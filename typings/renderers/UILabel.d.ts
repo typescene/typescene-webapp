@@ -1,4 +1,3 @@
-/** Helper function to set the (text or html) content for given element */
 export declare function setTextOrHtmlContent(element: HTMLElement, content: TextContentProperties): void;
 interface TextContentProperties {
     text?: string;
