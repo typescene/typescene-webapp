@@ -21,13 +21,25 @@ export class BrowserApplication extends Application {
     /** Create a browser application to be rendered within given DOM element (or to a wrapper that covers the entire window if no element is provided). */
     constructor(rootDOMElement?: HTMLElement) {
         super();
-        if (!rootDOMElement) document.body.innerHTML = "";
-        this.renderContext = new DOMRenderContext(rootDOMElement);
-        this.activationContext = new BrowserHashActivationContext();
-        (window as any).app = this;
-        (window as any).BrowserTheme = BrowserTheme;
-        (window as any).BrowserApplication = BrowserApplication;
+        this._rootDOMElement = rootDOMElement;
     }
+
+    /** Activate the application by creating a new render context and activation context if needed */
+    async onManagedStateActivatingAsync() {
+        await super.onManagedStateActivatingAsync();
+        if (!this._rootDOMElement) document.body.innerHTML = "";
+        this.renderContext = new DOMRenderContext(this._rootDOMElement);
+        this.activationContext = new BrowserHashActivationContext();
+    }
+
+    /** Deactivate the application by removing the render context and activation context */
+    async onManagedStateInactiveAsync() {
+        await super.onManagedStateInactiveAsync();
+        this.renderContext = undefined;
+        this.activationContext = undefined;
+    }
+
+    private _rootDOMElement?: HTMLElement;
 }
 
 /** Activation context that is used by the `BrowserApplication` type, which takes the target path from the browser window location 'hash' (e.g. `...#/foo/bar`) */
