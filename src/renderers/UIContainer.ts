@@ -250,7 +250,7 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
                         }
                         break;
                 }
-                if (targetTop! >= 0) {
+                if (targetTop != undefined) {
                     let top = element.scrollTop + (targetTop! - rect.top);
                     element.scrollTo({ behavior: "smooth", top });
                 }
@@ -298,7 +298,7 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
                         }
                         break;
                 }
-                if (targetLeft! >= 0) {
+                if (targetLeft! != undefined) {
                     let left = element.scrollLeft + (targetLeft! - rect.left);
                     element.scrollTo({ behavior: "smooth", left });
                 }
