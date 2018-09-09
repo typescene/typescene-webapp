@@ -135,6 +135,13 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
 
     /** Handle content changes asynchronously */
     async onContentChangeAsync() {
+        if (!this.component.content) {
+            if (this._updater) {
+                this._updater.stop();
+                this._updater = undefined;
+            }
+            return;
+        }
         if (this._updater) {
             // update container content
             this._updater.update(this.component.content);
