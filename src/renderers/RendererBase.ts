@@ -134,13 +134,14 @@ export abstract class RendererBase<TComponent extends UIComponent, TElement exte
                 for (let i = focusable.length - 1; i >= 0; i--) {
                     if (element.compareDocumentPosition(focusable[i]) &
                         Node.DOCUMENT_POSITION_PRECEDING) {
-                        while (i > 0) {
-                            if (!(focusable[i].compareDocumentPosition(focusable[i - 1]) &
-                                Node.DOCUMENT_POSITION_CONTAINS))
+                        let j = 0;
+                        while (j < i) {
+                            if (focusable[j].compareDocumentPosition(focusable[i]) &
+                                Node.DOCUMENT_POSITION_CONTAINED_BY)
                                 break;
-                            i--;
+                            j++;
                         }
-                        focusable[i].focus();
+                        focusable[j].focus();
                         return;
                     }
                 }
