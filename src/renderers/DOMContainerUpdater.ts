@@ -83,7 +83,7 @@ export class DOMContainerUpdater {
                 content[id] = out;
                 elements.push(out.element);
             }
-    
+
             // remove old components
             let removed: { [componentId: number]: DOMRenderOutput } = {};
             for (let oldId in this._content) {
@@ -113,7 +113,9 @@ export class DOMContainerUpdater {
             let last = this.element.lastChild;
             while (last && (last as HTMLElement).dataset &&
                 (last as HTMLElement).dataset.uiRemoved) {
-                last = last.previousSibling;
+                // TODO: shouldn't need to cast here
+                // https://github.com/Microsoft/TypeScript/issues/28551
+                last = last.previousSibling as typeof last;
             }
             let nextSibling = last && last.nextSibling;
             for (let i = elements.length - 1; i >= 0; i--) {

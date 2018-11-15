@@ -366,7 +366,7 @@ function _makeCSSUpdater() {
     // create style sheet first
     let elt = document.createElement("style");
     elt.setAttribute("type", "text/css");
-    document.head.appendChild(elt);
+    document.head!.appendChild(elt);
 
     // prepare an updater function
     let styles: { [spec: string]: any } = {};
