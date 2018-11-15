@@ -3,6 +3,7 @@ import { TopNavBar } from "../src";
 import { HMR } from "../src/HMR";
 
 // Enable Hot Module Reloading for the view exported by this module:
+declare const module: any;
 HMR.enableViewReload(module);
 
 export default UICell.with(

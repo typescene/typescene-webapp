@@ -1,6 +1,6 @@
 {
   "name": "@typescene/webapp",
-  "version": "0.10.4",
+  "version": "0.10.5",
   "description": "Typescene Web Application toolkit",
   "author": "Jelmer Cormont",
   "license": "MIT",
@@ -27,8 +27,8 @@
   },
   "devDependencies": {
     "@types/feather-icons": "^4.7.0",
-    "feather-icons": "^4.7.3",
-    "parcel-bundler": "^1.9.7",
-    "typescript": "^3.0.3"
+    "feather-icons": "^4.9.0",
+    "parcel-bundler": "^1.10.3",
+    "typescript": "^3.1.6"
   }
 }

@@ -275,7 +275,6 @@ export function initializeCSS() {
             left: "0", right: "0",
             display: "flex",
             flexDirection: "column",
-            background: "#fff",
             cursor: "default",
             overflow: "hidden"
         },

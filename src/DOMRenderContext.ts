@@ -228,7 +228,7 @@ export class DOMRenderContext extends UIRenderContext {
         wrapper.className = "App__ModalWrapper";
         wrapper.setAttribute("aria-modal", "true");
         shader.appendChild(wrapper);
-        
+
         // render element asynchronously and call callback
         let lastOutput: DOMRenderOutput | undefined = output;
         let lastFocused = document.activeElement;
@@ -289,7 +289,9 @@ export class DOMRenderContext extends UIRenderContext {
                 !(cur as HTMLElement).dataset.uiRemoved) {
                 wrapper.removeChild(cur);
             }
-            cur = cur.nextSibling;
+            // TODO: shouldn't need to cast here
+            // https://github.com/Microsoft/TypeScript/issues/28551
+            cur = cur.nextSibling as typeof cur;
         }
 
         // darken shader after rendering
@@ -503,7 +505,7 @@ export function removeElement(elt: HTMLElement, ...transitionElts: Array<HTMLEle
 
     // add attribute first so the elements can be skipped over
     elt.dataset.uiRemoved = "removed";
-    
+
     // set handler to wait for removal/animation
     let nTransitions = 0, timer: any;
     function checkRemove (this: HTMLElement | void) {
