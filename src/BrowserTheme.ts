@@ -217,6 +217,7 @@ export class BrowserTheme extends UITheme {
         primary: "@blue",
         accent: "@purple",
         background: "@white",
+        appBackground: "@background",
         text: "@background:text",
         controlBase: "@background",
         separator: "@background^-50%/20%",

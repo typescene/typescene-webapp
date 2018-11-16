@@ -8,7 +8,7 @@ HMR.enableViewReload(module);
 
 export default UICell.with(
     {
-        background: "#eee",
+        background: "@text/20%",
         dimensions: { maxWidth: "100%", shrink: 1 }
     },
     TopNavBar.with({

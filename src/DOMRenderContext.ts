@@ -91,8 +91,13 @@ export class DOMRenderContext extends UIRenderContext {
     static createFixedRootElement() {
         let result = document.createElement("app");
         result.className = "App__FixedRoot";
-        result.style.background = UITheme.replaceColor("@background");
-        result.style.color = UITheme.replaceColor("@text");
+        result.style.opacity = "0";
+        setTimeout(() => {
+            // apply colors asynchronously to allow theme changes
+            result.style.background = UITheme.replaceColor("@appBackground");
+            result.style.color = UITheme.replaceColor("@text");
+            result.style.opacity = "1";
+        }, 10);
         document.body.appendChild(result);
         return result;
     }
