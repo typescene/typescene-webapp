@@ -82,6 +82,23 @@ export class DOMContainerUpdater {
                 let out = this._content[id] || this._addChildComponent(c, p);
                 content[id] = out;
                 elements.push(out.element);
+
+                // detach from previous parent if needed
+                if (out.element && out.element.parentNode &&
+                    out.element.parentNode !== this.element) {
+                    out.detach && out.detach();
+                    if (out.element.parentNode) {
+                        out.element.parentNode.removeChild(out.element);
+                    }
+                }
+
+                // add own detach method
+                out.detach = () => {
+                    if (out.element && out.element.parentNode === this.element) {
+                        let plh = this._content[id] = this._getPlaceholder(c);
+                        out.element.parentNode.replaceChild(plh.element, out.element);
+                    }
+                }
             }
 
             // remove old components

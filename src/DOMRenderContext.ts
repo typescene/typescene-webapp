@@ -138,6 +138,7 @@ export class DOMRenderContext extends UIRenderContext {
     private _placePage(output: DOMRenderOutput, afterRender?: (out?: DOMRenderOutput) => void) {
         let replacePage = (output: DOMRenderOutput) => {
             // TODO: ANIMATION
+            output.detach && output.detach();
             if (this._page) {
                 let after = this._page.element.nextSibling;
                 this.root.insertBefore(output.element, after);
@@ -308,6 +309,7 @@ export class DOMRenderContext extends UIRenderContext {
         }, 0);
 
         // add content and reset/handle placement
+        output.detach && output.detach();
         wrapper.appendChild(output.element);
         wrapper.style.cssText = "";
         let refOut = output.placementRef && output.placementRef.lastRenderOutput;
