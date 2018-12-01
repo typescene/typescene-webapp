@@ -163,7 +163,9 @@ export class BrowserTheme extends UITheme {
             UIStyle.create("textfield_borderless", {
                 controlStyle: {
                     background: "transparent",
-                    border: "0"
+                    border: "0",
+                    borderRadius: "0",
+                    css: { padding: "0" }
                 }
             }).addState("focused", {
                 controlStyle: { css: { boxShadow: "none" } }
