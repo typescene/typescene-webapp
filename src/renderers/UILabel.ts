@@ -92,7 +92,7 @@ export function setTextOrHtmlContent(element: HTMLElement, content: TextContentP
     contentWrapper.style.display = "flex";
     contentWrapper.style.flexDirection = "row";
     contentWrapper.style.alignItems = "center";
-    contentWrapper.style.justifyContent = "space-around";
+    contentWrapper.style.justifyContent = "start";
     try {
         let size = getCSSLength(content.iconSize, "1rem");
         let color = content.iconColor ? UITheme.replaceColor(content.iconColor) : "";
