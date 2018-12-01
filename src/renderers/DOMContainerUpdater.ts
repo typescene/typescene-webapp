@@ -142,7 +142,10 @@ export class DOMContainerUpdater {
                         (cur.previousSibling || this._makeSeparator());
                     this.element.insertBefore(cur, nextSibling);
                     if (separator) {
-                        if (cur.previousSibling) {
+                        let previousSibling: any = cur.previousSibling;
+                        if (previousSibling &&
+                            !(previousSibling.dataset &&
+                                previousSibling.dataset.uiRemoved)) {
                             this.element.insertBefore(separator, cur);
                         }
                         else if (cur.nextSibling) {
