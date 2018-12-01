@@ -7,7 +7,7 @@ class UICellRenderer {
 
     /** Handle additional cell style changes */
     @onPropertyChange("css", "background", "textColor",
-        "borderWidth", "borderColor", "borderStyle", "borderRadius",
+        "borderThickness", "borderColor", "borderStyle", "borderRadius",
         "dropShadow")
     async updateStyleAsync() {
         if (this.component.lastRenderOutput) {

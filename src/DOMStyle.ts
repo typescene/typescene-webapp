@@ -186,8 +186,8 @@ function defineStyleClass(style: UIStyle) {
 /** Helper to append CSS styles to given object for a given `UIContainer` instance */
 function addContainerCSS(result: Partial<CSSStyleDeclaration>, container: UIContainer) {
     if (container instanceof UICell) {
-        if (container.borderWidth) {
-            result.borderWidth = getCSSLength(container.borderWidth);
+        if (container.borderThickness) {
+            result.borderWidth = getCSSLength(container.borderThickness);
             result.borderColor = UITheme.replaceColor(container.borderColor || "transparent");
             result.borderStyle = container.borderStyle;
         }

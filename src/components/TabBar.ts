@@ -43,7 +43,7 @@ export class TabBar extends UICell {
             background: "@background",
             borderColor: "@primary",
             borderStyle: "solid",
-            borderWidth: "0 0 .0625rem 0",
+            borderThickness: "0 0 .0625rem 0",
             ...presets
         }, UISelectionController.with(
             UIScrollContainer.with(
