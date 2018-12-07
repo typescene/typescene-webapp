@@ -1,8 +1,7 @@
-import { observe, onPropertyChange, UIRenderEvent, UISeparator } from "typescene";
+import { onPropertyChange, UIRenderEvent, UISeparator } from "typescene";
 import { applyElementCSS, getCSSLength } from "../DOMStyle";
 import { baseEventNames, RendererBase } from "./RendererBase";
 
-@observe(UISeparator)
 class UISeparatorRenderer extends RendererBase<UISeparator, HTMLElement> {
     constructor(public component: UISeparator) {
         super(component);
@@ -45,3 +44,5 @@ class UISeparatorRenderer extends RendererBase<UISeparator, HTMLElement> {
         }
     }
 }
+
+UISeparator.observe(UISeparatorRenderer);

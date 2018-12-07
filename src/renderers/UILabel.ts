@@ -1,8 +1,7 @@
-import { logUnhandledException, observe, onPropertyChange, UIFocusRequestEvent, UILabel, UIRenderEvent, UITheme } from "typescene";
+import { logUnhandledException, onPropertyChange, UIFocusRequestEvent, UILabel, UIRenderEvent, UITheme } from "typescene";
 import { applyElementCSS, getCSSLength } from "../DOMStyle";
 import { baseEventNames, controlEventNames, RendererBase } from "./RendererBase";
 
-@observe(UILabel)
 class UILabelRenderer extends RendererBase<UILabel, HTMLElement> {
     constructor(public component: UILabel) {
         super(component);
@@ -160,3 +159,5 @@ interface TextContentProperties {
     iconColor?: string;
     iconAfter?: boolean;
 }
+
+UILabel.observe(UILabelRenderer);

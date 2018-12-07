@@ -25,12 +25,12 @@
   },
   "dependencies": {
     "tslib": "^1.9.3",
-    "typescene": "^2.10.11"
+    "typescene": "^2.11.0"
   },
   "devDependencies": {
     "@types/feather-icons": "^4.7.0",
     "feather-icons": "^4.9.0",
     "parcel-bundler": "^1.10.3",
-    "typescript": "^3.1.6"
+    "typescript": "^3.2.2"
   }
 }

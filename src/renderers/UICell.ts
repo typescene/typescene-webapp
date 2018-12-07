@@ -1,7 +1,6 @@
-import { observe, onPropertyChange, UICell } from "typescene";
+import { onPropertyChange, UICell } from "typescene";
 import { applyElementCSS } from "../DOMStyle";
 
-@observe(UICell)
 class UICellRenderer {
     constructor(public component: UICell) { }
 
@@ -16,3 +15,5 @@ class UICellRenderer {
         }
     }
 }
+
+UICell.observe(UICellRenderer);

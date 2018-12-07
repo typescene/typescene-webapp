@@ -1,9 +1,8 @@
-import { observe, onPropertyChange, UIButton, UIFocusRequestEvent, UIRenderEvent } from "typescene";
+import { onPropertyChange, UIButton, UIFocusRequestEvent, UIRenderEvent } from "typescene";
 import { applyElementCSS } from "../DOMStyle";
 import { baseEventNames, controlEventNames, RendererBase } from "./RendererBase";
 import { setTextOrHtmlContent } from "./UILabel";
 
-@observe(UIButton)
 class UIButtonRenderer extends RendererBase<UIButton, HTMLButtonElement> {
     constructor(public component: UIButton) {
         super(component);
@@ -86,3 +85,5 @@ class UIButtonRenderer extends RendererBase<UIButton, HTMLButtonElement> {
         if (element) applyElementCSS(this.component, element);
     }
 }
+
+UIButton.observe(UIButtonRenderer);

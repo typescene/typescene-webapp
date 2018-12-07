@@ -1,8 +1,7 @@
-import { observe, onPropertyChange, UIFocusRequestEvent, UIRenderEvent, UITheme, UIToggle } from "typescene";
+import { onPropertyChange, UIFocusRequestEvent, UIRenderEvent, UITheme, UIToggle } from "typescene";
 import { applyElementCSS } from "../DOMStyle";
 import { baseEventNames, controlEventNames, RendererBase } from "./RendererBase";
 
-@observe(UIToggle)
 class UIToggleRenderer extends RendererBase<UIToggle, HTMLElement> {
     constructor(public component: UIToggle) {
         super(component);
@@ -107,3 +106,5 @@ class UIToggleRenderer extends RendererBase<UIToggle, HTMLElement> {
         }
     }
 }
+
+UIToggle.observe(UIToggleRenderer);

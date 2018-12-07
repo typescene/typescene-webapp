@@ -1,8 +1,7 @@
-import { observe, onPropertyChange, UIRenderEvent, UISpacer } from "typescene";
+import { onPropertyChange, UIRenderEvent, UISpacer } from "typescene";
 import { applyElementCSS } from "../DOMStyle";
 import { RendererBase } from "./RendererBase";
 
-@observe(UISpacer)
 class UISpacerRenderer extends RendererBase<UISpacer, HTMLElement> {
     constructor(public component: UISpacer) {
         super(component);
@@ -27,3 +26,5 @@ class UISpacerRenderer extends RendererBase<UISpacer, HTMLElement> {
         if (element) applyElementCSS(this.component, element);
     }
 }
+
+UISpacer.observe(UISpacerRenderer);

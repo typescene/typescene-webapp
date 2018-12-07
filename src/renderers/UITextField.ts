@@ -1,8 +1,7 @@
-import { observe, onPropertyChange, UIFocusRequestEvent, UIRenderEvent, UITextField } from "typescene";
+import { onPropertyChange, UIFocusRequestEvent, UIRenderEvent, UITextField } from "typescene";
 import { applyElementCSS } from "../DOMStyle";
 import { baseEventNames, controlEventNames, RendererBase } from "./RendererBase";
 
-@observe(UITextField)
 class UITextFieldRenderer extends RendererBase<UITextField, HTMLInputElement | HTMLTextAreaElement> {
     constructor(public component: UITextField) {
         super(component);
@@ -82,3 +81,5 @@ class UITextFieldRenderer extends RendererBase<UITextField, HTMLInputElement | H
         if (element) applyElementCSS(this.component, element);
     }
 }
+
+UITextField.observe(UITextFieldRenderer);

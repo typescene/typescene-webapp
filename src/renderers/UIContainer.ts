@@ -13,7 +13,6 @@ function hasComponentSpacing(container: UIContainer): container is UIContainerWi
         (container as UIContainerWithSpacing).hasComponentSpacing();
 }
 
-@observe(UIContainer as any)
 class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
     constructor(component: any) {
         super(component);
@@ -430,3 +429,6 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
         window.addEventListener("click", upHandler, true);
     }
 });
+
+// observe *all* containers (cast `UIContainer` because it is an abstract class)
+observe(UIContainer as any, UIContainerRenderer);

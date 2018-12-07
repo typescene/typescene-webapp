@@ -1,8 +1,7 @@
-import { observe, onPropertyChange, UIComponentEvent, UIFocusRequestEvent, UIImage, UIRenderEvent } from "typescene";
+import { onPropertyChange, UIComponentEvent, UIFocusRequestEvent, UIImage, UIRenderEvent } from "typescene";
 import { applyElementCSS } from "../DOMStyle";
 import { baseEventNames, controlEventNames, RendererBase } from "./RendererBase";
 
-@observe(UIImage)
 class UIImageRenderer extends RendererBase<UIImage, HTMLImageElement> {
     constructor(public component: UIImage) {
         super(component);
@@ -53,3 +52,5 @@ class UIImageRenderer extends RendererBase<UIImage, HTMLImageElement> {
         if (element) applyElementCSS(this.component, element);
     }
 }
+
+UIImage.observe(UIImageRenderer);
