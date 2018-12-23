@@ -34,6 +34,11 @@ class UIToggleRenderer extends RendererBase<UIToggle, HTMLElement> {
             this.component.state = !!checkbox.checked;
         }
         super.emitComponentEvent(e);
+
+        // fake an "input" event for certain browsers that don't send it
+        if (e.type === "click") {
+            super.emitComponentEvent(e, "Input");
+        }
     }
 
     /** Called after rendering: add event handlers */
