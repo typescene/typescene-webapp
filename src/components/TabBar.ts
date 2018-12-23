@@ -1,4 +1,4 @@
-import { UIBorderlessButton, UICell, UIRenderableConstructor, UIScrollContainer, UISelectionController, UIStyle } from "typescene";
+import { UIBorderlessButton, UICell, UIComponentEvent, UIRenderableConstructor, UIScrollContainer, UISelectionController, UIStyle } from "typescene";
 
 /** A button with predefined styles for use within a tab bar */
 export const TabBarButton = UIBorderlessButton.with({
@@ -6,7 +6,7 @@ export const TabBarButton = UIBorderlessButton.with({
     style: UIStyle
         .create("TabBarButton", {
             position: { gravity: "end" },
-            dimensions: { height: 42, maxHeight: 42, minWidth: 80, shrink: 0 },
+            dimensions: { height: 42, maxHeight: 42, minWidth: 32, shrink: 0 },
             textStyle: { align: "start", color: "@text" },
             controlStyle: {
                 borderRadius: 0,
@@ -32,7 +32,7 @@ export const TabBarButton = UIBorderlessButton.with({
     onArrowRightKeyPress() { this.requestFocusNext() }
 });
 
-/** A bar containing tabs, for use above other content */
+/** A bar containing tabs, for use with `TabBarButton` */
 export class TabBar extends UICell {
     static preset(presets: UICell.Presets, ...content: Array<UIRenderableConstructor>) {
         return super.preset({
@@ -55,4 +55,20 @@ export class TabBar extends UICell {
             )
         ));
     }
+
+    /** Index of last selected tab, if any (read-only) */
+    selectedIndex?: number;
 }
+TabBar.handle({
+    Select(e) {
+        // update `selectedIndex` if possible
+        if ((e instanceof UIComponentEvent) &&
+            (e.source instanceof TabBarButton)) {
+            let buttonParent = e.source.getParentComponent();
+            if (buttonParent instanceof UIScrollContainer) {
+                let selectedIndex = buttonParent.content.indexOf(e.source);
+                this.selectedIndex = selectedIndex >= 0 ? selectedIndex : undefined;
+            }
+        }
+    }
+})
