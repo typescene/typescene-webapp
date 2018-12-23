@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "tslib": "^1.9.3",
-    "typescene": "^2.11.0"
+    "typescene": "^2.11.1"
   },
   "devDependencies": {
     "@types/feather-icons": "^4.7.0",

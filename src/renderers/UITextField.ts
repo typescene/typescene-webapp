@@ -11,11 +11,14 @@ class UITextFieldRenderer extends RendererBase<UITextField, HTMLInputElement | H
     protected createElement() {
         let element = document.createElement(this.component.multiline ? "textarea" : "input");
         element.tabIndex = this.component.isKeyboardFocusable() ? 0 : -1;
-        applyElementCSS(this.component, element, true);
+        if (!this.component.multiline) {
+            (element as HTMLInputElement).type = this.component.type;
+        }
         element.placeholder = this.component.placeholder || " ";  // layout workaround
         element.value = this.component.value || "";
         if (this.component.name) element.name = this.component.name;
         if (this.component.disabled) element.disabled = true;
+        applyElementCSS(this.component, element, true);
         return element;
     }
 
@@ -53,12 +56,18 @@ class UITextFieldRenderer extends RendererBase<UITextField, HTMLInputElement | H
     }
 
     /** Handle control changes */
-    @onPropertyChange("name", "value", "placeholder")
+    @onPropertyChange("name", "value", "type", "placeholder")
     updateControl() {
         let element = this.getElement();
         if (element) {
-            let placeholder = this.component.placeholder || " ";
-            if (element.placeholder !== placeholder) element.placeholder = placeholder;
+            let placeholder = this.component.placeholder || " ";  // layout workaround
+            if (element.placeholder !== placeholder) {
+                element.placeholder = placeholder;
+            }
+            if (!this.component.multiline &&
+                element.type !== this.component.type) {
+                (element as HTMLInputElement).type = this.component.type;
+            }
             if (this.component.name) element.name = this.component.name;
 
             // update value asynchronously if it was set programmatically
