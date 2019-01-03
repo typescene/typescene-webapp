@@ -311,7 +311,8 @@ export function initializeCSS() {
             padding: "0",
             border: "0",
             borderTopStyle: "solid",
-            borderWidth: "1px"
+            borderWidth: "1px",
+            alignSelf: "stretch"
         },
         ".UIRender__Separator--line-vertical": {
             borderTopStyle: "none",
