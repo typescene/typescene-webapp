@@ -119,8 +119,10 @@ export function setTextOrHtmlContent(element: HTMLElement, content: TextContentP
             if (content.iconSize) iconWrapper.style.fontSize = size;
             if (color) iconWrapper.style.color = color;
         }
+        let iconSize = getCSSLength(content.iconSize, "1rem");
+        (icon as HTMLElement).style.flex = "0 0 " + iconSize;
+        (icon as HTMLElement).style.width = iconSize;
         (icon as HTMLElement).style.order = content.iconAfter ? "2" : "0";
-        (icon as HTMLElement).style.flex = "0 0 " + getCSSLength(content.iconSize, "1rem");
         contentWrapper.appendChild(icon);
     }
     catch (err) {
