@@ -328,18 +328,18 @@ export function initializeCSS() {
         ".UI__CustomToggle": {
             lineHeight: "1.5rem",
             position: "relative",
-            padding: ".25rem .5rem"
+            padding: ".25rem 0"
         },
         ".UI__CustomToggle>input": {
             position: "absolute",
-            top: ".25rem", left: ".5rem",
+            top: ".25rem", left: "0",
             width: "1rem", height: "1rem",
             margin: "0", padding: "0", border: "0",
             opacity: "0"
         },
         ".UI__CustomToggle>input+label": {
             display: "inline-block",
-            paddingLeft: "1.25rem"
+            paddingLeft: "1rem"
         },
         ".UI__CustomToggle>input[disabled]+label": {
             opacity: ".5"
@@ -350,7 +350,7 @@ export function initializeCSS() {
         ".UI__CustomToggle>input+label>control": {
             content: "''",
             position: "absolute",
-            top: ".25rem", left: ".5rem", 
+            top: ".25rem", left: "0",
             width: ".875rem",
             height: ".875rem",
             background: "#fff",
