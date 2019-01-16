@@ -1,5 +1,6 @@
 import { UIStyle, UITheme } from "typescene";
-import { AlertDialogBuilder, DropdownMenuBuilder } from "./components";
+import { AlertDialogBuilder } from "./components/AlertDialog";
+import { DropdownMenuBuilder } from "./components/DropdownMenu";
 import { getCSSLength, setGlobalCSS } from "./DOMStyle";
 
 /** Base text style mixed into the base control style set */

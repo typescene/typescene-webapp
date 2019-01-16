@@ -1,5 +1,5 @@
 src/
-sample/
+demo/
 *.log
 npm-debug.log*
 package-lock.json

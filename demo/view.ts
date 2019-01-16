@@ -1,5 +1,4 @@
-import { tl, UICell, UIColumn, UIFlowCell, UIOppositeRow, UIOutlineButton, UIScrollContainer } from "typescene";
-import { TopNavBar } from "../src";
+import { tl, UICell, UIColumn, UIFlowCell, UIHeading1, UIOppositeRow, UIOutlineButton, UIScrollContainer } from "typescene";
 import { HMR } from "../src/HMR";
 
 // Enable Hot Module Reloading for the view exported by this module:
@@ -11,10 +10,22 @@ export default UICell.with(
         background: "@text/20%",
         dimensions: { maxWidth: "100%", shrink: 1 }
     },
-    TopNavBar.with({
-        title: "Sample",
-        icon: "layout",
-    }),
+    UIFlowCell.with(
+        {
+            background: "@primary",
+            textColor: "@primary:text",
+            layout: { axis: "horizontal", distribution: "fill" },
+            dimensions: { height: 48 },
+            padding: { x: 16 },
+            dropShadow: .3
+        },
+        UIHeading1.with({
+            icon: "layout",
+            text: "Sample",
+            textStyle: { fontSize: 18 },
+            position: { gravity: "center" }
+        })
+    ),
     UIScrollContainer.with(
         UIFlowCell.with(
             {
