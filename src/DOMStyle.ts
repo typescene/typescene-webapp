@@ -327,7 +327,7 @@ function addControlStyleCSS(result: Partial<CSSStyleDeclaration> & { className?:
     if (border !== undefined) result.border = UITheme.replaceColor(border);
     let borderRadius = controlStyle.borderRadius;
     if (borderRadius !== undefined) result.borderRadius = getCSSLength(controlStyle.borderRadius);
-    if (controlStyle.dropShadow! > 0) result.boxShadow = getBoxShadowCSS(controlStyle.dropShadow);
+    if (controlStyle.dropShadow) result.boxShadow = getBoxShadowCSS(controlStyle.dropShadow);
     if (controlStyle.css) {
         // copy all properties to result
         for (let p in controlStyle.css) result[p] = controlStyle.css[p];
@@ -352,13 +352,18 @@ function getCSSText(style: any) {
 
 /** Helper function to get boxShadow property for given elevation (0-1) */
 function getBoxShadowCSS(d = 0) {
-    if (d <= 0) return "none";
+    let inset = "";
+    if (d < 0) {
+        inset = "inset ";
+        d = -d;
+    }
     d = Math.min(1, Math.max(0, d));
-    return `0 0 ${d * 2}rem ${d * -.25}rem rgba(0,0,0,${d * d * .3}),` +
-        `0 ${d * .85}rem ${d * 1}rem ${d * -.25}rem rgba(0,0,0,${d * .15 + .1}),` +
-        `0 ${d * d * .5 + d * .6}rem ${d * 1}rem ${d * -1}rem rgba(0,0,0,.4),` +
-        `0 ${d * d * 1.5}rem ${d * 3}rem ${d * -1}rem rgba(0,0,0,.3),` +
-        `0 ${d * d * 3}rem ${d * 2.5}rem ${d * -2}rem rgba(0,0,0,.3)`;
+    if (!(d > 0)) return "none";
+    return inset + `0 0 ${d * 2}rem ${d * -.25}rem rgba(0,0,0,${d * d * .3}),` +
+        inset + `0 ${d * .85}rem ${d * 1}rem ${d * -.25}rem rgba(0,0,0,${d * .15 + .1}),` +
+        inset + `0 ${d * d * .5 + d * .6}rem ${d * 1}rem ${d * -1}rem rgba(0,0,0,.4),` +
+        inset + `0 ${d * d * 1.5}rem ${d * 3}rem ${d * -1}rem rgba(0,0,0,.3),` +
+        inset + `0 ${d * d * 3}rem ${d * 2.5}rem ${d * -2}rem rgba(0,0,0,.3)`;
 }
 
 /** Helper function to make a CSS style element updater function */
