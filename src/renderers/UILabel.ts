@@ -91,8 +91,9 @@ export function setTextOrHtmlContent(element: HTMLElement, content: TextContentP
     contentWrapper.style.display = "flex";
     contentWrapper.style.flexDirection = "row";
     contentWrapper.style.alignItems = "center";
-    contentWrapper.style.justifyContent = "start";
+    contentWrapper.style.justifyContent = "space-around";
     try {
+        // add icon element
         let size = getCSSLength(content.iconSize, "1rem");
         let color = content.iconColor ? UITheme.replaceColor(content.iconColor) : "";
         let temp = document.createElement("div");
@@ -132,20 +133,24 @@ export function setTextOrHtmlContent(element: HTMLElement, content: TextContentP
         }
     }
     if (content.text) {
+        // add margin element
         let margin = getCSSLength(content.iconMargin, ".5rem");
         let marginWrapper = document.createElement("span");
         marginWrapper.style.flex = "0 0 " + margin;
         marginWrapper.style.width = margin;
         marginWrapper.style.order = "1";
         contentWrapper.appendChild(marginWrapper);
-    }
-    if (content.text) {
+
+        // add text element
         let textWrapper = document.createElement("span");
         textWrapper.style.flex = "1 0 auto";
         textWrapper.style.order = content.iconAfter ? "0" : "2";
         if (content.htmlFormat) textWrapper.innerHTML = content.text;
         else textWrapper.textContent = content.text;
         contentWrapper.appendChild(textWrapper);
+
+        // align icon to the left (ltr) if there is text next to it
+        contentWrapper.style.justifyContent = "start";
     }
     element.innerHTML = "";
     element.appendChild(contentWrapper);
