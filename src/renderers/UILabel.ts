@@ -92,6 +92,7 @@ export function setTextOrHtmlContent(element: HTMLElement, content: TextContentP
     contentWrapper.style.flexDirection = "row";
     contentWrapper.style.alignItems = "center";
     contentWrapper.style.justifyContent = "space-around";
+    contentWrapper.style.textOverflow = "inherit";
     try {
         // add icon element
         let size = getCSSLength(content.iconSize, "1rem");
@@ -143,8 +144,10 @@ export function setTextOrHtmlContent(element: HTMLElement, content: TextContentP
 
         // add text element
         let textWrapper = document.createElement("span");
-        textWrapper.style.flex = "1 0 auto";
+        textWrapper.style.flex = "1 0 0";
         textWrapper.style.order = content.iconAfter ? "0" : "2";
+        textWrapper.style.textOverflow = "inherit";
+        textWrapper.style.overflow = "hidden";
         if (content.htmlFormat) textWrapper.innerHTML = content.text;
         else textWrapper.textContent = content.text;
         contentWrapper.appendChild(textWrapper);
