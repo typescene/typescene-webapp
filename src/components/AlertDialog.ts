@@ -1,4 +1,4 @@
-import { bind, ComponentPresetType, ConfirmationDialogBuilder, UIBorderlessButton, UICell, UICloseRow, UIColumn, UIExpandedLabel, UIFlowCell, UILabel, UILinkButton, UIOppositeRow, UIParagraph, UIPrimaryButton, UISpacer, ViewComponent } from "typescene";
+import { bind, ComponentPresetType, ConfirmationDialogBuilder, tt, UIBorderlessButton, UICell, UICloseRow, UIColumn, UIExpandedLabel, UIFlowCell, UILabel, UILinkButton, UIOppositeRow, UIParagraph, UIPrimaryButton, UISpacer, ViewComponent } from "typescene";
 
 /** Simple modal message dialog UI component; emits `Confirm` and `CloseModal` events */
 export class AlertDialog extends ViewComponent.with(
@@ -73,7 +73,7 @@ export class AlertDialog extends ViewComponent.with(
     title?: string;
 
     /** Label for the confirmation button */
-    confirmButtonLabel = "Dismiss";
+    confirmButtonLabel = tt("Dismiss");
 
     /** Label for the cancellation button; if none specified, only the confirmation button will be displayed */
     cancelButtonLabel?: string;

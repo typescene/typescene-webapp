@@ -1,4 +1,4 @@
-import { logUnhandledException, onPropertyChange, UIFocusRequestEvent, UILabel, UIRenderEvent, UITheme } from "typescene";
+import { logUnhandledException, onPropertyChange, Stringable, UIFocusRequestEvent, UILabel, UIRenderEvent, UITheme } from "typescene";
 import { applyElementCSS, getCSSLength } from "../DOMStyle";
 import { baseEventNames, controlEventNames, RendererBase } from "./RendererBase";
 
@@ -79,10 +79,11 @@ class UILabelRenderer extends RendererBase<UILabel, HTMLElement> {
 
 /** Helper function to set the (text or html) content for given element */
 export function setTextOrHtmlContent(element: HTMLElement, content: TextContentProperties) {
+    let text = String(content.text || "");
     if (!content.icon) {
         // just set text/html content
-        if (content.htmlFormat) element.innerHTML = content.text || "";
-        else element.textContent = content.text || "";
+        if (content.htmlFormat) element.innerHTML = text;
+        else element.textContent = text;
         return;
     }
 
@@ -133,7 +134,7 @@ export function setTextOrHtmlContent(element: HTMLElement, content: TextContentP
             logUnhandledException(Error("[UILabel] Failed to load icon: " + content.icon));
         }
     }
-    if (content.text) {
+    if (text) {
         // add margin element
         let margin = getCSSLength(content.iconMargin, ".5rem");
         let marginWrapper = document.createElement("span");
@@ -148,8 +149,8 @@ export function setTextOrHtmlContent(element: HTMLElement, content: TextContentP
         textWrapper.style.order = content.iconAfter ? "0" : "2";
         textWrapper.style.textOverflow = "inherit";
         textWrapper.style.overflow = "hidden";
-        if (content.htmlFormat) textWrapper.innerHTML = content.text;
-        else textWrapper.textContent = content.text;
+        if (content.htmlFormat) textWrapper.innerHTML = text;
+        else textWrapper.textContent = text;
         contentWrapper.appendChild(textWrapper);
 
         // align icon to the left (ltr) if there is text next to it
@@ -161,7 +162,7 @@ export function setTextOrHtmlContent(element: HTMLElement, content: TextContentP
 let _failedIconNotified: { [name: string]: true } = {};
 
 interface TextContentProperties {
-    text?: string;
+    text?: Stringable;
     htmlFormat?: boolean;
     icon?: string;
     iconSize?: string | number;

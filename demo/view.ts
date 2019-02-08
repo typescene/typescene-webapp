@@ -1,4 +1,4 @@
-import { tl, UICell, UIColumn, UIFlowCell, UIHeading1, UIOppositeRow, UIOutlineButton, UIScrollContainer } from "typescene";
+import { tl, tt, UICell, UIColumn, UIFlowCell, UIHeading1, UIOppositeRow, UIOutlineButton, UIScrollContainer } from "typescene";
 import { HMR } from "../src/HMR";
 
 // Enable Hot Module Reloading for the view exported by this module:
@@ -21,7 +21,7 @@ export default UICell.with(
         },
         UIHeading1.with({
             icon: "layout",
-            text: "Sample",
+            text: tt("Sample"),
             textStyle: { fontSize: 18 },
             position: { gravity: "center" }
         })
