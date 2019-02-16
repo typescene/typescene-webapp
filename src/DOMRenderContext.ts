@@ -1,4 +1,5 @@
 import { AppActivity, logUnhandledException, UIComponent, UIRenderable, UIRenderContext, UIRenderPlacement, UITheme } from "typescene";
+import { BrowserApplication } from './BrowserApplication';
 
 /** Default popover width (in pixels) */
 const MIN_POPOVER_WIDTH = 140;
@@ -197,7 +198,18 @@ export class DOMRenderContext extends UIRenderContext {
         let clickToClose = !!output.modalShadeClickToClose;
         shader.className = "App__ModalShader";
         shader.tabIndex = 0;
+        if (BrowserApplication.transitionsDisabled) {
+            shader.style.transition = "none";
+        }
         shader.addEventListener("click", e => {
+            if (e.target === shader || e.target === wrapper) {
+                e.stopPropagation();
+                if (clickToClose && (output.source instanceof UIComponent)) {
+                    output.source.propagateComponentEvent("CloseModal");
+                }
+            }
+        }, true);
+        shader.addEventListener("touchstart", e => {
             if (e.target === shader || e.target === wrapper) {
                 e.stopPropagation();
                 if (clickToClose && (output.source instanceof UIComponent)) {

@@ -1,10 +1,12 @@
 import { UIComponent, UIFocusRequestEvent, UIFocusRequestType, UIRenderContext, UIRenderEvent } from "typescene";
+import { BrowserApplication } from '../BrowserApplication';
 import { DOMRenderCallback, DOMRenderOutput } from "../DOMRenderContext";
 
 /** @internal List of basic DOM events that can be propagated on all elements */
 export const baseEventNames = [
     "click", "dblclick", "contextmenu", "mouseup", "mousedown",
-    "keydown", "keypress", "keyup", "focusin", "focusout"
+    "keydown", "keypress", "keyup", "focusin", "focusout",
+    "touchstart", "touchend"
 ];
 
 /** @internal List of DOM events that should be propagated on control and form elements */
@@ -24,6 +26,8 @@ const _names: { [type: string]: string } = {
     "mousedown": "MouseDown",
     "mouseenter": "MouseEnter",
     "mouseleave": "MouseLeave",
+    "touchstart": "TouchStart",
+    "touchend": "TouchEnd",
     "keydown": "KeyDown",
     "keyup": "KeyUp",
     "keypress": "KeyPress",
@@ -49,6 +53,12 @@ const _keyUIEvents: { [keyCode: number]: string } = {
     40: "ArrowDownKeyPress"
 }
 
+/** Last renderer where a touchstart occurred */
+let _lastTouched: any;
+
+/** Last time an element was touched */
+let _lastTouchTime: number | undefined;
+
 export abstract class RendererBase<TComponent extends UIComponent, TElement extends HTMLElement> {
     constructor(component: TComponent) {
         this.component = component;
@@ -72,8 +82,23 @@ export abstract class RendererBase<TComponent extends UIComponent, TElement exte
 
     /** Propagate a DOM event to the UI component and stop its propagation in the DOM; can be overridden e.g. to read the latest value of an input element before emitting the event. */
     protected emitComponentEvent(e: Event, name?: string) {
+        if (e.type === "click" || e.type === "mousedown" || e.type === "mouseup") {
+            if (_lastTouchTime! > Date.now() - 500) return;
+        }
         let uiEventName = name || domEventToUIEventName(e);
         this.component && this.component.propagateComponentEvent(uiEventName, undefined, e);
+        if (uiEventName === "TouchStart") {
+            _lastTouchTime = Date.now();
+            _lastTouched = this;
+            this.component && this.component.propagateComponentEvent("MouseDown", undefined, e);
+        }
+        if (uiEventName === "TouchEnd") {
+            _lastTouchTime = Date.now();
+            if (_lastTouched === this) {
+                this.component && this.component.propagateComponentEvent("MouseUp", undefined, e);
+                this.component && this.component.propagateComponentEvent("Click", undefined, e);
+            }
+        }
         if (uiEventName === "KeyDown") {
             let key = (e as KeyboardEvent).keyCode;
             let uiKeyEventName: string = key ? _keyUIEvents[key] : "";
@@ -95,15 +120,17 @@ export abstract class RendererBase<TComponent extends UIComponent, TElement exte
     /** Handle given render event by creating an element using the (overridden) `createElement` method if necessary, and storing the last render callback to enable the `updateElement` method */
     protected handleRenderEvent(e: UIRenderEvent<TComponent>) {
         if (e.source !== this.component) return;
-        let playReveal = !this._renderedElement;
         let element = this._renderedElement || (this._renderedElement = this.createElement());
-        if (playReveal && this.component.revealTransition) {
-            element.dataset.transitionReveal = this.component.revealTransition;
-            element.dataset.transitionT = "revealing";
-        }
-        if (this.component.exitTransition) {
-            element.dataset.transitionExit = this.component.exitTransition;
-            element.dataset.transitionT = "revealing";
+        if (!BrowserApplication.transitionsDisabled) {
+            let playReveal = !this._renderedElement;
+            if (playReveal && this.component.revealTransition) {
+                element.dataset.transitionReveal = this.component.revealTransition;
+                element.dataset.transitionT = "revealing";
+            }
+            if (this.component.exitTransition) {
+                element.dataset.transitionExit = this.component.exitTransition;
+                element.dataset.transitionT = "revealing";
+            }
         }
         let output = new UIRenderContext.Output(this.component, element);
         this.component.lastRenderOutput = output as any;

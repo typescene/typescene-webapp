@@ -4,6 +4,8 @@ import { DOMRenderContext } from "./DOMRenderContext";
 import { DP_PER_REM, setGlobalCSS } from "./DOMStyle";
 import "./renderers";
 
+let _transitionsDisabled = false;
+
 // apply global styles immediately
 initializeCSS();
 let _theme = UITheme.current = new BrowserTheme();
@@ -17,6 +19,14 @@ export class BrowserApplication extends Application {
             html: { fontSize: (size * DP_PER_REM) + "px" }
         });
     }
+
+    /** Set global (page-wide) setting to disable all transition animations in rendered components */
+    static disableTransitions() {
+        _transitionsDisabled = true;
+    }
+
+    /** True if transitions have been disabled using `disableTransitions()` */
+    static get transitionsDisabled() { return _transitionsDisabled }
 
     /** Create a browser application to be rendered within given DOM element (or to a wrapper that covers the entire window if no element is provided). */
     constructor(rootDOMElement?: HTMLElement) {
