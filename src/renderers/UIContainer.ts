@@ -389,16 +389,23 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
         if (this.getParentComponent() instanceof UIComponent) return;
         let element: HTMLElement = this.lastRenderOutput && this.lastRenderOutput.element;
         if (!element || !(e instanceof UIComponentEvent)) return;
-        let event: MouseEvent = e.event;
-        if (!event || event.button || !event.screenX || !event.screenY) return;
+        let event: MouseEvent | TouchEvent = e.event;
+        if (!event || (event as MouseEvent).button) return;
+        let startX = (event as TouchEvent).touches && (event as TouchEvent).touches[0].screenX
+            || (event as MouseEvent).screenX;
+        let startY = (event as TouchEvent).touches && (event as TouchEvent).touches[0].screenY
+            || (event as MouseEvent).screenY;
+        if (startX === undefined || startY === undefined) return;
 
         let moved = false;
-        let startX = event.screenX;
-        let startY = event.screenY;
         let rect = element.getBoundingClientRect();
-        let moveHandler = (e: MouseEvent) => {
-            let diffX = e.screenX - startX;
-            let diffY = e.screenY - startY;
+        let moveHandler = (e: MouseEvent | TouchEvent) => {
+            let screenX = (e as TouchEvent).touches && (e as TouchEvent).touches[0].screenX
+                || (e as MouseEvent).screenX;
+            let screenY = (e as TouchEvent).touches && (e as TouchEvent).touches[0].screenY
+                || (e as MouseEvent).screenY;
+            let diffX = screenX - startX;
+            let diffY = screenY - startY;
             if (!moved) {
                 if (Math.abs(diffX) < 2 && Math.abs(diffY) < 2) return;
                 moved = true;
@@ -419,12 +426,16 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
                 e.stopPropagation();
             }
             DOMRenderContext.scheduleRender(() => {
+                window.removeEventListener("touchmove", moveHandler, true);
                 window.removeEventListener("mousemove", moveHandler, true);
+                window.removeEventListener("touchend", upHandler as any, true);
                 window.removeEventListener("mouseup", upHandler, true);
                 window.removeEventListener("click", upHandler, true);
             });
         }
+        window.addEventListener("touchmove", moveHandler, true);
         window.addEventListener("mousemove", moveHandler, true);
+        window.addEventListener("touchend", upHandler as any, true);
         window.addEventListener("mouseup", upHandler, true);
         window.addEventListener("click", upHandler, true);
     }

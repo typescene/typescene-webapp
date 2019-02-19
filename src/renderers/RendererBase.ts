@@ -1,6 +1,6 @@
 import { UIComponent, UIFocusRequestEvent, UIFocusRequestType, UIRenderContext, UIRenderEvent } from "typescene";
 import { BrowserApplication } from '../BrowserApplication';
-import { DOMRenderCallback, DOMRenderOutput } from "../DOMRenderContext";
+import { DOMRenderCallback, DOMRenderContext, DOMRenderOutput } from "../DOMRenderContext";
 
 /** @internal List of basic DOM events that can be propagated on all elements */
 export const baseEventNames = [
@@ -56,9 +56,6 @@ const _keyUIEvents: { [keyCode: number]: string } = {
 /** Last renderer where a touchstart occurred */
 let _lastTouched: any;
 
-/** Last time an element was touched */
-let _lastTouchTime: number | undefined;
-
 export abstract class RendererBase<TComponent extends UIComponent, TElement extends HTMLElement> {
     constructor(component: TComponent) {
         this.component = component;
@@ -83,17 +80,17 @@ export abstract class RendererBase<TComponent extends UIComponent, TElement exte
     /** Propagate a DOM event to the UI component and stop its propagation in the DOM; can be overridden e.g. to read the latest value of an input element before emitting the event. */
     protected emitComponentEvent(e: Event, name?: string) {
         if (e.type === "click" || e.type === "mousedown" || e.type === "mouseup") {
-            if (_lastTouchTime! > Date.now() - 500) return;
+            if (DOMRenderContext.$touchData.last > Date.now() - 1000) return;
         }
         let uiEventName = name || domEventToUIEventName(e);
         this.component && this.component.propagateComponentEvent(uiEventName, undefined, e);
         if (uiEventName === "TouchStart") {
-            _lastTouchTime = Date.now();
+            DOMRenderContext.$touchData.last = Date.now();
             _lastTouched = this;
             this.component && this.component.propagateComponentEvent("MouseDown", undefined, e);
         }
         if (uiEventName === "TouchEnd") {
-            _lastTouchTime = Date.now();
+            DOMRenderContext.$touchData.last = Date.now();
             if (_lastTouched === this) {
                 this.component && this.component.propagateComponentEvent("MouseUp", undefined, e);
                 this.component && this.component.propagateComponentEvent("Click", undefined, e);

@@ -41,6 +41,9 @@ function detractFocus(this: HTMLElement, e: Event) {
 
 /** DOM platform specific application render context */
 export class DOMRenderContext extends UIRenderContext {
+    /** @internal Touch event data to be used for blocking click events after touch events */
+    static $touchData = { last: 0 };
+
     /** Schedule a render/update callback in sync with other pending updates, if any */
     static scheduleRender<TResult>(callback: () => TResult, lowPriority?: boolean) {
         if (lowPriority && !_pendingNextRender) _pendingNextRender = [];
@@ -205,14 +208,17 @@ export class DOMRenderContext extends UIRenderContext {
             if (e.target === shader || e.target === wrapper) {
                 e.stopPropagation();
                 if (clickToClose && (output.source instanceof UIComponent)) {
-                    output.source.propagateComponentEvent("CloseModal");
+                    if (DOMRenderContext.$touchData.last < Date.now() - 1000) {
+                        output.source.propagateComponentEvent("CloseModal");
+                    }
                 }
             }
         }, true);
-        shader.addEventListener("touchstart", e => {
+        shader.addEventListener("touchend", e => {
             if (e.target === shader || e.target === wrapper) {
                 e.stopPropagation();
                 if (clickToClose && (output.source instanceof UIComponent)) {
+                    DOMRenderContext.$touchData.last = Date.now();
                     output.source.propagateComponentEvent("CloseModal");
                 }
             }
