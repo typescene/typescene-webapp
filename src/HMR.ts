@@ -5,31 +5,29 @@ export namespace HMR {
     /** Enable hot module reloading for given view module, which must export exactly one component constructor as `default` or `View` */
     export function enableViewReload(viewModule: any) {
         if (viewModule.hot) {
-            // add a callback for the incoming module:
+            // accept new modules, and link up the new view class
+            viewModule.hot.accept();
             if (viewModule.hot.data && viewModule.hot.data.updateActivity) {
-                viewModule.hot.accept(() => {
-                    setTimeout(() => {
-                        let ViewClass = viewModule.exports.default || viewModule.exports.View;
-                        if (ViewClass && (ViewClass.prototype instanceof Component)) {
-                            // reset all view constructors, then trigger reactivation
-                            viewModule.hot.data.updateActivity(ViewClass);
-                            Application.active.forEach(app => {
-                                app.renderContext && app.renderContext.emitRenderChange();
-                            });
-                        }
-                    }, 0);
-                });
+                setTimeout(() => {
+                    let ViewClass = viewModule.exports.default || viewModule.exports.View;
+                    if (ViewClass && (ViewClass.prototype instanceof Component)) {
+                        // reset all view constructors, then trigger reactivation
+                        viewModule.hot.data.updateActivity(ViewClass);
+                        Application.active.forEach(app => {
+                            app.renderContext && app.renderContext.emitRenderChange();
+                        });
+                    }
+                }, 0);
             }
-
-            // find view activities that use the exported view constructor
-            // (use hidden #activity:n methods to reload views later)
             setTimeout(() => {
+                // find the exported view class and add a dispose callback
                 let ViewClass = viewModule.exports.default || viewModule.exports.View;
                 if (ViewClass && (ViewClass.prototype instanceof Component)) {
                     if ((ViewClass as any)["@updateActivity"]) {
-                        // add callback for when a module is disposed of:
-                        viewModule.hot.dispose(() => {
-                            viewModule.hot.data.updateActivity = (ViewClass as any)["@updateActivity"];
+                        viewModule.hot.dispose((data?: any) => {
+                            // (Webpack supplies `data` but Parcel does not)
+                            if (!data) data = viewModule.hot.data;
+                            data.updateActivity = (ViewClass as any)["@updateActivity"];
                         });
                     }
                 }
