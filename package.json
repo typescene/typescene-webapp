@@ -15,6 +15,10 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "typings": "./typings/index.d.ts",
+  "files": [
+    "dist",
+    "typings"
+  ],
   "scripts": {
     "clean": "rm -rf dist typings",
     "prepublishOnly": "npm run build",
@@ -24,7 +28,7 @@
   },
   "dependencies": {
     "tslib": "^1.9.3",
-    "typescene": "^2.11.5"
+    "typescene": "^2.11.20"
   },
   "devDependencies": {
     "@types/feather-icons": "^4.7.0",
