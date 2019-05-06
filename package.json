@@ -1,7 +1,7 @@
 {
   "name": "@typescene/webapp",
   "version": "2.0.8",
-  "description": "Typescene Web Application toolkit",
+  "description": "Typescene framework",
   "author": "Jelmer Cormont",
   "license": "MIT",
   "repository": {
@@ -11,29 +11,32 @@
   "bugs": {
     "url": "https://github.com/typescene/typescene-webapp/issues"
   },
-  "homepage": "http://typescene.org/",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "typings": "./typings/index.d.ts",
+  "homepage": "http://typescene.dev/",
+  "main": "./index.js",
+  "module": "./index.js",
+  "typings": "./index.d.ts",
   "files": [
     "dist",
-    "typings"
+    "index.js",
+    "index.d.ts"
   ],
   "scripts": {
-    "clean": "rm -rf dist typings",
+    "clean": "rimraf dist",
     "prepublishOnly": "npm run build",
-    "prebuild": "rm -rf dist typings && tsc -p src --declaration --declarationDir typings",
+    "prebuild": "rimraf dist && tsc -p src --declaration",
     "build": "tsc -p src --removeComments",
+    "watch": "tsc -p src -w",
     "start": "cd demo && parcel index.html --open"
   },
   "dependencies": {
     "tslib": "^1.9.3",
-    "typescene": "^2.11.20"
+    "typescene": "^2.12.1"
   },
   "devDependencies": {
+    "rimraf": "^2.6.3",
     "@types/feather-icons": "^4.7.0",
     "feather-icons": "^4.10.0",
     "parcel-bundler": "^1.11.0",
-    "typescript": "^3.2.2"
+    "typescript": "^3.4.5"
   }
 }
