@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "tslib": "^1.9.3",
-    "typescene": "^2.12.1"
+    "typescene": "^2.12.4"
   },
   "devDependencies": {
     "rimraf": "^2.6.3",
