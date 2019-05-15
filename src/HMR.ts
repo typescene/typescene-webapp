@@ -1,15 +1,20 @@
-import { Application, Component } from "typescene";
+import { Application, Component, ComponentConstructor } from "typescene";
 
 /** Encapsulates hot module reload (HMR) functions for a view module, which must export exactly one component constructor as `default` or `View` */
 export namespace HMR {
     /** Enable hot module reloading for given view module, which must export exactly one component constructor as `default` or `View` */
-    export function enableViewReload(viewModule: any) {
+    export function enableViewReload(viewModule: any): void;
+    /** Enable hot module reloading for given view module, to reload views that are created from given class (usually the class that is exported by given module) */
+    export function enableViewReload<T extends ComponentConstructor>(viewModule: any, ViewClass: T): T;
+    export function enableViewReload(viewModule: any, ViewClass?: any) {
         if (viewModule.hot) {
             // accept new modules, and link up the new view class
             viewModule.hot.accept();
             if (viewModule.hot.data && viewModule.hot.data.updateActivity) {
                 setTimeout(() => {
-                    let ViewClass = viewModule.exports.default || viewModule.exports.View;
+                    ViewClass = ViewClass ||
+                        viewModule.exports.default ||
+                        viewModule.exports.View;
                     if (ViewClass && (ViewClass.prototype instanceof Component)) {
                         // reset all view constructors, then trigger reactivation
                         viewModule.hot.data.updateActivity(ViewClass);
@@ -21,7 +26,9 @@ export namespace HMR {
             }
             setTimeout(() => {
                 // find the exported view class and add a dispose callback
-                let ViewClass = viewModule.exports.default || viewModule.exports.View;
+                ViewClass = ViewClass ||
+                    viewModule.exports.default ||
+                    viewModule.exports.View;
                 if (ViewClass && (ViewClass.prototype instanceof Component)) {
                     if ((ViewClass as any)["@updateActivity"]) {
                         viewModule.hot.dispose((data?: any) => {
@@ -33,5 +40,6 @@ export namespace HMR {
                 }
             }, 10);
         }
+        return ViewClass;
     }
 }
