@@ -56,6 +56,9 @@ const _keyUIEvents: { [keyCode: number]: string } = {
 /** Last renderer where a touchstart occurred */
 let _lastTouched: any;
 
+/** Current touch-move handler on the window, if any */
+let _touchMoveHandler: any;
+
 export abstract class RendererBase<TComponent extends UIComponent, TElement extends HTMLElement> {
     constructor(component: TComponent) {
         this.component = component;
@@ -84,11 +87,23 @@ export abstract class RendererBase<TComponent extends UIComponent, TElement exte
         }
         let uiEventName = name || domEventToUIEventName(e);
         this.component && this.component.propagateComponentEvent(uiEventName, undefined, e);
+
+        // set time of last touch event, and watch for moves
         if (uiEventName === "TouchStart") {
             DOMRenderContext.$touchData.last = Date.now();
             _lastTouched = this;
+            if (!_touchMoveHandler) {
+                window.addEventListener("touchmove",
+                    _touchMoveHandler = () => {
+                        window.removeEventListener("touchmove", _touchMoveHandler);
+                        _touchMoveHandler = undefined;
+                        _lastTouched = undefined;
+                    });
+            }
             this.component && this.component.propagateComponentEvent("MouseDown", undefined, e);
         }
+
+        // simulate mouse up and click on touch (if not moved)
         if (uiEventName === "TouchEnd") {
             DOMRenderContext.$touchData.last = Date.now();
             if (_lastTouched === this) {
@@ -96,6 +111,8 @@ export abstract class RendererBase<TComponent extends UIComponent, TElement exte
                 this.component && this.component.propagateComponentEvent("Click", undefined, e);
             }
         }
+
+        // handle various key press aliases
         if (uiEventName === "KeyDown") {
             let key = (e as KeyboardEvent).keyCode;
             let uiKeyEventName: string = key ? _keyUIEvents[key] : "";
