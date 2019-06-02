@@ -1,7 +1,7 @@
 import { AppActivationContext, Application, UITheme } from "typescene";
 import { BrowserTheme, initializeCSS } from "./BrowserTheme";
 import { DOMRenderContext } from "./DOMRenderContext";
-import { DP_PER_REM, setGlobalCSS } from "./DOMStyle";
+import { DP_PER_REM, importStylesheet, setGlobalCSS } from "./DOMStyle";
 import "./renderers";
 
 let _transitionsDisabled = false;
@@ -18,6 +18,11 @@ export class BrowserApplication extends Application {
         setGlobalCSS({
             html: { fontSize: (size * DP_PER_REM) + "px" }
         });
+    }
+
+    /** Import an external stylesheet from given URL (asynchronously) */
+    static importStylesheet(url: string) {
+        importStylesheet(url);
     }
 
     /** Set global (page-wide) setting to disable all transition animations in rendered components */
