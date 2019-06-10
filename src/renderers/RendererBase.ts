@@ -134,10 +134,10 @@ export abstract class RendererBase<TComponent extends UIComponent, TElement exte
     /** Handle given render event by creating an element using the (overridden) `createElement` method if necessary, and storing the last render callback to enable the `updateElement` method */
     protected handleRenderEvent(e: UIRenderEvent<TComponent>) {
         if (e.source !== this.component) return;
+        let firstRender = !this._renderedElement;
         let element = this._renderedElement || (this._renderedElement = this.createElement());
         if (!BrowserApplication.transitionsDisabled) {
-            let playReveal = !this._renderedElement;
-            if (playReveal && this.component.revealTransition) {
+            if (firstRender && this.component.revealTransition) {
                 element.dataset.transitionReveal = this.component.revealTransition;
                 element.dataset.transitionT = "revealing";
             }
