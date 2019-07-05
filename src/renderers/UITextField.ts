@@ -15,7 +15,8 @@ class UITextFieldRenderer extends RendererBase<UITextField, HTMLInputElement | H
             (element as HTMLInputElement).type = this.component.type;
         }
         element.placeholder = String(this.component.placeholder || " ");  // layout workaround
-        element.value = this.component.value || "";
+        let value = this.component.value;
+        element.value = value == null ? "" : String(value);
         if (this.component.name) element.name = this.component.name;
         if (this.component.disabled) element.disabled = true;
         applyElementCSS(this.component, element, true);
@@ -71,7 +72,8 @@ class UITextFieldRenderer extends RendererBase<UITextField, HTMLInputElement | H
             if (this.component.name) element.name = this.component.name;
 
             // update value asynchronously if it was set programmatically
-            let value = String(this.component.value || "");
+            let value = this.component.value;
+            value = value == null ? "" : String(value);
             if (element.value != value) element!.value = value;
         }
     }

@@ -93,7 +93,8 @@ class UIToggleRenderer extends RendererBase<UIToggle, HTMLElement> {
         if (this.component.highlightColor) {
             customcontrol.style.background = UITheme.replaceColor(this.component.highlightColor);
         }
-        let text = String(this.component.label || "");
+        let text = this.component.label;
+        text = text == null ? "" : String(text);
         label.textContent = text ? "  " + text : "";
         label.insertBefore(customcontrol, label.firstChild);
     }

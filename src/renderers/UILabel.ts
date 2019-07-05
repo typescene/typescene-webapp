@@ -79,7 +79,7 @@ class UILabelRenderer extends RendererBase<UILabel, HTMLElement> {
 
 /** Helper function to set the (text or html) content for given element */
 export function setTextOrHtmlContent(element: HTMLElement, content: TextContentProperties) {
-    let text = String(content.text || "");
+    let text = content.text == null ? "" : String(content.text);
     if (!content.icon) {
         // just set text/html content
         if (content.htmlFormat) element.innerHTML = text;
