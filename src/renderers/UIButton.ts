@@ -1,16 +1,18 @@
 import { onPropertyChange, UIButton, UIFocusRequestEvent, UIRenderEvent } from "typescene";
+import { BrowserApplication, BrowserHashActivationContext } from '../BrowserApplication';
 import { applyElementCSS } from "../DOMStyle";
 import { baseEventNames, controlEventNames, RendererBase } from "./RendererBase";
 import { setTextOrHtmlContent } from "./UILabel";
 
-class UIButtonRenderer extends RendererBase<UIButton, HTMLButtonElement> {
+class UIButtonRenderer extends RendererBase<UIButton, HTMLButtonElement | HTMLAnchorElement> {
     constructor(public component: UIButton) {
         super(component);
     }
 
     /** Create output element, used by base class */
     protected createElement() {
-        let element = document.createElement("button");
+        let element = document.createElement(
+            this.component.accessibleRole === "link" ? "a" : "button");
         element.tabIndex = this.component.isKeyboardFocusable() ? 0 : -1;
         applyElementCSS(this.component, element, true);
         setTextOrHtmlContent(element, {
@@ -21,7 +23,33 @@ class UIButtonRenderer extends RendererBase<UIButton, HTMLButtonElement> {
             iconMargin: this.component.iconMargin,
             iconAfter: this.component.iconAfter
         });
-        if (this.component.disabled) element.disabled = true;
+        if (this.component.navigateTo) {
+            (element as HTMLAnchorElement).href =
+                getPathHref(this.component, this.component.navigateTo);
+        }
+        if (this.component.disabled) {
+            (element as HTMLButtonElement).disabled = true;
+        }
+
+        // handle direct clicks with `navigateTo` set
+        element.addEventListener("click", e => {
+            if (this.component.navigateTo) {
+                if ((e as MouseEvent).ctrlKey ||
+                    (e as MouseEvent).altKey ||
+                    (e as MouseEvent).metaKey) {
+                    // assume OS handles key combo clicks,
+                    // don't treat as a click at all:
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                }
+                else {
+                    // use app to navigate instead
+                    e.preventDefault();
+                    let app = this.component.getParentComponent(BrowserApplication);
+                    app && app.navigate(this.component.navigateTo);
+                }
+            }
+        });
         return element;
     }
 
@@ -59,10 +87,21 @@ class UIButtonRenderer extends RendererBase<UIButton, HTMLButtonElement> {
         }
     }
 
+    /** Handle link `href` changes */
+    onNavigateToChange() {
+        let element = this.getElement();
+        if (element) {
+            (element as HTMLAnchorElement).href =
+                getPathHref(this.component, this.component.navigateTo);
+        }
+    }
+
     /** Handle disabled state */
     onDisabledChange() {
         let element = this.getElement();
-        if (element) element.disabled = !!this.component.disabled;
+        if (element) {
+            (element as HTMLButtonElement).disabled = !!this.component.disabled;
+        }
     }
 
     /** Handle selection */
@@ -87,3 +126,10 @@ class UIButtonRenderer extends RendererBase<UIButton, HTMLButtonElement> {
 }
 
 UIButton.observe(UIButtonRenderer);
+
+/** Helper function to get a proper `href` attribute for given path */
+function getPathHref(component: UIButton, path?: string) {
+    let app = component.getParentComponent(BrowserApplication);
+    let ctx = app && app.activationContext as BrowserHashActivationContext;
+    return ctx && ctx.getPathHref && ctx.getPathHref(path) || "";
+}

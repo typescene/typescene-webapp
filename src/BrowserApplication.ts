@@ -66,13 +66,11 @@ export class BrowserHashActivationContext extends AppActivationContext {
         this._setPath();
     }
 
-    navigate(path: string) {
-        let target: string;
-        path = String(path);
-        if (path === ":back") {
-            window.history.back();
-            return;
-        }
+    /** Convert given path into a valid href (used by Button renderer) */
+    getPathHref(path?: string) {
+        let target = "";
+        if (!path || path[0] === ":") return "";
+        if (path[0] === "#") path = path.slice(1);
         if (path[0] === "/") {
             target = path;
         }
@@ -89,7 +87,17 @@ export class BrowserHashActivationContext extends AppActivationContext {
                 .replace(/\/[^\/]+\/\.\.\//g, "/")
                 .replace(/^\/?\.\.\//, "/");
         }
-        window.location.hash = "#/" + target.replace(/^\/+/, "");
+        return "#/" + target.replace(/^\/+/, "");
+    }
+
+    navigate(path: string) {
+        let target: string;
+        path = String(path);
+        if (path === ":back") {
+            window.history.back();
+            return;
+        }
+        window.location.hash = this.getPathHref(path);
     }
 
     async onManagedStateDestroyingAsync() {
