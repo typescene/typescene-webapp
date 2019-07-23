@@ -260,7 +260,8 @@ export function initializeCSS() {
             outline: "0",
             cursor: "inherit",
             boxSizing: "border-box",
-            textOverflow: "ellipsis"
+            textOverflow: "ellipsis",
+            textDecoration: "none"
         },
         ".UI[hidden]": {
             display: "none"
