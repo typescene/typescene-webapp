@@ -14,6 +14,11 @@ export const controlEventNames = [
     "change", "input", "copy", "cut", "paste"
 ];
 
+/** @internal List of DOM events that should be propagated on container cell elements */
+export const cellEventNames = [
+    "mouseenter", "mouseleave"
+];
+
 /** Helper function to transform DOM event types to UI event names */
 function domEventToUIEventName(e: Event) {
     return _names[e.type];
@@ -37,7 +42,8 @@ const _names: { [type: string]: string } = {
     "input": "Input",
     "copy": "Copy",
     "cut": "Cut",
-    "paste": "Paste"
+    "paste": "Paste",
+    "submit": "Submit"
 };
 
 /** Named key press events for `keydown` event key code */
@@ -85,6 +91,11 @@ export abstract class RendererBase<TComponent extends UIComponent, TElement exte
         if (e.type === "click" || e.type === "mousedown" || e.type === "mouseup") {
             if (DOMRenderContext.$touchData.last > Date.now() - 1000) return;
         }
+        if (e.type === "submit") {
+            e.preventDefault();
+        }
+
+        // find event name and propagate event to component itself
         let uiEventName = name || domEventToUIEventName(e);
         this.component && this.component.propagateComponentEvent(uiEventName, undefined, e);
 
