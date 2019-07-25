@@ -1,9 +1,12 @@
 {
   "name": "@typescene/webapp",
-  "version": "2.0.13",
+  "version": "2.0.14",
   "description": "Typescene framework",
   "author": "Jelmer Cormont",
   "license": "MIT",
+  "publishConfig": {
+    "tag": "next"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/typescene/typescene-webapp.git"
@@ -26,18 +29,14 @@
     "prepublishOnly": "npm run build",
     "prebuild": "rimraf dist && tsc -p src --declaration",
     "build": "tsc -p src --removeComments",
-    "watch": "tsc -p src -w",
-    "start": "cd demo && parcel index.html --open"
+    "watch": "tsc -p src -w"
   },
   "dependencies": {
-    "tslib": "^1.9.3",
-    "typescene": "^2.12.4"
+    "typescene": "2.20",
+    "tslib": "^1.10.0"
   },
   "devDependencies": {
     "rimraf": "^2.6.3",
-    "@types/feather-icons": "^4.7.0",
-    "feather-icons": "^4.10.0",
-    "parcel-bundler": "^1.11.0",
-    "typescript": "^3.4.5"
+    "typescript": "^3.5.3"
   }
 }

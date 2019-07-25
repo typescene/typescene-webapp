@@ -2,7 +2,7 @@ import { observe, onPropertyChange, UICell, UIColumn, UIComponent, UIComponentEv
 import { DOMRenderContext } from "../DOMRenderContext";
 import { applyElementCSS } from "../DOMStyle";
 import { DOMContainerUpdater } from "./DOMContainerUpdater";
-import { baseEventNames, RendererBase } from "./RendererBase";
+import { baseEventNames, cellEventNames, RendererBase } from "./RendererBase";
 
 /** Type for containers that have a `spacing` property */
 type UIContainerWithSpacing = UIRow | UIColumn;
@@ -23,7 +23,8 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
 
     /** Create output element, used by base class */
     protected createElement() {
-        let element = document.createElement("container");
+        let element = document.createElement(
+            this.component.accessibleRole === "form" ? "form" : "container");
         if (this.component.isKeyboardFocusable()) element.tabIndex = 0;
         else if (this.component.isFocusable()) element.tabIndex = -1;
         applyElementCSS(this.component, element, true);
@@ -32,8 +33,15 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
 
     /** Called after rendering: add base event handlers */
     protected afterRender() {
-        this.propagateDOMEvents((this.component instanceof UICell) ?
-            ["mouseenter", "mouseleave", ...baseEventNames] : baseEventNames);
+        this.propagateDOMEvents(baseEventNames);
+        if (this.component instanceof UICell) {
+            // handle mouseenter/leave specially, only on cells
+            this.propagateDOMEvents(cellEventNames);
+        }
+        if (this.component.accessibleRole === "form") {
+            // handle form submit (default prevented in RendererBase)
+            this.propagateDOMEvents(["submit"]);
+        }
         super.afterRender();
 
         // capture scroll events on scroll containers
@@ -211,9 +219,7 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
                         rects.push(r);
                     }
                 }
-                // TODO: shouldn't need to cast here
-                // https://github.com/Microsoft/TypeScript/issues/28551
-                cur = cur.nextSibling as typeof cur;
+                cur = cur.nextSibling;
             }
             if (e.name === "ScrollEnd" ||
                 e.name === "ScrollSnapUp" || e.name === "ScrollSnapDown") {

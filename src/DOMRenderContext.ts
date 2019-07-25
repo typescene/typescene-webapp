@@ -313,9 +313,7 @@ export class DOMRenderContext extends UIRenderContext {
                 !(cur as HTMLElement).dataset.uiRemoved) {
                 wrapper.removeChild(cur);
             }
-            // TODO: shouldn't need to cast here
-            // https://github.com/Microsoft/TypeScript/issues/28551
-            cur = cur.nextSibling as typeof cur;
+            cur = cur.nextSibling;
         }
 
         // darken shader after rendering
