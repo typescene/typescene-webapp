@@ -59,6 +59,11 @@ const _keyUIEvents: { [keyCode: number]: string } = {
     40: "ArrowDownKeyPress"
 }
 
+/** Keys for which OS actions should be prevented if used on lists and list items */
+const _listKeysPreventDefault: { [keyCode: number]: boolean } = {
+    37: true, 38: true, 39: true, 40: true
+}
+
 /** Last renderer where a touchstart occurred */
 let _lastTouched: any;
 
@@ -133,6 +138,11 @@ export abstract class RendererBase<TComponent extends UIComponent, TElement exte
                 let nodeName = String(target.nodeName).toLowerCase();
                 ignore = (nodeName === "button" || nodeName === "textarea");
             }
+            if (_listKeysPreventDefault[key] &&
+                    (this.component.accessibleRole === "list" ||
+                        this.component.accessibleRole === "listitem")) {
+                e.preventDefault();
+            }
             if (!ignore && uiKeyEventName) {
                 setTimeout(() => {
                     this.component.propagateComponentEvent(uiKeyEventName, undefined, e);
@@ -147,6 +157,12 @@ export abstract class RendererBase<TComponent extends UIComponent, TElement exte
         if (e.source !== this.component) return;
         let firstRender = !this._renderedElement;
         let element = this._renderedElement || (this._renderedElement = this.createElement());
+        if (this.component.accessibleRole) {
+            element.setAttribute("role", this.component.accessibleRole)
+        }
+        if (this.component.accessibleLabel) {
+            element.setAttribute("aria-label", this.component.accessibleLabel)
+        }
         if (!BrowserApplication.transitionsDisabled) {
             if (firstRender && this.component.revealTransition) {
                 element.dataset.transitionReveal = this.component.revealTransition;
