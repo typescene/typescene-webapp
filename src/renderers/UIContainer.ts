@@ -219,9 +219,7 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
                         rects.push(r);
                     }
                 }
-                // TODO: shouldn't need to cast here
-                // https://github.com/Microsoft/TypeScript/issues/28551
-                cur = cur.nextSibling as typeof cur;
+                cur = cur.nextSibling;
             }
             if (e.name === "ScrollEnd" ||
                 e.name === "ScrollSnapUp" || e.name === "ScrollSnapDown") {

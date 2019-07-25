@@ -130,9 +130,7 @@ export class DOMContainerUpdater {
             let last = this.element.lastChild;
             while (last && (last as HTMLElement).dataset &&
                 (last as HTMLElement).dataset.uiRemoved) {
-                // TODO: shouldn't need to cast here
-                // https://github.com/Microsoft/TypeScript/issues/28551
-                last = last.previousSibling as typeof last;
+                last = last.previousSibling as ChildNode;
             }
             let nextSibling = last && last.nextSibling;
             for (let i = elements.length - 1; i >= 0; i--) {
