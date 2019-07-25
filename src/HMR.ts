@@ -1,12 +1,9 @@
-import { Application, Component, ComponentConstructor } from "typescene";
+import { Application, CHANGE, Component, ComponentConstructor } from "typescene";
 
 /** Encapsulates hot module reload (HMR) functions for a view module, which must export exactly one component constructor as `default` or `View` */
 export namespace HMR {
-    /** Enable hot module reloading for given view module, which must export exactly one component constructor as `default` or `View` */
-    export function enableViewReload(viewModule: any): void;
-    /** Enable hot module reloading for given view module, to reload views that are created from given class (usually the class that is exported by given module) */
-    export function enableViewReload<T extends ComponentConstructor>(viewModule: any, ViewClass: T): T;
-    export function enableViewReload(viewModule: any, ViewClass?: any) {
+    /** Enable hot module reloading for given view module (must be referenced by a `ViewActivity` class), to reload activity views that are created from given class without reinstantiating the activity itself */
+    export function enableViewReload<T extends ComponentConstructor>(viewModule: any, ViewClass: T): T {
         if (viewModule.hot) {
             // accept new modules, and link up the new view class
             viewModule.hot.accept();
@@ -19,13 +16,16 @@ export namespace HMR {
                         // reset all view constructors, then trigger reactivation
                         viewModule.hot.data.updateActivity(ViewClass);
                         Application.active.forEach(app => {
-                            app.renderContext && app.renderContext.emitRenderChange();
+                            if (!app.renderContext) return;
+                            app.renderContext.getAppComponents()
+                                .forEach(c => c.emit(CHANGE));
                         });
                     }
                 }, 0);
             }
             setTimeout(() => {
                 // find the exported view class and add a dispose callback
+                // (to be called above after loading new module's view class)
                 ViewClass = ViewClass ||
                     viewModule.exports.default ||
                     viewModule.exports.View;
