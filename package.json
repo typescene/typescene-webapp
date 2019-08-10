@@ -21,6 +21,7 @@
   "typings": "./index.d.ts",
   "files": [
     "dist",
+    "umd",
     "index.js",
     "index.d.ts",
     "setup"
@@ -29,6 +30,7 @@
     "clean": "rimraf dist",
     "prepublishOnly": "npm run build",
     "prebuild": "rimraf dist && tsc -p src --declaration",
+    "postbuild": "rollup -c",
     "build": "tsc -p src --removeComments",
     "watch": "tsc -p src -w"
   },
@@ -38,6 +40,10 @@
   },
   "devDependencies": {
     "rimraf": "^2.6.3",
+    "rollup": "^1.19.4",
+    "rollup-plugin-multi-entry": "^2.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^5.1.1",
     "typescript": "^3.5.3"
   }
 }
