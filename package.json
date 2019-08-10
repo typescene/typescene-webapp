@@ -5,9 +5,6 @@
   "description": "Typescene framework",
   "author": "Jelmer Cormont",
   "license": "MIT",
-  "publishConfig": {
-    "tag": "next"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/typescene/typescene-webapp.git"
