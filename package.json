@@ -1,6 +1,7 @@
 {
   "name": "@typescene/webapp",
-  "version": "2.0.14",
+  "version": "0.0.0",
+  "private": true,
   "description": "Typescene framework",
   "author": "Jelmer Cormont",
   "license": "MIT",
