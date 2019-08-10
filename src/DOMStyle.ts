@@ -44,8 +44,8 @@ export function importStylesheet(url: string) {
 
 /** @internal Replace given CSS styles in the global root style sheet */
 export function setGlobalCSS(css: { [spec: string]: Partial<CSSStyleDeclaration> | { [spec: string]: any } }) {
-    if (!_pendingCSS) _pendingCSS = css;
-    else _pendingCSS = { ..._pendingCSS, ...css };
+    if (!_pendingCSS) _pendingCSS = {};
+    for (let p in css) _pendingCSS[p] = css[p];
     DOMRenderContext.scheduleRender(() => {
         if (!_cssUpdater) _cssUpdater = _makeCSSUpdater();
         if (_pendingCSS) _cssUpdater(_pendingCSS, _cssImports);

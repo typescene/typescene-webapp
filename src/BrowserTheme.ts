@@ -374,163 +374,58 @@ export function initializeCSS() {
             transform: "rotate(45deg)",
             borderBottom: ".125rem solid #fff",
             borderRight: ".125rem solid #fff"
-        },
-
-        // transition: fade
-        "[data-transition-reveal=fade][data-transition-t=revealing]": {
-            opacity: 0
-        },
-        "[data-transition-reveal=fade][data-transition-t=revealed]": {
-            opacity: 1,
-            transition: "opacity .5s ease-in-out"
-        },
-        "[data-transition-exit=fade][data-transition-t=exiting]": {
-            opacity: 0,
-            transition: "opacity .5s ease-in-out"
-        },
-
-        // transition: fade-fast
-        "[data-transition-reveal=fade-fast][data-transition-t=revealing]": {
-            opacity: 0
-        },
-        "[data-transition-reveal=fade-fast][data-transition-t=revealed]": {
-            opacity: 1,
-            transition: "opacity .2s ease-in-out"
-        },
-        "[data-transition-exit=fade-fast][data-transition-t=exiting]": {
-            opacity: 0,
-            transition: "opacity .2s ease-in-out"
-        },
-
-        // transition: down
-        "[data-transition-reveal=down][data-transition-t=revealing]": {
-            opacity: 0,
-            transform: "translateY(-50%)"
-        },
-        "[data-transition-reveal=down][data-transition-t=revealed]": {
-            opacity: 1,
-            tranform: "",
-            transition: "opacity .5s ease-in-out, transform .5s ease"
-        },
-        "[data-transition-exit=down][data-transition-t=exiting]": {
-            opacity: 0,
-            transform: "translateY(50%)",
-            transition: "opacity .5s ease-in-out, transform .5s ease"
-        },
-
-        // transition: down-fast
-        "[data-transition-reveal=down-fast][data-transition-t=revealing]": {
-            opacity: 0,
-            transform: "translateY(-50%)"
-        },
-        "[data-transition-reveal=down-fast][data-transition-t=revealed]": {
-            opacity: 1,
-            tranform: "",
-            transition: "opacity .2s ease-in-out, transform .15s ease"
-        },
-        "[data-transition-exit=down-fast][data-transition-t=exiting]": {
-            opacity: 0,
-            transform: "translateY(50%)",
-            transition: "opacity .2s ease-in-out, transform .15s ease"
-        },
-
-        // transition: up
-        "[data-transition-reveal=up][data-transition-t=revealing]": {
-            opacity: 0,
-            transform: "translateY(50%)"
-        },
-        "[data-transition-reveal=up][data-transition-t=revealed]": {
-            opacity: 1,
-            tranform: "",
-            transition: "opacity .5s ease-in-out, transform .5s ease"
-        },
-        "[data-transition-exit=up][data-transition-t=exiting]": {
-            opacity: 0,
-            transform: "translateY(-50%)",
-            transition: "opacity .5s ease-in-out, transform .5s ease"
-        },
-
-        // transition: up-fast
-        "[data-transition-reveal=up-fast][data-transition-t=revealing]": {
-            opacity: 0,
-            transform: "translateY(50%)"
-        },
-        "[data-transition-reveal=up-fast][data-transition-t=revealed]": {
-            opacity: 1,
-            tranform: "",
-            transition: "opacity .2s ease-in-out, transform .15s ease"
-        },
-        "[data-transition-exit=up-fast][data-transition-t=exiting]": {
-            opacity: 0,
-            transform: "translateY(-50%)",
-            transition: "opacity .2s ease-in-out, transform .15s ease"
-        },
-
-        // transition: left
-        "[data-transition-reveal=left][data-transition-t=revealing]": {
-            opacity: 0,
-            transform: "translateX(50%)"
-        },
-        "[data-transition-reveal=left][data-transition-t=revealed]": {
-            opacity: 1,
-            tranform: "",
-            transition: "opacity .5s ease-in-out, transform .5s ease"
-        },
-        "[data-transition-exit=left][data-transition-t=exiting]": {
-            opacity: 0,
-            transform: "translateX(-50%)",
-            transition: "opacity .5s ease-in-out, transform .5s ease"
-        },
-
-        // transition: left-fast
-        "[data-transition-reveal=left-fast][data-transition-t=revealing]": {
-            opacity: 0,
-            transform: "translateX(50%)",
-            willChange: "transform",
-            position: "relative"
-        },
-        "[data-transition-reveal=left-fast][data-transition-t=revealed]": {
-            opacity: 1,
-            tranform: "",
-            transition: "opacity .2s ease-in-out, transform .15s ease",
-            position: "relative"
-        },
-        "[data-transition-exit=left-fast][data-transition-t=exiting]": {
-            opacity: 0,
-            transform: "translateX(-50%)",
-            transition: "opacity .2s ease-in-out, transform .15s ease"
-        },
-
-        // transition: right
-        "[data-transition-reveal=right][data-transition-t=revealing]": {
-            opacity: 0,
-            transform: "translateX(-50%)"
-        },
-        "[data-transition-reveal=right][data-transition-t=revealed]": {
-            opacity: 1,
-            tranform: "",
-            transition: "opacity .5s ease-in-out, transform .5s ease"
-        },
-        "[data-transition-exit=right][data-transition-t=exiting]": {
-            opacity: 0,
-            transform: "translateX(50%)",
-            transition: "opacity .5s ease-in-out, transform .5s ease"
-        },
-
-        // transition: right-fast
-        "[data-transition-reveal=right-fast][data-transition-t=revealing]": {
-            opacity: 0,
-            transform: "translateX(-50%)"
-        },
-        "[data-transition-reveal=right-fast][data-transition-t=revealed]": {
-            opacity: 1,
-            tranform: "",
-            transition: "opacity .2s ease-in-out, transform .15s ease"
-        },
-        "[data-transition-exit=right-fast][data-transition-t=exiting]": {
-            opacity: 0,
-            transform: "translateX(50%)",
-            transition: "opacity .2s ease-in-out, transform .15s ease"
         }
     });
+
+    // add all predefined transitions:
+    const OPAQUE: [number] = [1];
+    const T_UP: [number, string] = [0, "translateY(-50%)"];
+    const T_DOWN: [number, string] = [0, "translateY(50%)"];
+    const T_LEFT: [number, string] = [0, "translateX(-50%)"];
+    const T_RIGHT: [number, string] = [0, "translateX(50%)"];
+    addTransitionState("fade", ".5s ease-in-out", "",
+        [[0], OPAQUE]);
+    addTransitionState("fade-fast", ".2s ease-in-out", "",
+        [[0], OPAQUE]);
+    addTransitionState("down", ".5s ease-in-out", ".5s ease",
+        [T_UP, OPAQUE, T_DOWN]);
+    addTransitionState("down-fast", ".2s ease-in-out", ".15s ease",
+        [T_UP, OPAQUE, T_DOWN]);
+    addTransitionState("up", ".5s ease-in-out", ".5s ease",
+        [T_DOWN, OPAQUE, T_UP]);
+    addTransitionState("up-fast", ".2s ease-in-out", ".15s ease",
+        [T_DOWN, OPAQUE, T_UP]);
+    addTransitionState("left", ".5s ease-in-out", ".5s ease",
+        [T_RIGHT, OPAQUE, T_LEFT]);
+    addTransitionState("left-fast", ".2s ease-in-out", ".15s ease",
+        [T_RIGHT, OPAQUE, T_LEFT]);
+    addTransitionState("right", ".5s ease-in-out", ".5s ease",
+        [T_LEFT, OPAQUE, T_RIGHT]);
+    addTransitionState("right-fast", ".2s ease-in-out", ".15s ease",
+        [T_LEFT, OPAQUE, T_RIGHT]);
+}
+
+/** Helper function to set CSS styles for a particular transition type (name),with transition property values for opacity and transform, and values for opacity and transform themselves (0 = revealing, 1 = revealed, 2 = exiting [optional, repeats 0 if omitted]) */
+function addTransitionState(name: string,
+    opacityTransition: string, transformTransition: string,
+    values: [number?, string?][]) {
+    let transition = "";
+    if (opacityTransition) transition = "opacity " + opacityTransition;
+    if (transformTransition) transition += (transition ? ", " : "") + "transform " + transformTransition;
+    setGlobalCSS({
+        [`[data-transition-reveal=${name}][data-transition-t=revealing]`]: {
+            opacity: values[0][0],
+            transform: values[0][1]
+        },
+        [`[data-transition-reveal=${name}][data-transition-t=revealed]`]: {
+            opacity: values[1][0],
+            transform: values[1][1],
+            transition
+        },
+        [`[data-transition-exit=${name}][data-transition-t=exiting]`]: {
+            opacity: (values[2] || values[0])[0],
+            transform: (values[2] || values[0])[1],
+            transition
+        },
+    })
 }
