@@ -101,7 +101,7 @@ export class DOMRenderContext extends UIRenderContext {
             result.style.background = UITheme.replaceColor("@appBackground");
             result.style.color = UITheme.replaceColor("@text");
             result.style.opacity = "1";
-        }, 10);
+        }, 0);
         document.body.appendChild(result);
         return result;
     }
@@ -111,7 +111,10 @@ export class DOMRenderContext extends UIRenderContext {
         super();
 
         // set or create root element
-        if (!root) root = DOMRenderContext.createFixedRootElement();
+        if (!root) {
+            root = DOMRenderContext.createFixedRootElement();
+            this._isFixedRoot = true;
+        }
         this.root = root;
 
         // add focus handler that blocks focus outside of modals
@@ -125,6 +128,15 @@ export class DOMRenderContext extends UIRenderContext {
     /** Remove all content from the root node */
     clear() {
         this.root.innerHTML = "";
+    }
+
+    /** Remove the rendered content from the screen when the renderer is destroyed */
+    async onManagedStateDestroyingAsync() {
+        await super.onManagedStateDestroyingAsync();
+        this.clear();
+        if (this._isFixedRoot && this.root.parentNode) {
+            document.body.removeChild(this.root);
+        }
     }
 
     /** Returns a callback that can be used to render a root DOM output element asynchronously. */
@@ -142,12 +154,13 @@ export class DOMRenderContext extends UIRenderContext {
     private _placePage(output: DOMRenderOutput, afterRender?: (out?: DOMRenderOutput) => void) {
         let replacePage = (output: DOMRenderOutput) => {
             // TODO: ANIMATION
+            if (!this.managedState) return;
             output.detach && output.detach();
             if (this._page) {
                 let after = this._page.element.nextSibling;
                 this.root.insertBefore(output.element, after);
                 if (this._page.element !== output.element) {
-                    this.root.removeChild(this._page.element);
+                    this._rm(this._page.element);
                 }
             }
             else {
@@ -170,16 +183,17 @@ export class DOMRenderContext extends UIRenderContext {
         let update: DOMRenderCallback = (output, afterRender) => {
             // switch to modal renderer if needed
             if (output && output.placement !== UIRenderPlacement.PAGE) {
-                if (lastOutput) this.root.removeChild(lastOutput.element);
+                if (lastOutput) this._rm(lastOutput.element);
                 return this._placeModal(output, afterRender);
             }
 
             // otherwise schedule page rendering
             DOMRenderContext.scheduleRender(() => {
+                if (!this.managedState) return;
                 if (this._page === lastOutput) {
                     if (!output) {
                         // remove last output
-                        if (lastOutput) this.root.removeChild(lastOutput.element);
+                        if (lastOutput) this._rm(lastOutput.element);
                         lastOutput = this._page = undefined;
                     }
                     else {
@@ -257,6 +271,7 @@ export class DOMRenderContext extends UIRenderContext {
         let lastOutput: DOMRenderOutput | undefined = output;
         let lastFocused = document.activeElement;
         DOMRenderContext.scheduleRender(() => {
+            if (!this.managedState) return;
             this._addModalContent(wrapper, output);
             this.root.appendChild(shader);
             function setFocus() {
@@ -277,12 +292,13 @@ export class DOMRenderContext extends UIRenderContext {
         let update: DOMRenderCallback = (output, afterRender) => {
             // switch to page renderer if needed
             if (output && output.placement === UIRenderPlacement.PAGE) {
-                this.root.removeChild(shader);
+                this._rm(shader);
                 return this._placePage(output, afterRender);
             }
 
             // otherwise schedule rendering as modal
             DOMRenderContext.scheduleRender(() => {
+                if (!this.managedState) return;
                 if (!output) {
                     shader.style.background = "";
                     removeElement(shader, wrapper.firstChild as any);
@@ -418,7 +434,15 @@ export class DOMRenderContext extends UIRenderContext {
         }
     }
 
+    /** Remove given DOM element if it is still a child element of the root element */
+    private _rm(element?: Node) {
+        if (element && element.parentNode === this.root) {
+            this.root.removeChild(element);
+        }
+    }
+
     private _page?: DOMRenderOutput;
+    private _isFixedRoot?: boolean;
 }
 
 /** Helper function to fix positioning of a dropdown menu or vertical popover */
