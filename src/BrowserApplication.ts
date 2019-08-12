@@ -36,15 +36,21 @@ export class BrowserApplication extends Application {
     /** Create a browser application to be rendered within given DOM element (or to a wrapper that covers the entire window if no element is provided). */
     constructor(rootDOMElement?: HTMLElement) {
         super();
-        this._rootDOMElement = rootDOMElement;
+        this._root = rootDOMElement;
     }
 
     /** Activate the application by creating a new render context and activation context if needed */
     async onManagedStateActivatingAsync() {
         await super.onManagedStateActivatingAsync();
-        if (!this._rootDOMElement) document.body.innerHTML = "";
-        this.renderContext = new DOMRenderContext(this._rootDOMElement);
+        if (!this.renderContext) {
+            // clear the rest of the page if not mounted to a DOM element
+            if (!this._root) document.body.innerHTML = "";
+
+            // create the render context
+            this.renderContext = new DOMRenderContext(this._root);
+        }
         if (!this.activationContext) {
+            // create the activation context (hash/history based API)
             this.activationContext = this._useHistoryAPI ?
                 new BrowserHistoryAPIActivationContext() :
                 new BrowserHashActivationContext();
@@ -58,15 +64,35 @@ export class BrowserApplication extends Application {
         this.activationContext = undefined;
     }
 
+    /**
+     * Use given DOM element to contain the application output, by creating a new renderer instance that is mounted to given element.
+     * @note By default, `BrowserApplication` occupies the entire page and clears everything else from the same page. Use this method _immediately_ after creating the application to prevent clearing the page, or supply a DOM element as a constructor argument if instantiating the application manually.
+     */
+    mount(element: HTMLElement) {
+        this._root = element;
+        if (this.renderContext) {
+            this.renderContext = new DOMRenderContext(element);
+        }
+        return this;
+    }
+
+    /** Remove the application output from the screen by destroying the renderer instance */
+    unmount() {
+        this._root = undefined;
+        this.renderContext = undefined;
+        return this;
+    }
+
     /** Use the browser History API intead of hash-URLs */
     useHistoryAPI() {
         this._useHistoryAPI = true;
         if (this.activationContext) {
             this.activationContext = new BrowserHistoryAPIActivationContext();
         }
+        return this;
     }
 
-    private _rootDOMElement?: HTMLElement;
+    private _root?: HTMLElement;
     private _useHistoryAPI?: boolean;
 }
 
