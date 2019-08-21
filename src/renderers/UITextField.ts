@@ -1,96 +1,109 @@
-import { onPropertyChange, UIFocusRequestEvent, UIRenderEvent, UITextField } from "typescene";
+import {
+  onPropertyChange,
+  UIFocusRequestEvent,
+  UIRenderEvent,
+  UITextField,
+} from "typescene";
 import { applyElementCSS } from "../DOMStyle";
 import { baseEventNames, controlEventNames, RendererBase } from "./RendererBase";
 
-class UITextFieldRenderer extends RendererBase<UITextField, HTMLInputElement | HTMLTextAreaElement> {
-    constructor(public component: UITextField) {
-        super(component);
-    }
+class UITextFieldRenderer extends RendererBase<
+  UITextField,
+  HTMLInputElement | HTMLTextAreaElement
+> {
+  constructor(public component: UITextField) {
+    super(component);
+  }
 
-    /** Create output element, used by base class */
-    protected createElement() {
-        let element = document.createElement(this.component.multiline ? "textarea" : "input");
-        element.tabIndex = this.component.isKeyboardFocusable() ? 0 : -1;
-        if (!this.component.multiline) {
-            (element as HTMLInputElement).type = this.component.type;
-        }
-        element.placeholder = String(this.component.placeholder || " ");  // layout workaround
-        let value = this.component.value;
-        element.value = value == null ? "" : String(value);
-        if (this.component.name) element.name = this.component.name;
-        if (this.component.disabled) element.disabled = true;
-        applyElementCSS(this.component, element, true);
-        return element;
+  /** Create output element, used by base class */
+  protected createElement() {
+    let element = document.createElement(this.component.multiline ? "textarea" : "input");
+    element.tabIndex = this.component.isKeyboardFocusable() ? 0 : -1;
+    if (!this.component.multiline) {
+      (element as HTMLInputElement).type = this.component.type;
     }
+    element.placeholder = String(this.component.placeholder || " "); // layout workaround
+    let value = this.component.value;
+    element.value = value == null ? "" : String(value);
+    if (this.component.name) element.name = this.component.name;
+    if (this.component.disabled) element.disabled = true;
+    applyElementCSS(this.component, element, true);
+    return element;
+  }
 
-    /** Called when emitting a UI event: update component value first */
-    emitComponentEvent(e: Event) {
-        let element = this.getElement();
-        if (element) {
-            this.component.value = element.value;
-        }
-        super.emitComponentEvent(e);
+  /** Called when emitting a UI event: update component value first */
+  emitComponentEvent(e: Event) {
+    let element = this.getElement();
+    if (element) {
+      this.component.value = element.value;
     }
+    super.emitComponentEvent(e);
+  }
 
-    /** Called after rendering: add event handlers */
-    protected afterRender() {
-        this.propagateDOMEvents(baseEventNames);
-        this.propagateDOMEvents(controlEventNames);
-        super.afterRender();
+  /** Called after rendering: add event handlers */
+  protected afterRender() {
+    this.propagateDOMEvents(baseEventNames);
+    this.propagateDOMEvents(controlEventNames);
+    super.afterRender();
+  }
+
+  /** Handle render event */
+  onUIRender(e: UIRenderEvent<UITextField>) {
+    this.handleRenderEvent(e);
+  }
+
+  /** Handle focus requests */
+  onUIFocusRequestAsync(e: UIFocusRequestEvent<UITextField>) {
+    this.handleFocusRequestEvent(e);
+  }
+
+  /** Handle multiline/single line changes */
+  onMultilineChange() {
+    if (this.isRendered()) {
+      this.updateElement(this.createElement());
     }
+  }
 
-    /** Handle render event */
-    onUIRender(e: UIRenderEvent<UITextField>) {
-        this.handleRenderEvent(e);
+  /** Handle control changes */
+  @onPropertyChange("name", "value", "type", "placeholder")
+  updateControl() {
+    let element = this.getElement();
+    if (element) {
+      let placeholder = String(this.component.placeholder || " "); // layout workaround
+      if (element.placeholder !== placeholder) {
+        element.placeholder = placeholder;
+      }
+      if (!this.component.multiline && element.type !== this.component.type) {
+        (element as HTMLInputElement).type = this.component.type;
+      }
+      if (this.component.name) element.name = this.component.name;
+
+      // update value asynchronously if it was set programmatically
+      let value = this.component.value;
+      value = value == null ? "" : String(value);
+      if (element.value != value) element!.value = value;
     }
+  }
 
-    /** Handle focus requests */
-    onUIFocusRequestAsync(e: UIFocusRequestEvent<UITextField>) {
-        this.handleFocusRequestEvent(e);
-    }
+  /** Handle disabled state */
+  onDisabledChange() {
+    let element = this.getElement();
+    if (element) element.disabled = !!this.component.disabled;
+  }
 
-    /** Handle multiline/single line changes */
-    onMultilineChange() {
-        if (this.isRendered()) {
-            this.updateElement(this.createElement());
-        }
-    }
-
-    /** Handle control changes */
-    @onPropertyChange("name", "value", "type", "placeholder")
-    updateControl() {
-        let element = this.getElement();
-        if (element) {
-            let placeholder = String(this.component.placeholder || " ");  // layout workaround
-            if (element.placeholder !== placeholder) {
-                element.placeholder = placeholder;
-            }
-            if (!this.component.multiline &&
-                element.type !== this.component.type) {
-                (element as HTMLInputElement).type = this.component.type;
-            }
-            if (this.component.name) element.name = this.component.name;
-
-            // update value asynchronously if it was set programmatically
-            let value = this.component.value;
-            value = value == null ? "" : String(value);
-            if (element.value != value) element!.value = value;
-        }
-    }
-
-    /** Handle disabled state */
-    onDisabledChange() {
-        let element = this.getElement();
-        if (element) element.disabled = !!this.component.disabled;
-    }
-
-    /** Handle style changes */
-    @onPropertyChange("hidden", "style", "shrinkwrap",
-        "textStyle", "controlStyle", "dimensions")
-    async updateStyleAsync() {
-        let element = this.getElement();
-        if (element) applyElementCSS(this.component, element);
-    }
+  /** Handle style changes */
+  @onPropertyChange(
+    "hidden",
+    "style",
+    "shrinkwrap",
+    "textStyle",
+    "controlStyle",
+    "dimensions"
+  )
+  async updateStyleAsync() {
+    let element = this.getElement();
+    if (element) applyElementCSS(this.component, element);
+  }
 }
 
 UITextField.observe(UITextFieldRenderer);

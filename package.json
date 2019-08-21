@@ -23,8 +23,7 @@
     "dist",
     "umd",
     "index.js",
-    "index.d.ts",
-    "setup"
+    "index.d.ts"
   ],
   "scripts": {
     "clean": "rimraf dist",
