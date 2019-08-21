@@ -187,7 +187,7 @@ interface TextContentProperties {
   icon?: string;
   iconSize?: string | number;
   iconMargin?: string | number;
-  iconColor?: string;
+  iconColor?: Stringable;
   iconAfter?: boolean;
 }
 

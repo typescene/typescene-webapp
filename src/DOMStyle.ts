@@ -1,6 +1,5 @@
 import {
   UICell,
-  UICellOffsets,
   UIColumn,
   UIComponent,
   UIContainer,
@@ -141,7 +140,7 @@ export function applyElementCSS(
 }
 
 /** @internal Helper method to convert a CSS length unit *or* DP number to a CSS string or given default string (e.g. `auto`) */
-export function getCSSLength(length?: UICellOffsets, defaultValue: any = "auto"): string {
+export function getCSSLength(length?: UIStyle.Offsets, defaultValue: any = "auto"): string {
   if (typeof length === "string") return length;
   if (typeof length === "number") return length / DP_PER_REM + "rem";
   if (typeof length === "object") {
@@ -362,9 +361,18 @@ function addControlStyleCSS(
   if (background !== undefined) result.background = UITheme.replaceColor(background);
   let border = controlStyle.border;
   if (border !== undefined) result.border = UITheme.replaceColor(border);
+  let borderThickness = controlStyle.borderThickness;
+  if (borderThickness !== undefined) {
+    result.borderWidth = getCSSLength(borderThickness);
+    result.borderColor = UITheme.replaceColor(controlStyle.borderColor || "transparent");
+    result.borderStyle = controlStyle.borderStyle || "solid";
+  }
+
   let borderRadius = controlStyle.borderRadius;
   if (borderRadius !== undefined)
     result.borderRadius = getCSSLength(controlStyle.borderRadius);
+  let padding = controlStyle.padding;
+  if (padding !== undefined) result.padding = getCSSLength(padding);
   if (controlStyle.dropShadow) result.boxShadow = getBoxShadowCSS(controlStyle.dropShadow);
   if (controlStyle.css) {
     // copy all properties to result

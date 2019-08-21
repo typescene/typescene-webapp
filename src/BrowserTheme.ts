@@ -65,11 +65,11 @@ export class BrowserTheme extends UITheme {
           lineBreakMode: "ellipsis",
         },
         controlStyle: {
-          border: "0",
+          borderThickness: 0,
           background: "@controlBase",
           borderRadius: 4,
+          padding: { y: 8, x: 12 },
           css: {
-            padding: ".5rem .75rem",
             cursor: "pointer",
             transition: "all .2s ease",
           },
@@ -86,33 +86,42 @@ export class BrowserTheme extends UITheme {
         .addState("disabled", {
           textStyle: { color: "@primary" },
           controlStyle: {
-            border: "0",
+            borderThickness: 0,
             background: "@controlBase",
             css: { opacity: ".5", cursor: "inherit" },
           },
         }),
       UIStyle.create("button_primary", {
         textStyle: { color: "@primary:text" },
-        controlStyle: { background: "@primary", border: "1px solid @primary" },
+        controlStyle: {
+          background: "@primary",
+          borderThickness: 1,
+          borderColor: "@primary",
+        },
       }).addState("hover", {
         controlStyle: {
           background: "@primary^+30%",
-          border: "1px solid @primary^+30%",
+          borderThickness: 1,
+          borderColor: "@primary^+30%",
         },
       }),
       UIStyle.create("button_borderless", {
         dimensions: { minWidth: 16, minHeight: 16 },
         controlStyle: {
           background: "transparent",
-          border: "1px solid transparent",
-          css: { padding: ".4rem .7rem" },
+          borderThickness: 1,
+          borderColor: "transparent",
+          padding: { y: 6, x: 12 },
         },
       }).addState("hover", {
         textStyle: { color: "@primary" },
         controlStyle: { background: "@controlStyle^-50%/30%" },
       }),
       UIStyle.create("button_outline", {
-        controlStyle: { border: "1px solid @primary" },
+        controlStyle: {
+          borderThickness: 1,
+          borderColor: "@primary",
+        },
       }),
       UIStyle.create("button_link", {
         dimensions: { minWidth: 16, minHeight: 16 },
@@ -133,15 +142,16 @@ export class BrowserTheme extends UITheme {
         controlStyle: {
           background: "@primary",
           borderRadius: 32,
-          css: { padding: ".75rem 1rem" },
+          padding: { y: 12, x: 16 },
         },
       }),
       UIStyle.create("button_small", {
         dimensions: { minWidth: 64 },
         textStyle: { color: "@controlBase:text", fontSize: 12 },
         controlStyle: {
-          border: "1px solid @controlBase^-20%",
-          css: { padding: ".25rem .5rem" },
+          borderThickness: 1,
+          borderColor: "@controlBase^-20%",
+          padding: { y: 4, x: 8 },
         },
       }),
       UIStyle.create("button_icon", {
@@ -150,7 +160,7 @@ export class BrowserTheme extends UITheme {
         controlStyle: {
           background: "transparent",
           borderRadius: "50%",
-          css: { padding: "0" },
+          padding: 0,
         },
       }).addState("hover", {
         textStyle: { color: "@primary" },
@@ -162,17 +172,19 @@ export class BrowserTheme extends UITheme {
         textStyle: { color: "@white:text" },
         controlStyle: {
           background: "@white",
-          border: "1px solid @controlBase^-20%",
+          borderColor: "@controlBase^-20%",
+          borderThickness: 1,
           borderRadius: 4,
-          css: { padding: ".5rem .5rem", cursor: "text" },
+          padding: 8,
+          css: { cursor: "text" },
         },
       }),
       UIStyle.create("textfield_borderless", {
         controlStyle: {
           background: "transparent",
-          border: "0",
-          borderRadius: "0",
-          css: { padding: "0" },
+          borderThickness: 0,
+          borderRadius: 0,
+          padding: 0,
         },
       }).addState("focused", {
         controlStyle: { css: { boxShadow: "none" } },
