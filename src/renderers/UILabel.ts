@@ -151,7 +151,7 @@ export function setTextOrHtmlContent(element: HTMLElement, content: TextContentP
   } catch (err) {
     if (!_failedIconNotified[content.icon]) {
       _failedIconNotified[content.icon] = true;
-      logUnhandledException(Error("[UILabel] Failed to load icon: " + content.icon));
+      logUnhandledException(err);
     }
   }
   if (text) {
