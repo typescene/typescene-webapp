@@ -6,11 +6,12 @@ import {
   UIToggle,
 } from "typescene";
 import { applyElementCSS } from "../DOMStyle";
-import { baseEventNames, controlEventNames, RendererBase } from "./RendererBase";
+import { RendererBase } from "./RendererBase";
 
 class UIToggleRenderer extends RendererBase<UIToggle, HTMLElement> {
   constructor(public component: UIToggle) {
     super(component);
+    this.DOM_CONTROL_EMIT = this.DOM_EMIT;
   }
 
   /** Create output element, used by base class */
@@ -45,13 +46,6 @@ class UIToggleRenderer extends RendererBase<UIToggle, HTMLElement> {
     if (e.type === "click") {
       super.emitComponentEvent(e, "Input");
     }
-  }
-
-  /** Called after rendering: add event handlers */
-  protected afterRender() {
-    this.propagateDOMEvents(baseEventNames);
-    this.propagateDOMEvents(controlEventNames);
-    super.afterRender();
   }
 
   /** Handle render event */

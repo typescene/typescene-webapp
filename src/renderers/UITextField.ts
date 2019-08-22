@@ -5,7 +5,7 @@ import {
   UITextField,
 } from "typescene";
 import { applyElementCSS } from "../DOMStyle";
-import { baseEventNames, controlEventNames, RendererBase } from "./RendererBase";
+import { RendererBase } from "./RendererBase";
 
 class UITextFieldRenderer extends RendererBase<
   UITextField,
@@ -13,6 +13,7 @@ class UITextFieldRenderer extends RendererBase<
 > {
   constructor(public component: UITextField) {
     super(component);
+    this.DOM_CONTROL_EMIT = this.DOM_EMIT;
   }
 
   /** Create output element, used by base class */
@@ -38,13 +39,6 @@ class UITextFieldRenderer extends RendererBase<
       this.component.value = element.value;
     }
     super.emitComponentEvent(e);
-  }
-
-  /** Called after rendering: add event handlers */
-  protected afterRender() {
-    this.propagateDOMEvents(baseEventNames);
-    this.propagateDOMEvents(controlEventNames);
-    super.afterRender();
   }
 
   /** Handle render event */

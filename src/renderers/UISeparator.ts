@@ -1,6 +1,6 @@
 import { onPropertyChange, UIRenderEvent, UISeparator } from "typescene";
 import { applyElementCSS, getCSSLength } from "../DOMStyle";
-import { baseEventNames, RendererBase } from "./RendererBase";
+import { RendererBase } from "./RendererBase";
 
 class UISeparatorRenderer extends RendererBase<UISeparator, HTMLElement> {
   constructor(public component: UISeparator) {
@@ -19,12 +19,6 @@ class UISeparatorRenderer extends RendererBase<UISeparator, HTMLElement> {
       element.style.margin = this.component.vertical ? "0 " + margin : margin + " 0";
     }
     return element;
-  }
-
-  /** Called after rendering: add event handlers */
-  protected afterRender() {
-    this.propagateDOMEvents(baseEventNames);
-    super.afterRender();
   }
 
   /** Handle render event */

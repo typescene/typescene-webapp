@@ -15,7 +15,7 @@ import {
 import { DOMRenderContext } from "../DOMRenderContext";
 import { applyElementCSS } from "../DOMStyle";
 import { DOMContainerUpdater } from "./DOMContainerUpdater";
-import { baseEventNames, cellEventNames, RendererBase } from "./RendererBase";
+import { RendererBase } from "./RendererBase";
 
 /** Type for containers that have a `spacing` property */
 type UIContainerWithSpacing = UIRow | UIColumn;
@@ -32,6 +32,9 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
   constructor(component: any) {
     super(component);
     this.component = component;
+    if (component instanceof UICell) {
+      this.DOM_CELL_EMIT = this.DOM_EMIT;
+    }
   }
 
   component: UIContainer;
@@ -49,15 +52,6 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
 
   /** Called after rendering: add base event handlers */
   protected afterRender() {
-    this.propagateDOMEvents(baseEventNames);
-    if (this.component instanceof UICell) {
-      // handle mouseenter/leave specially, only on cells
-      this.propagateDOMEvents(cellEventNames);
-    }
-    if (this.component.accessibleRole === "form") {
-      // handle form submit (default prevented in RendererBase)
-      this.propagateDOMEvents(["submit"]);
-    }
     super.afterRender();
 
     // capture scroll events on scroll containers

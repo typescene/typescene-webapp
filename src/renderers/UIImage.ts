@@ -6,11 +6,12 @@ import {
   UIRenderEvent,
 } from "typescene";
 import { applyElementCSS } from "../DOMStyle";
-import { baseEventNames, controlEventNames, RendererBase } from "./RendererBase";
+import { RendererBase } from "./RendererBase";
 
 class UIImageRenderer extends RendererBase<UIImage, HTMLImageElement> {
   constructor(public component: UIImage) {
     super(component);
+    this.DOM_CONTROL_EMIT = this.DOM_EMIT;
   }
 
   /** Create output element, used by base class */
@@ -24,13 +25,6 @@ class UIImageRenderer extends RendererBase<UIImage, HTMLImageElement> {
     applyElementCSS(this.component, element, true);
     element.src = this.component.url || "";
     return element;
-  }
-
-  /** Called after rendering: add event handlers */
-  protected afterRender() {
-    this.propagateDOMEvents(baseEventNames);
-    this.propagateDOMEvents(controlEventNames);
-    super.afterRender();
   }
 
   /** Handle render event */
