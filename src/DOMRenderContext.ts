@@ -9,6 +9,19 @@ import {
 } from "typescene";
 import { BrowserApplication } from "./BrowserApplication";
 
+/** @internal Unique ID that is used as a property name for renderer instances on DOM elements */
+export const RENDER_PROP_ID =
+  ((window as any).DOM_UI_RENDER_MODULE_ID =
+    ((window as any).DOM_UI_RENDER_MODULE_ID || 1000) + 1) +
+  Math.floor(Math.random() * 1e6) +
+  "_RendererBase";
+
+/** Specific type of output that is accepted by `DOMRenderContext` */
+export type DOMRenderOutput = UIRenderContext.Output<UIRenderable, HTMLElement>;
+
+/** Specific type of render callback that is returned by `DOMRenderContext.getRenderCallback` */
+export type DOMRenderCallback = UIRenderContext.RenderCallback<DOMRenderOutput>;
+
 /** Default popover width (in pixels) */
 const MIN_POPOVER_WIDTH = 140;
 
@@ -17,12 +30,6 @@ const MIN_POPOVER_HEIGHT = 32;
 
 /** Popover margin (in pixels) */
 const POPOVER_GAP = 8;
-
-/** Specific type of output that is accepted by `DOMRenderContext` */
-export type DOMRenderOutput = UIRenderContext.Output<UIRenderable, HTMLElement>;
-
-/** Specific type of render callback that is returned by `DOMRenderContext.getRenderCallback` */
-export type DOMRenderCallback = UIRenderContext.RenderCallback<DOMRenderOutput>;
 
 /** Pending render callbacks, if any */
 let _pendingRender: Array<() => void> | undefined;
@@ -45,6 +52,63 @@ function detractFocus(this: HTMLElement, e: Event) {
         layer.removeChild(detractor);
       }, 0);
     }
+  }
+}
+
+/** List of basic DOM events that can be propagated on all components */
+const _baseEventNames = [
+  "click",
+  "dblclick",
+  "contextmenu",
+  "mouseup",
+  "mousedown",
+  "keydown",
+  "keypress",
+  "keyup",
+  "focusin",
+  "focusout",
+  "touchstart",
+  "touchend",
+];
+
+/** Helper function that propagates DOM events on all components */
+function propagateBaseEvents(this: HTMLElement, e: Event) {
+  let target = e.target as Node | null;
+  while (target && target !== this) {
+    let renderer = (target as any)[RENDER_PROP_ID];
+    if (renderer && renderer.DOM_EMIT) {
+      return renderer.DOM_EMIT.call(renderer, e);
+    }
+    target = target.parentNode;
+  }
+}
+
+/** List of DOM events that should be propagated on controls */
+const _controlEventNames = ["change", "input", "copy", "cut", "paste"];
+
+/** Helper function that propagates DOM events on control components, max 1 level up */
+function propagateControlEvents(this: HTMLElement, e: Event) {
+  let target = e.target as Node;
+  let renderer =
+    (target as any)[RENDER_PROP_ID] ||
+    (target.parentNode && (target.parentNode as any)[RENDER_PROP_ID]);
+  if (renderer && renderer.DOM_CONTROL_EMIT) {
+    return renderer.DOM_CONTROL_EMIT.call(renderer, e);
+  }
+}
+
+/** List of DOM events that should be propagated on cell components */
+const _cellEventNames = ["mouseenter", "mouseleave", "submit"];
+
+/** Helper function that propagates DOM events on cell components */
+function propagateCellEvents(this: HTMLElement, e: Event) {
+  let target = e.target as Node | null;
+  while (target && target !== this) {
+    let renderer = (target as any)[RENDER_PROP_ID];
+    if (renderer && renderer.DOM_CELL_EMIT) {
+      return renderer.DOM_CELL_EMIT.call(renderer, e);
+    }
+    target = target.parentNode;
   }
 }
 
@@ -127,14 +191,32 @@ export class DOMRenderContext extends UIRenderContext {
       this._isFixedRoot = true;
     }
     this.root = root;
-
-    // add focus handler that blocks focus outside of modals
-    root.removeEventListener("focusin", detractFocus, true);
-    root.addEventListener("focusin", detractFocus, true);
+    this.addEventListeners();
   }
 
   /** The root node that contains all rendered content (read-only) */
   readonly root: HTMLElement;
+
+  /** Add all event handlers on the root element */
+  addEventListeners() {
+    // add focus handler that blocks focus outside of modals
+    this.root.removeEventListener("focusin", detractFocus, true);
+    this.root.addEventListener("focusin", detractFocus, true);
+
+    // add all other handlers:
+    for (let name of _baseEventNames) {
+      this.root.removeEventListener(name, propagateBaseEvents);
+      this.root.addEventListener(name, propagateBaseEvents);
+    }
+    for (let name of _controlEventNames) {
+      this.root.removeEventListener(name, propagateControlEvents);
+      this.root.addEventListener(name, propagateControlEvents);
+    }
+    for (let name of _cellEventNames) {
+      this.root.removeEventListener(name, propagateCellEvents);
+      this.root.addEventListener(name, propagateCellEvents);
+    }
+  }
 
   /** Remove all content from the root node */
   clear() {

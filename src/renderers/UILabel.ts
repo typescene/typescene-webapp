@@ -8,11 +8,12 @@ import {
   UITheme,
 } from "typescene";
 import { applyElementCSS, getCSSLength } from "../DOMStyle";
-import { baseEventNames, controlEventNames, RendererBase } from "./RendererBase";
+import { RendererBase } from "./RendererBase";
 
 class UILabelRenderer extends RendererBase<UILabel, HTMLElement> {
   constructor(public component: UILabel) {
     super(component);
+    this.DOM_CONTROL_EMIT = this.DOM_EMIT;
   }
 
   /** Create output element, used by base class */
@@ -33,13 +34,6 @@ class UILabelRenderer extends RendererBase<UILabel, HTMLElement> {
       iconAfter: this.component.iconAfter,
     });
     return element;
-  }
-
-  /** Called after rendering: add event handlers */
-  protected afterRender() {
-    this.propagateDOMEvents(baseEventNames);
-    this.propagateDOMEvents(controlEventNames);
-    super.afterRender();
   }
 
   /** Handle render event */

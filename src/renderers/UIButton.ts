@@ -1,7 +1,7 @@
 import { onPropertyChange, UIButton, UIFocusRequestEvent, UIRenderEvent } from "typescene";
 import { BrowserApplication, BrowserHashActivationContext } from "../BrowserApplication";
 import { applyElementCSS } from "../DOMStyle";
-import { baseEventNames, controlEventNames, RendererBase } from "./RendererBase";
+import { RendererBase } from "./RendererBase";
 import { setTextOrHtmlContent } from "./UILabel";
 
 class UIButtonRenderer extends RendererBase<
@@ -10,6 +10,7 @@ class UIButtonRenderer extends RendererBase<
 > {
   constructor(public component: UIButton) {
     super(component);
+    this.DOM_CONTROL_EMIT = this.DOM_EMIT;
   }
 
   /** Create output element, used by base class */
@@ -58,13 +59,6 @@ class UIButtonRenderer extends RendererBase<
       }
     });
     return element;
-  }
-
-  /** Called after rendering: add event handlers */
-  protected afterRender() {
-    this.propagateDOMEvents(baseEventNames);
-    this.propagateDOMEvents(controlEventNames);
-    super.afterRender();
   }
 
   /** Handle render event */

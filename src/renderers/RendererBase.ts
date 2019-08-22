@@ -1,4 +1,5 @@
 import {
+  ManagedEvent,
   UIComponent,
   UIFocusRequestEvent,
   UIFocusRequestType,
@@ -6,29 +7,15 @@ import {
   UIRenderEvent,
 } from "typescene";
 import { BrowserApplication } from "../BrowserApplication";
-import { DOMRenderCallback, DOMRenderContext, DOMRenderOutput } from "../DOMRenderContext";
+import {
+  DOMRenderCallback,
+  DOMRenderContext,
+  DOMRenderOutput,
+  RENDER_PROP_ID,
+} from "../DOMRenderContext";
 
-/** @internal List of basic DOM events that can be propagated on all elements */
-export const baseEventNames = [
-  "click",
-  "dblclick",
-  "contextmenu",
-  "mouseup",
-  "mousedown",
-  "keydown",
-  "keypress",
-  "keyup",
-  "focusin",
-  "focusout",
-  "touchstart",
-  "touchend",
-];
-
-/** @internal List of DOM events that should be propagated on control and form elements */
-export const controlEventNames = ["change", "input", "copy", "cut", "paste"];
-
-/** @internal List of DOM events that should be propagated on container cell elements */
-export const cellEventNames = ["mouseenter", "mouseleave"];
+/** `Rendered` event that is emitted on all rendered components */
+const _renderedEvent = new ManagedEvent("Rendered").freeze();
 
 /** Helper function to transform DOM event types to UI event names */
 function domEventToUIEventName(e: Event) {
@@ -95,9 +82,18 @@ export abstract class RendererBase<
   /** Target component */
   public component: TComponent;
 
-  /** Method that is called asynchronously after every time the component is rendered, can be overridden e.g. to add event handlers to a HTML element */
+  /** Method used by the root event handler to propagate base events (always set) */
+  DOM_EMIT: Function = this.emitComponentEvent;
+
+  /** Method used by the root event handler to propagate control events (should be set on controls) */
+  DOM_CONTROL_EMIT?: Function;
+
+  /** Method used by the root event handler to propagate cell events (should be set on cells) */
+  DOM_CELL_EMIT?: Function;
+
+  /** Method that is called asynchronously after every time the component is rendered, can be overridden */
   protected afterRender(_out?: DOMRenderOutput) {
-    this.component.propagateComponentEvent("Rendered");
+    this.component.emit(_renderedEvent);
     let elt = this._renderedElement;
     if (elt && elt.dataset.transitionT === "revealing") {
       setTimeout(() => {
@@ -178,6 +174,7 @@ export abstract class RendererBase<
     if (e.source !== this.component) return;
     let firstRender = !this._renderedElement;
     let element = this._renderedElement || (this._renderedElement = this.createElement());
+    (element as any)[RENDER_PROP_ID] = this;
     if (this.component.accessibleRole) {
       element.setAttribute("role", this.component.accessibleRole);
     }
@@ -263,22 +260,6 @@ export abstract class RendererBase<
       );
     }
   }
-
-  /**
-   * Add event handler(s) on the output element for given DOM events; the handler stops DOM propagation and calls `RenderBase.emitComponentEvent` to emit an event on the UI component (which is then propagated up the component tree).
-   * Any previous event handlers set by this method for the same event name(s) are removed before adding them again.
-   */
-  protected propagateDOMEvents(events: string[]) {
-    let element = this._renderedElement;
-    if (!element) return;
-    for (let name of events) {
-      try {
-        element.removeEventListener(name, this._domEventHandler);
-      } catch (all) {}
-      element.addEventListener(name, this._domEventHandler);
-    }
-  }
-  private _domEventHandler = this.emitComponentEvent.bind(this);
 
   /** Returns the last rendered element, if any */
   protected getElement() {
