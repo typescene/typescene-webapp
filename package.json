@@ -19,8 +19,7 @@
     "dist",
     "umd",
     "index.js",
-    "index.d.ts",
-    "setup"
+    "index.d.ts"
   ],
   "scripts": {
     "clean": "rimraf dist",
@@ -31,7 +30,7 @@
     "watch": "tsc -p src -w"
   },
   "dependencies": {
-    "typescene": "2.20",
+    "typescene": "2.21",
     "tslib": "^1.10.0"
   },
   "devDependencies": {
