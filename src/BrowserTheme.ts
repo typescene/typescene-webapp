@@ -60,13 +60,13 @@ export class BrowserTheme extends UITheme {
       UIStyle.create("button", {
         dimensions: { minWidth: 96 },
         textStyle: {
-          color: "@primary",
           align: "center",
           lineBreakMode: "ellipsis",
         },
         controlStyle: {
           borderThickness: 0,
           background: "@controlBase",
+          textColor: "@primary",
           borderRadius: 4,
           padding: { y: 8, x: 12 },
           css: {
@@ -76,25 +76,23 @@ export class BrowserTheme extends UITheme {
         },
       })
         .addState("pressed", {
-          textStyle: { color: "@primary:text" },
-          controlStyle: { background: "@primary" },
+          controlStyle: { background: "@primary", textColor: "@primary:text" },
         })
         .addState("hover", {
-          textStyle: { color: "@primary:text" },
-          controlStyle: { background: "@primary" },
+          controlStyle: { background: "@primary", textColor: "@primary:text" },
         })
         .addState("disabled", {
-          textStyle: { color: "@primary" },
           controlStyle: {
             borderThickness: 0,
             background: "@controlBase",
+            textColor: "@primary",
             css: { opacity: ".5", cursor: "inherit" },
           },
         }),
       UIStyle.create("button_primary", {
-        textStyle: { color: "@primary:text" },
         controlStyle: {
           background: "@primary",
+          textColor: "@primary:text",
           borderThickness: 1,
           borderColor: "@primary",
         },
@@ -114,8 +112,7 @@ export class BrowserTheme extends UITheme {
           padding: { y: 6, x: 12 },
         },
       }).addState("hover", {
-        textStyle: { color: "@primary" },
-        controlStyle: { background: "@controlStyle^-50%/30%" },
+        controlStyle: { background: "@controlStyle^-50%/30%", textColor: "@primary" },
       }),
       UIStyle.create("button_outline", {
         controlStyle: {
@@ -129,25 +126,25 @@ export class BrowserTheme extends UITheme {
         controlStyle: { background: "transparent" },
       })
         .addState("hover", {
-          textStyle: { color: "@primary", underline: true },
-          controlStyle: { background: "transparent" },
+          textStyle: { underline: true },
+          controlStyle: { background: "transparent", textColor: "@primary" },
         })
         .addState("disabled", {
-          textStyle: { color: "@primary" },
-          controlStyle: { background: "transparent" },
+          controlStyle: { background: "transparent", textColor: "@primary" },
         }),
       UIStyle.create("button_large", {
         dimensions: { minWidth: 128 },
-        textStyle: { color: "@primary:text", fontWeight: 200, fontSize: 16 },
+        textStyle: { fontWeight: 200, fontSize: 16 },
         controlStyle: {
           background: "@primary",
+          textColor: "@primary:text",
           borderRadius: 32,
           padding: { y: 12, x: 16 },
         },
       }),
       UIStyle.create("button_small", {
         dimensions: { minWidth: 64 },
-        textStyle: { color: "@controlBase:text", fontSize: 12 },
+        textStyle: { fontSize: 12 },
         controlStyle: {
           borderThickness: 1,
           borderColor: "@controlBase^-20%",
@@ -163,15 +160,14 @@ export class BrowserTheme extends UITheme {
           padding: 0,
         },
       }).addState("hover", {
-        textStyle: { color: "@primary" },
-        controlStyle: { background: "@controlStyle^-50%/30%" },
+        controlStyle: { background: "@controlStyle^-50%/30%", textColor: "@primary" },
       }),
 
       // text field styles
       UIStyle.create("textfield", {
-        textStyle: { color: "@white:text" },
         controlStyle: {
           background: "@white",
+          textColor: "@white:text",
           borderColor: "@controlBase^-20%",
           borderThickness: 1,
           borderRadius: 4,
@@ -192,8 +188,7 @@ export class BrowserTheme extends UITheme {
 
       // toggle styles
       UIStyle.create("toggle", {
-        textStyle: { color: "@text" },
-        controlStyle: { cssClassNames: ["UI__CustomToggle"] },
+        controlStyle: { textColor: "@text", cssClassNames: ["UI__CustomToggle"] },
       }),
 
       // image styles
@@ -354,8 +349,10 @@ export function initializeCSS() {
       borderWidth: "1px",
     },
     ".UIRender__Separator--spacer": {
-      flex: "0 1 auto", // flex-basis set inline
-      alignSelf: "stretch",
+      flex: "0 0 auto",
+      width: "1px", // actual size set inline
+      height: "1px",
+      alignSelf: "center",
     },
 
     // add custom toggle styles

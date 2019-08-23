@@ -359,6 +359,8 @@ function addControlStyleCSS(
 ) {
   let background = controlStyle.background;
   if (background !== undefined) result.background = UITheme.replaceColor(background);
+  let textColor = controlStyle.textColor;
+  if (textColor !== undefined) result.color = UITheme.replaceColor(textColor);
   let border = controlStyle.border;
   if (border !== undefined) result.border = UITheme.replaceColor(border);
   let borderThickness = controlStyle.borderThickness;

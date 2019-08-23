@@ -389,7 +389,8 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
       if (!separator && hasComponentSpacing(this.component)) {
         let spacing = (this._spacing = this.component.spacing);
         if (spacingOnly && this._updater && spacing === this._spacing) return;
-        separator = { type: "spacer", thickness: spacing };
+        let vertical = this.component.layout && this.component.layout.axis === "horizontal";
+        separator = { type: "spacer", thickness: spacing, vertical };
       }
       if (this._updater) this._updater.stop();
       this._updater = new DOMContainerUpdater(element, separator);
