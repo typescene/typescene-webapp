@@ -112,7 +112,7 @@ export class BrowserTheme extends UITheme {
           padding: { y: 6, x: 12 },
         },
       }).addState("hover", {
-        controlStyle: { background: "@controlStyle^-50%/30%", textColor: "@primary" },
+        controlStyle: { background: "@controlBase^-50%/30%", textColor: "@primary" },
       }),
       UIStyle.create("button_outline", {
         controlStyle: {
