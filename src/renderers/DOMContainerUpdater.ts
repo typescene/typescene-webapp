@@ -20,7 +20,10 @@ let _animatedElementId = 16;
 export class DOMContainerUpdater {
   constructor(element: HTMLElement, separator?: UIStyle.SeparatorOptions) {
     this.element = element;
-    this.separator = separator && { ...separator };
+    if (separator) {
+      this.separator = { ...separator };
+      if (!this.separator.color) this.separator.color = "@separator";
+    }
   }
 
   /** Set flag to add components synchronously or asynchronously */
@@ -205,16 +208,25 @@ export class DOMContainerUpdater {
       case "spacer":
         result = document.createElement("spacer");
         result.className = "UIRender__Separator--spacer";
-        result.style.flexBasis = thickness;
+        if (this.separator.vertical !== false) {
+          result.style.width = thickness;
+        }
+        if (!this.separator.vertical) {
+          result.style.height = thickness;
+        }
         break;
       default:
         result = document.createElement("hr");
-        result.className = "UIRender__Separator--line";
+        result.className =
+          "UIRender__Separator--line" +
+          (this.separator.vertical ? " UIRender__Separator--line-vertical" : "");
         result.style.borderWidth = thickness;
-        result.style.margin = margin ? margin + " 0" : "";
-        result.style.borderColor = UITheme.replaceColor(
-          this.separator.color || "@separator"
-        );
+        result.style.margin = margin
+          ? this.separator.vertical
+            ? "0 " + margin
+            : margin + " 0"
+          : "";
+        result.style.borderColor = UITheme.replaceColor(this.separator.color!);
         break;
     }
     return result;
