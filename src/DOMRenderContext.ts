@@ -213,8 +213,8 @@ export class DOMRenderContext extends UIRenderContext {
       this.root.addEventListener(name, propagateControlEvents);
     }
     for (let name of _cellEventNames) {
-      this.root.removeEventListener(name, propagateCellEvents);
-      this.root.addEventListener(name, propagateCellEvents);
+      this.root.removeEventListener(name, propagateCellEvents, true);
+      this.root.addEventListener(name, propagateCellEvents, true);
     }
   }
 
