@@ -35,7 +35,7 @@ class UIButtonRenderer extends RendererBase<
       );
     }
     if (this.component.disabled) {
-      (element as HTMLButtonElement).disabled = true;
+      element.setAttribute("disabled", "disabled");
     }
 
     // handle direct clicks with `navigateTo` set
@@ -53,8 +53,10 @@ class UIButtonRenderer extends RendererBase<
         } else {
           // use app to navigate instead
           e.preventDefault();
-          let app = this.component.getParentComponent(BrowserApplication);
-          app && app.navigate(this.component.navigateTo);
+          if (!this.component.disabled) {
+            let app = this.component.getParentComponent(BrowserApplication);
+            app && app.navigate(this.component.navigateTo);
+          }
         }
       }
     });
@@ -102,7 +104,11 @@ class UIButtonRenderer extends RendererBase<
   onDisabledChange() {
     let element = this.getElement();
     if (element) {
-      (element as HTMLButtonElement).disabled = !!this.component.disabled;
+      if (this.component.disabled) {
+        element.setAttribute("disabled", "disabled");
+      } else {
+        element.removeAttribute("disabled");
+      }
     }
   }
 
