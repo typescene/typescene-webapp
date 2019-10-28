@@ -81,10 +81,10 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
           lastT = Date.now();
           let event: UIScrollEvent;
           if (lastEventT < lastT - 200) {
-            event = new UIScrollEvent("ScrollEnd", this.component, undefined, e);
+            event = new UIScrollEvent("ScrollEnd", scrollContainer, undefined, e);
             pending = false;
           } else {
-            event = new UIScrollEvent("Scroll", this.component, undefined, e);
+            event = new UIScrollEvent("Scroll", scrollContainer, undefined, e);
             setTimeout(checkAndEmit, 250);
             pending = true;
           }
@@ -406,11 +406,6 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
 
   private _updater?: DOMContainerUpdater;
   private _spacing?: any;
-
-  // following only used for UIScrollContainer
-  private _lastScrollTop?: number;
-  private _scrolledToTop?: boolean;
-  private _scrolledToBottom?: boolean;
 }
 
 // make root containers draggable using the "DragContainer" event
