@@ -107,6 +107,7 @@ class UIToggleRenderer extends RendererBase<UIToggle, HTMLElement> {
     "textStyle",
     "controlStyle",
     "dimensions",
+    "position",
     "hightlightColor"
   )
   async updateStyleAsync() {

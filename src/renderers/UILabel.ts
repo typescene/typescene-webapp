@@ -86,7 +86,8 @@ class UILabelRenderer extends RendererBase<UILabel, HTMLElement> {
     "disabled",
     "textStyle",
     "controlStyle",
-    "dimensions"
+    "dimensions",
+    "position"
   )
   async updateStyleAsync() {
     let element = this.getElement();
