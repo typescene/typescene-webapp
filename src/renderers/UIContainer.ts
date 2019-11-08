@@ -211,6 +211,7 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
     "style",
     "layout",
     "dimensions",
+    "position",
     "padding",
     "height",
     "width",
