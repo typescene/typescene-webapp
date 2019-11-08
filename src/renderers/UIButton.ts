@@ -131,7 +131,8 @@ class UIButtonRenderer extends RendererBase<
     "shrinkwrap",
     "textStyle",
     "controlStyle",
-    "dimensions"
+    "dimensions",
+    "position"
   )
   async updateStyleAsync() {
     let element = this.getElement();

@@ -34,7 +34,8 @@ class UISeparatorRenderer extends RendererBase<UISeparator, HTMLElement> {
     "dimensions",
     "color",
     "thickness",
-    "margin"
+    "margin",
+    "position"
   )
   async updateStyleAsync() {
     let element = this.getElement();
