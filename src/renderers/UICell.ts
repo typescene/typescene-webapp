@@ -13,7 +13,8 @@ class UICellRenderer {
     "borderColor",
     "borderStyle",
     "borderRadius",
-    "dropShadow"
+    "dropShadow",
+    "opacity"
   )
   async updateStyleAsync() {
     if (this.component.lastRenderOutput) {
