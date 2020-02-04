@@ -217,6 +217,7 @@ function addContainerCSS(result: Partial<CSSStyleDeclaration>, container: UICont
     if (container.padding) result.padding = getCSSLength(container.padding);
     if (container.margin) result.margin = getCSSLength(container.margin);
     if (container.dropShadow) result.boxShadow = getBoxShadowCSS(container.dropShadow);
+    if (container.opacity! >= 0) result.opacity = String(container.opacity);
     if (container.css) {
       // copy all properties to result
       for (let p in container.css) result[p] = container.css[p];
@@ -376,6 +377,7 @@ function addControlStyleCSS(
   let padding = controlStyle.padding;
   if (padding !== undefined) result.padding = getCSSLength(padding);
   if (controlStyle.dropShadow) result.boxShadow = getBoxShadowCSS(controlStyle.dropShadow);
+  if (controlStyle.opacity! >= 0) result.opacity = String(controlStyle.opacity);
   if (controlStyle.css) {
     // copy all properties to result
     for (let p in controlStyle.css) result[p] = controlStyle.css[p];
