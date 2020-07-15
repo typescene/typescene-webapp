@@ -186,4 +186,4 @@ interface TextContentProperties {
   iconAfter?: boolean;
 }
 
-UILabel.observe(UILabelRenderer);
+UILabel.addObserver(UILabelRenderer);

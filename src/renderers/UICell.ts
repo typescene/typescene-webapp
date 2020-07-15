@@ -23,4 +23,4 @@ class UICellRenderer {
   }
 }
 
-UICell.observe(UICellRenderer);
+UICell.addObserver(UICellRenderer);

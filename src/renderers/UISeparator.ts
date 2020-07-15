@@ -52,4 +52,4 @@ class UISeparatorRenderer extends RendererBase<UISeparator, HTMLElement> {
   }
 }
 
-UISeparator.observe(UISeparatorRenderer);
+UISeparator.addObserver(UISeparatorRenderer);

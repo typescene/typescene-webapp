@@ -101,4 +101,4 @@ class UITextFieldRenderer extends RendererBase<
   }
 }
 
-UITextField.observe(UITextFieldRenderer);
+UITextField.addObserver(UITextFieldRenderer);

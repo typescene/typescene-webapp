@@ -17,7 +17,7 @@ class UIImageRenderer extends RendererBase<UIImage, HTMLImageElement> {
   /** Create output element, used by base class */
   protected createElement() {
     let element = document.createElement("img");
-    element.onerror = e => {
+    element.onerror = (e) => {
       this.component.emit(new UIComponentEvent("LoadError", this.component, undefined, e));
     };
     if (this.component.isKeyboardFocusable()) element.tabIndex = 0;
@@ -60,4 +60,4 @@ class UIImageRenderer extends RendererBase<UIImage, HTMLImageElement> {
   }
 }
 
-UIImage.observe(UIImageRenderer);
+UIImage.addObserver(UIImageRenderer);

@@ -35,14 +35,14 @@
   },
   "dependencies": {
     "typescene": "2.21",
-    "tslib": "^1.10.0"
+    "tslib": "^2.0.0"
   },
   "devDependencies": {
-    "rimraf": "^2.6.3",
-    "rollup": "^1.19.4",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.18.1",
     "rollup-plugin-multi-entry": "^2.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-terser": "^5.1.1",
-    "typescript": "^3.5.3"
+    "rollup-plugin-terser": "^6.1.0",
+    "typescript": "^4.0.0-beta"
   }
 }

@@ -234,7 +234,7 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
       let focusedRect: ClientRect | undefined;
       let cur = element.firstChild;
       while (cur) {
-        if ((cur as HTMLElement).getBoundingClientRect) {
+        if ((cur as any).getBoundingClientRect) {
           let r = (cur as HTMLElement).getBoundingClientRect();
           if (r.bottom > rect.top && r.top < rect.bottom) {
             if (cur === focused) focusedRect = r;
@@ -410,8 +410,8 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
 }
 
 // make root containers draggable using the "DragContainer" event
-(UIContainer as typeof UIContainer & { new (): UIContainer }).handle({
-  DragContainer(e) {
+(UIContainer as typeof UIContainer & { new (): UIContainer }).addEventHandler(function (e) {
+  if (e.name === "DragContainer") {
     if (this.getParentComponent() instanceof UIComponent) return;
     let element: HTMLElement = this.lastRenderOutput && this.lastRenderOutput.element;
     if (!element || !(e instanceof UIComponentEvent)) return;
@@ -468,8 +468,8 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
     window.addEventListener("touchend", upHandler as any, true);
     window.addEventListener("mouseup", upHandler, true);
     window.addEventListener("click", upHandler, true);
-  },
+  }
 });
 
 // observe *all* containers (cast `UIContainer` because it is an abstract class)
-observe(UIContainer as any, UIContainerRenderer);
+(UIContainer as any).addObserver(UIContainerRenderer);

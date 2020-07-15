@@ -123,4 +123,4 @@ class UIToggleRenderer extends RendererBase<UIToggle, HTMLElement> {
   }
 }
 
-UIToggle.observe(UIToggleRenderer);
+UIToggle.addObserver(UIToggleRenderer);

@@ -39,7 +39,7 @@ class UIButtonRenderer extends RendererBase<
     }
 
     // handle direct clicks with `navigateTo` set
-    element.addEventListener("click", e => {
+    element.addEventListener("click", (e) => {
       if (this.component.navigateTo) {
         if (
           (e as MouseEvent).ctrlKey ||
@@ -140,7 +140,7 @@ class UIButtonRenderer extends RendererBase<
   }
 }
 
-UIButton.observe(UIButtonRenderer);
+UIButton.addObserver(UIButtonRenderer);
 
 /** Helper function to get a proper `href` attribute for given path */
 function getPathHref(component: UIButton, path?: string) {
