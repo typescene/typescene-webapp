@@ -23,7 +23,7 @@ class UIImageRenderer extends RendererBase<UIImage, HTMLImageElement> {
     if (this.component.isKeyboardFocusable()) element.tabIndex = 0;
     else if (this.component.isFocusable()) element.tabIndex = -1;
     applyElementCSS(this.component, element, true);
-    element.src = this.component.url || "";
+    element.src = String(this.component.url || "");
     return element;
   }
 
@@ -40,7 +40,7 @@ class UIImageRenderer extends RendererBase<UIImage, HTMLImageElement> {
   /** Handle URL change */
   onUrlChange() {
     let element = this.getElement();
-    if (element) element.src = this.component.url || "";
+    if (element) element.src = String(this.component.url || "");
   }
 
   /** Handle style changes */

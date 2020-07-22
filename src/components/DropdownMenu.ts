@@ -10,7 +10,7 @@ import {
   UISeparator,
   UISpacer,
   UIStyle,
-  UITransitionType,
+  UICellTransition,
 } from "typescene";
 
 /** Encapsulates a menu; items are mixed in by `DropdownMenuBuilder` */
@@ -75,10 +75,10 @@ export class DropdownMenuBuilder extends UIMenuBuilder {
           },
           onClick,
           onEnterKeyPress: onClick,
-          onArrowDownKeyPress: function() {
+          onArrowDownKeyPress: function () {
             this.requestFocusNext();
           },
-          onArrowUpKeyPress: function() {
+          onArrowUpKeyPress: function () {
             this.requestFocusPrevious();
           },
         },
@@ -122,12 +122,12 @@ export class DropdownMenuBuilder extends UIMenuBuilder {
     return this;
   }
 
-  setRevealTransition(transition: UITransitionType) {
+  setRevealTransition(transition: string) {
     this._revealTransition = transition;
     return this;
   }
 
-  setExitTransition(transition: UITransitionType) {
+  setExitTransition(transition: string) {
     this._exitTransition = transition;
     return this;
   }
@@ -137,13 +137,13 @@ export class DropdownMenuBuilder extends UIMenuBuilder {
       position: { gravity: this._gravity },
       revealTransition: this._revealTransition,
       exitTransition: this._exitTransition,
-      content: [new UISpacer(8, 8), ...this._items.map(C => new C()), new UISpacer(8, 8)],
+      content: [new UISpacer(8, 8), ...this._items.map((C) => new C()), new UISpacer(8, 8)],
     });
   }
 
   /** List of items currently built up */
   private readonly _items: UIRenderableConstructor[] = [];
   private _gravity: "start" | "stretch" | "end" = "end";
-  private _revealTransition?: UITransitionType;
-  private _exitTransition?: UITransitionType;
+  private _revealTransition?: string;
+  private _exitTransition?: string;
 }

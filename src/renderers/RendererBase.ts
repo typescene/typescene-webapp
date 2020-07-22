@@ -1,5 +1,6 @@
 import {
   ManagedEvent,
+  UICell,
   UIComponent,
   UIFocusRequestEvent,
   UIFocusRequestType,
@@ -44,25 +45,32 @@ const _names: { [type: string]: string } = {
   "submit": "Submit",
 };
 
-/** Named key press events for `keydown` event key code */
-const _keyUIEvents: { [keyCode: number]: string } = {
-  13: "EnterKeyPress",
-  32: "SpacebarPress",
-  8: "BackspaceKeyPress",
-  46: "DeleteKeyPress",
-  27: "EscapeKeyPress",
-  37: "ArrowLeftKeyPress",
-  38: "ArrowUpKeyPress",
-  39: "ArrowRightKeyPress",
-  40: "ArrowDownKeyPress",
+/** Event key names for `keydown` event key name (some aliases for IE) */
+const _keyUIEvents: { [keyName: string]: string } = {
+  "Enter": "EnterKey",
+  "Spacebar": "Spacebar",
+  " ": "Spacebar",
+  "Backspace": "BackspaceKey",
+  "Delete": "DeleteKey",
+  "Del": "DeleteKey",
+  "Escape": "EscapeKey",
+  "Esc": "EscapeKey",
+  "ArrowLeft": "ArrowLeftKey",
+  "Left": "ArrowLeftKey",
+  "ArrowUp": "ArrowUpKey",
+  "Up": "ArrowUpKey",
+  "ArrowRight": "ArrowRightKey",
+  "Right": "ArrowRightKey",
+  "ArrowDown": "ArrowDownKey",
+  "Down": "ArrowDownKey",
 };
 
 /** Keys for which OS actions should be prevented if used on lists and list items */
-const _listKeysPreventDefault: { [keyCode: number]: boolean } = {
-  37: true,
-  38: true,
-  39: true,
-  40: true,
+const _listKeysPreventDefault: { [keyName: string]: boolean } = {
+  ArrowLeftKey: true,
+  ArrowRightKey: true,
+  ArrowUpKey: true,
+  ArrowDownKey: true,
 };
 
 /** Last renderer where a touchstart occurred */
@@ -145,24 +153,24 @@ export abstract class RendererBase<
 
     // handle various key press aliases
     if (uiEventName === "KeyDown") {
-      let key = (e as KeyboardEvent).keyCode;
-      let uiKeyEventName: string = key ? _keyUIEvents[key] : "";
+      let key = (e as KeyboardEvent).key;
+      let keyName = key ? _keyUIEvents[key] : "";
       let ignore = false;
-      if (uiKeyEventName === "EnterKeyPress") {
+      if (keyName === "EnterKey") {
         let target: HTMLElement = e.target as any;
         let nodeName = String(target.nodeName).toLowerCase();
         ignore = nodeName === "button" || nodeName === "textarea";
       }
       if (
-        _listKeysPreventDefault[key] &&
+        _listKeysPreventDefault[keyName] &&
         (this.component.accessibleRole === "list" ||
           this.component.accessibleRole === "listitem")
       ) {
         e.preventDefault();
       }
-      if (!ignore && uiKeyEventName) {
+      if (!ignore && keyName) {
         setTimeout(() => {
-          this.component.propagateComponentEvent(uiKeyEventName, undefined, e);
+          this.component.propagateComponentEvent(keyName + "Press", undefined, e);
         }, 0);
       }
     }
@@ -175,24 +183,25 @@ export abstract class RendererBase<
     let firstRender = !this._renderedElement;
     let element = this._renderedElement || (this._renderedElement = this.createElement());
     (element as any)[RENDER_PROP_ID] = this;
-    if (this.component.accessibleRole) {
-      element.setAttribute("role", this.component.accessibleRole);
+    let component = this.component;
+    if (component.accessibleRole) {
+      element.setAttribute("role", component.accessibleRole);
     }
-    if (this.component.accessibleLabel) {
-      element.setAttribute("aria-label", this.component.accessibleLabel);
+    if (component.accessibleLabel) {
+      element.setAttribute("aria-label", component.accessibleLabel);
     }
-    if (!BrowserApplication.transitionsDisabled) {
-      if (firstRender && this.component.revealTransition) {
-        element.dataset.transitionReveal = this.component.revealTransition;
+    if (!BrowserApplication.transitionsDisabled && component instanceof UICell) {
+      if (firstRender && component.revealTransition) {
+        element.dataset.transitionReveal = component.revealTransition;
         element.dataset.transitionT = "revealing";
       }
-      if (this.component.exitTransition) {
-        element.dataset.transitionExit = this.component.exitTransition;
+      if (component.exitTransition) {
+        element.dataset.transitionExit = component.exitTransition;
         element.dataset.transitionT = "revealing";
       }
     }
-    let output = new UIRenderContext.Output(this.component, element);
-    this.component.lastRenderOutput = output as any;
+    let output = new UIRenderContext.Output(component, element);
+    component.lastRenderOutput = output as any;
     this._lastRenderCallback = e.renderCallback(output, this.afterRender.bind(this));
   }
 
