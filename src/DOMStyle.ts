@@ -209,7 +209,7 @@ function addContainerCSS(result: Partial<CSSStyleDeclaration>, container: UICont
     if (container.borderThickness) {
       result.borderWidth = getCSSLength(container.borderThickness);
       result.borderColor = UITheme.replaceColor(container.borderColor || "transparent");
-      result.borderStyle = container.borderStyle;
+      result.borderStyle = String(container.borderStyle || "solid");
     }
     if (container.background)
       result.background = UITheme.replaceColor(container.background);
