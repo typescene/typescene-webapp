@@ -3,206 +3,206 @@ import { AlertDialogBuilder } from "./components/AlertDialog";
 import { DropdownMenuBuilder } from "./components/DropdownMenu";
 import { getCSSLength, setGlobalCSS } from "./DOMStyle";
 
-/** Base text style mixed into the base control style set */
-const _textStyle = UIStyle.create("text", {
-  textStyle: {
-    fontFamily:
-      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, "Helvetica Neue", Arial, sans-serif',
-    fontSize: 14,
-    fontWeight: "normal",
-    lineHeight: "normal",
-    italic: false,
-    lineBreakMode: "pre",
-  },
-});
+const BASE_FONT_FAMILY =
+  '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, "Helvetica Neue", Arial, sans-serif';
+const BASE_FONT_SIZE = 14;
 
 /** Theme that includes default Web app specific styles */
 export class BrowserTheme extends UITheme {
   constructor() {
     super();
-    this.addStyles(
-      _textStyle,
 
-      // simple control styles
-      UIStyle.create("spacer", {
-        dimensions: { grow: 1, width: 8, height: 8 },
-        position: { gravity: "stretch" },
-      }),
-      UIStyle.create("separator", {
-        dimensions: { grow: 0, shrink: 0 },
-        position: { gravity: "stretch" },
-      }),
-
-      // label styles
-      UIStyle.create("label", {
-        dimensions: { maxWidth: "100%" },
-        controlStyle: { css: { margin: "calc(1rem - .5em) 0" } },
-        textStyle: { lineBreakMode: "ellipsis" },
-      }),
-      UIStyle.create("label_close", {
-        controlStyle: { css: { margin: "0" } },
-      }),
-      UIStyle.create("heading1", {
-        textStyle: { fontSize: 60, fontWeight: 200, letterSpacing: -0.5 },
-      }),
-      UIStyle.create("heading2", {
-        textStyle: { fontSize: 24 },
-      }),
-      UIStyle.create("heading3", {
-        textStyle: { fontSize: 18, bold: true },
-      }),
-      UIStyle.create("paragraph", {
-        textStyle: { lineBreakMode: "pre-wrap", lineHeight: 1.4 },
-        controlStyle: { css: { cursor: "text" } },
-      }),
-
-      // button styles
-      UIStyle.create("button", {
-        dimensions: { minWidth: 96 },
-        textStyle: {
-          align: "center",
-          lineBreakMode: "ellipsis",
+    this.setStyle("container", {
+      decoration: {
+        css: {
+          display: "flex",
+          textAlign: "start||left",
         },
-        controlStyle: {
+      },
+    });
+    this.setStyle("control", {
+      textStyle: {
+        fontFamily: BASE_FONT_FAMILY,
+        fontSize: BASE_FONT_SIZE,
+        fontWeight: "normal",
+        lineHeight: "normal",
+        italic: false,
+        lineBreakMode: "pre",
+      },
+    });
+
+    this.setStyle("spacer", {
+      dimensions: { grow: 1, width: 8, height: 8 },
+      position: { gravity: "stretch" },
+    });
+    this.setStyle("separator", {
+      dimensions: { grow: 0, shrink: 0 },
+      position: { gravity: "stretch" },
+    });
+
+    // label styles
+    this.setStyle("label", {
+      dimensions: { maxWidth: "100%" },
+      decoration: { css: { margin: "calc(1rem - .5em) 0" } },
+      textStyle: { lineBreakMode: "ellipsis" },
+    });
+    this.setStyle("label_close", {
+      decoration: { css: { margin: "0" } },
+    });
+    this.setStyle("heading1", {
+      textStyle: { fontSize: 60, fontWeight: 200, letterSpacing: -0.5 },
+    });
+    this.setStyle("heading2", {
+      textStyle: { fontSize: 24 },
+    });
+    this.setStyle("heading3", {
+      textStyle: { fontSize: 18, bold: true },
+    });
+    this.setStyle("paragraph", {
+      textStyle: { lineBreakMode: "pre-wrap", lineHeight: 1.4 },
+      decoration: { css: { cursor: "text" } },
+    });
+
+    // button styles
+    this.setStyle("button", {
+      dimensions: { minWidth: 96 },
+      textStyle: {
+        align: "center",
+        lineBreakMode: "ellipsis",
+      },
+      decoration: {
+        borderThickness: 0,
+        background: "@controlBase",
+        textColor: "@primary",
+        borderRadius: 4,
+        padding: { y: 8, x: 12 },
+        css: {
+          cursor: "pointer",
+          transition: "all .2s ease",
+        },
+      },
+    })
+      .addState("pressed", {
+        decoration: { background: "@primary", textColor: "@primary:text" },
+      })
+      .addState("hover", {
+        decoration: { background: "@primary", textColor: "@primary:text" },
+      })
+      .addState("disabled", {
+        decoration: {
           borderThickness: 0,
           background: "@controlBase",
           textColor: "@primary",
-          borderRadius: 4,
-          padding: { y: 8, x: 12 },
-          css: {
-            cursor: "pointer",
-            transition: "all .2s ease",
-          },
+          css: { opacity: ".5", cursor: "inherit" },
         },
+      });
+    this.setStyle("button_primary", {
+      decoration: {
+        background: "@primary",
+        textColor: "@primary:text",
+        borderThickness: 1,
+        borderColor: "@primary",
+      },
+    }).addState("hover", {
+      decoration: {
+        background: "@primary^+30%",
+        borderThickness: 1,
+        borderColor: "@primary^+30%",
+      },
+    });
+    this.setStyle("button_borderless", {
+      dimensions: { minWidth: 16, minHeight: 16 },
+      decoration: {
+        background: "transparent",
+        borderThickness: 1,
+        borderColor: "transparent",
+        padding: { y: 6, x: 12 },
+      },
+    }).addState("hover", {
+      decoration: { background: "@controlBase^-50%/30%", textColor: "@primary" },
+    });
+    this.setStyle("button_outline", {
+      decoration: {
+        borderThickness: 1,
+        borderColor: "@primary",
+      },
+    });
+    this.setStyle("button_link", {
+      dimensions: { minWidth: 16, minHeight: 16 },
+      textStyle: { align: "start||left" },
+      decoration: { background: "transparent" },
+    })
+      .addState("hover", {
+        textStyle: { underline: true },
+        decoration: { background: "transparent", textColor: "@primary" },
       })
-        .addState("pressed", {
-          controlStyle: { background: "@primary", textColor: "@primary:text" },
-        })
-        .addState("hover", {
-          controlStyle: { background: "@primary", textColor: "@primary:text" },
-        })
-        .addState("disabled", {
-          controlStyle: {
-            borderThickness: 0,
-            background: "@controlBase",
-            textColor: "@primary",
-            css: { opacity: ".5", cursor: "inherit" },
-          },
-        }),
-      UIStyle.create("button_primary", {
-        controlStyle: {
-          background: "@primary",
-          textColor: "@primary:text",
-          borderThickness: 1,
-          borderColor: "@primary",
-        },
-      }).addState("hover", {
-        controlStyle: {
-          background: "@primary^+30%",
-          borderThickness: 1,
-          borderColor: "@primary^+30%",
-        },
-      }),
-      UIStyle.create("button_borderless", {
-        dimensions: { minWidth: 16, minHeight: 16 },
-        controlStyle: {
-          background: "transparent",
-          borderThickness: 1,
-          borderColor: "transparent",
-          padding: { y: 6, x: 12 },
-        },
-      }).addState("hover", {
-        controlStyle: { background: "@controlBase^-50%/30%", textColor: "@primary" },
-      }),
-      UIStyle.create("button_outline", {
-        controlStyle: {
-          borderThickness: 1,
-          borderColor: "@primary",
-        },
-      }),
-      UIStyle.create("button_link", {
-        dimensions: { minWidth: 16, minHeight: 16 },
-        textStyle: { align: "start||left" },
-        controlStyle: { background: "transparent" },
-      })
-        .addState("hover", {
-          textStyle: { underline: true },
-          controlStyle: { background: "transparent", textColor: "@primary" },
-        })
-        .addState("disabled", {
-          controlStyle: { background: "transparent", textColor: "@primary" },
-        }),
-      UIStyle.create("button_large", {
-        dimensions: { minWidth: 128 },
-        textStyle: { fontWeight: 200, fontSize: 16 },
-        controlStyle: {
-          background: "@primary",
-          textColor: "@primary:text",
-          borderRadius: 32,
-          padding: { y: 12, x: 16 },
-        },
-      }),
-      UIStyle.create("button_small", {
-        dimensions: { minWidth: 64 },
-        textStyle: { fontSize: 12 },
-        controlStyle: {
-          borderThickness: 1,
-          borderColor: "@controlBase^-20%",
-          padding: { y: 4, x: 8 },
-        },
-      }),
-      UIStyle.create("button_icon", {
-        dimensions: { minWidth: 32, minHeight: 32 },
-        position: { gravity: "center" },
-        controlStyle: {
-          background: "transparent",
-          borderRadius: "50%",
-          padding: 0,
-        },
-      }).addState("hover", {
-        controlStyle: { background: "@controlStyle^-50%/30%", textColor: "@primary" },
-      }),
+      .addState("disabled", {
+        decoration: { background: "transparent", textColor: "@primary" },
+      });
+    this.setStyle("button_large", {
+      dimensions: { minWidth: 128 },
+      textStyle: { fontWeight: 200, fontSize: 16 },
+      decoration: {
+        background: "@primary",
+        textColor: "@primary:text",
+        borderRadius: 32,
+        padding: { y: 12, x: 16 },
+      },
+    });
+    this.setStyle("button_small", {
+      dimensions: { minWidth: 64 },
+      textStyle: { fontSize: 12 },
+      decoration: {
+        borderThickness: 1,
+        borderColor: "@controlBase^-20%",
+        padding: { y: 4, x: 8 },
+      },
+    });
+    this.setStyle("button_icon", {
+      dimensions: { minWidth: 32, minHeight: 32 },
+      position: { gravity: "center" },
+      decoration: {
+        background: "transparent",
+        borderRadius: "50%",
+        padding: 0,
+      },
+    }).addState("hover", {
+      decoration: { background: "@decoration^-50%/30%", textColor: "@primary" },
+    });
 
-      // text field styles
-      UIStyle.create("textfield", {
-        controlStyle: {
-          background: "@white",
-          textColor: "@white:text",
-          borderColor: "@controlBase^-20%",
-          borderThickness: 1,
-          borderRadius: 4,
-          padding: 8,
-          css: { cursor: "text" },
-        },
-      }),
-      UIStyle.create("textfield_borderless", {
-        controlStyle: {
-          background: "transparent",
-          borderThickness: 0,
-          borderRadius: 0,
-          padding: 0,
-        },
-      }).addState("focused", {
-        controlStyle: { css: { boxShadow: "none" } },
-      }),
+    // text field styles
+    this.setStyle("textfield", {
+      decoration: {
+        background: "@white",
+        textColor: "@white:text",
+        borderColor: "@controlBase^-20%",
+        borderThickness: 1,
+        borderRadius: 4,
+        padding: 8,
+        css: { cursor: "text" },
+      },
+    });
+    this.setStyle("textfield_borderless", {
+      decoration: {
+        background: "transparent",
+        borderThickness: 0,
+        borderRadius: 0,
+        padding: 0,
+      },
+    }).addState("focused", {
+      decoration: { css: { boxShadow: "none" } },
+    });
 
-      // toggle styles
-      UIStyle.create("toggle", {
-        controlStyle: { textColor: "@text", cssClassNames: ["UI__CustomToggle"] },
-      }),
+    // toggle styles
+    this.setStyle("toggle", {
+      decoration: { textColor: "@text", cssClassNames: ["UI__CustomToggle"] },
+    });
 
-      // image styles
-      UIStyle.create("image", {
-        position: { gravity: "center" },
-      })
-    );
+    // image styles
+    this.setStyle("image", {
+      position: { gravity: "center" },
+    });
   }
-
-  /** Base control style, extended with default text style */
-  baseControlStyle: UIStyle = UIStyle.create("UIControl", {
-    ...this.baseControlStyle.getStyles(),
-    textStyle: _textStyle.getStyles().textStyle,
-  });
 
   /** Confirmation/alert dialog component builder */
   ConfirmationDialogBuilder = AlertDialogBuilder;
@@ -287,12 +287,6 @@ export function initializeCSS() {
     },
     ".UI[hidden]": {
       display: "none",
-    },
-    ".UIContainer": {
-      display: "flex",
-      flex: "0 1 auto",
-      background: "transparent",
-      textAlign: "start||left",
     },
 
     // add style for fixed root component

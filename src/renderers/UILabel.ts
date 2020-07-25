@@ -85,7 +85,7 @@ class UILabelRenderer extends RendererBase<UILabel, HTMLElement> {
     "shrinkwrap",
     "disabled",
     "textStyle",
-    "controlStyle",
+    "decoration",
     "dimensions",
     "position"
   )

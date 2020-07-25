@@ -10,7 +10,6 @@ import {
   UISeparator,
   UISpacer,
   UIStyle,
-  UICellTransition,
 } from "typescene";
 
 /** Encapsulates a menu; items are mixed in by `DropdownMenuBuilder` */

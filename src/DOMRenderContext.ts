@@ -321,7 +321,7 @@ export class DOMRenderContext extends UIRenderContext {
     }
     shader.addEventListener(
       "click",
-      e => {
+      (e) => {
         if (e.target === shader || e.target === wrapper) {
           e.stopPropagation();
           if (clickToClose && output.source instanceof UIComponent) {
@@ -335,7 +335,7 @@ export class DOMRenderContext extends UIRenderContext {
     );
     shader.addEventListener(
       "touchend",
-      e => {
+      (e) => {
         if (e.target === shader || e.target === wrapper) {
           e.stopPropagation();
           if (clickToClose && output.source instanceof UIComponent) {
@@ -348,7 +348,7 @@ export class DOMRenderContext extends UIRenderContext {
     );
     shader.addEventListener(
       "keydown",
-      e => {
+      (e) => {
         if (e.keyCode === 27) {
           e.stopPropagation();
           if (output.source instanceof UIComponent) {
@@ -377,7 +377,6 @@ export class DOMRenderContext extends UIRenderContext {
     shader.appendChild(wrapper);
 
     // render element asynchronously and call callback
-    let lastOutput: DOMRenderOutput | undefined = output;
     let lastFocused = document.activeElement;
     DOMRenderContext.scheduleRender(() => {
       if (!this.managedState) return;
@@ -415,7 +414,6 @@ export class DOMRenderContext extends UIRenderContext {
         if (!output) {
           shader.style.background = "";
           removeElement(shader, wrapper.firstChild as any);
-          lastOutput = undefined;
           if (lastFocused) {
             try {
               (lastFocused as HTMLElement).focus();
@@ -424,7 +422,6 @@ export class DOMRenderContext extends UIRenderContext {
         } else {
           this._addModalContent(wrapper, output);
           clickToClose = !!output.modalShadeClickToClose;
-          lastOutput = output;
         }
         return output;
       })

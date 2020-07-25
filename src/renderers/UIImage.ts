@@ -50,7 +50,7 @@ class UIImageRenderer extends RendererBase<UIImage, HTMLImageElement> {
     "shrinkwrap",
     "disabled",
     "textStyle",
-    "controlStyle",
+    "decoration",
     "dimensions",
     "position"
   )

@@ -20,14 +20,7 @@ class UISpacerRenderer extends RendererBase<UISpacer, HTMLElement> {
   }
 
   /** Handle style changes */
-  @onPropertyChange(
-    "hidden",
-    "style",
-    "shrinkwrap",
-    "controlStyle",
-    "dimensions",
-    "position"
-  )
+  @onPropertyChange("hidden", "style", "shrinkwrap", "decoration", "dimensions", "position")
   async updateStyleAsync() {
     let element = this.getElement();
     if (element) applyElementCSS(this.component, element);

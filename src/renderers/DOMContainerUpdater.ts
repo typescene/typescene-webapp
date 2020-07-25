@@ -22,7 +22,7 @@ export class DOMContainerUpdater {
     this.element = element;
     if (separator) {
       this.separator = { ...separator };
-      if (!this.separator.color) this.separator.color = "@separator";
+      if (!this.separator.lineColor) this.separator.lineColor = "@separator";
     }
   }
 
@@ -201,33 +201,31 @@ export class DOMContainerUpdater {
   /** Create a separator element */
   private _makeSeparator() {
     if (!this.separator) throw Error;
-    let margin = getCSSLength(this.separator.margin, "");
-    let thickness = getCSSLength(this.separator.thickness, "");
+    let margin = getCSSLength(this.separator.lineMargin, "");
     let result: HTMLElement;
-    switch (this.separator && this.separator.type) {
-      case "spacer":
-        result = document.createElement("spacer");
-        result.className = "UIRender__Separator--spacer";
-        if (this.separator.vertical !== false) {
-          result.style.width = thickness;
-        }
-        if (!this.separator.vertical) {
-          result.style.height = thickness;
-        }
-        break;
-      default:
-        result = document.createElement("hr");
-        result.className =
-          "UIRender__Separator--line" +
-          (this.separator.vertical ? " UIRender__Separator--line-vertical" : "");
-        result.style.borderWidth = thickness;
-        result.style.margin = margin
-          ? this.separator.vertical
-            ? "0 " + margin
-            : margin + " 0"
-          : "";
-        result.style.borderColor = UITheme.replaceColor(this.separator.color!);
-        break;
+    if (this.separator.space) {
+      let thickness = getCSSLength(this.separator.space);
+      result = document.createElement("spacer");
+      result.className = "UIRender__Separator--spacer";
+      if (this.separator.vertical !== false) {
+        result.style.width = thickness;
+      }
+      if (!this.separator.vertical) {
+        result.style.height = thickness;
+      }
+    } else {
+      let thickness = getCSSLength(this.separator.lineThickness, "");
+      result = document.createElement("hr");
+      result.className =
+        "UIRender__Separator--line" +
+        (this.separator.vertical ? " UIRender__Separator--line-vertical" : "");
+      result.style.borderWidth = thickness;
+      result.style.margin = margin
+        ? this.separator.vertical
+          ? "0 " + margin
+          : margin + " 0"
+        : "";
+      result.style.borderColor = UITheme.replaceColor(this.separator.lineColor!);
     }
     return result;
   }
@@ -334,7 +332,7 @@ export class DOMContainerUpdater {
       }
       cur = cur.nextSibling as any;
     }
-    hideTemp.forEach(f => f());
+    hideTemp.forEach((f) => f());
 
     // update transforms and prepare transition
     cur = this.element.firstChild as any;
@@ -393,7 +391,7 @@ export class DOMContainerUpdater {
     }, 0);
 
     // unhide temporarily hidden elements
-    unhideTemp.forEach(f => f());
+    unhideTemp.forEach((f) => f());
   }
 
   private _rendered?: boolean;

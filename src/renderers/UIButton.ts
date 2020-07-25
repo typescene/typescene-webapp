@@ -130,7 +130,7 @@ class UIButtonRenderer extends RendererBase<
     "style",
     "shrinkwrap",
     "textStyle",
-    "controlStyle",
+    "decoration",
     "dimensions",
     "position"
   )

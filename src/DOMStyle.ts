@@ -91,16 +91,15 @@ export function applyElementCSS(
     addPositionCSS(inline, component.position);
   }
   if (component instanceof UIContainer) {
-    className += " UIContainer";
     if (UIStyle.isStyleOverride(component.layout)) {
       addContainerLayoutCSS(inline, component.layout);
     }
     addContainerCSS(inline, component);
   } else if (component instanceof UIControl) {
-    if (UIStyle.isStyleOverride(component.controlStyle)) {
-      addControlStyleCSS(inline, component.controlStyle);
-    } else if (component.controlStyle.cssClassNames) {
-      inline.className = component.controlStyle.cssClassNames.join(" ");
+    if (UIStyle.isStyleOverride(component.decoration)) {
+      addDecorationCSS(inline, component.decoration);
+    } else if (component.decoration.cssClassNames) {
+      inline.className = component.decoration.cssClassNames.join(" ");
     }
     if (UIStyle.isStyleOverride(component.textStyle)) {
       addTextStyleCSS(inline, component.textStyle);
@@ -168,20 +167,22 @@ function defineStyleClass(style: UIStyle) {
     if (styles.dimensions) addDimensionsCSS(result, styles.dimensions);
     if (styles.position) addPositionCSS(result, styles.position);
     if (styles.textStyle) addTextStyleCSS(result, styles.textStyle);
-    if (styles.controlStyle) addControlStyleCSS(result, styles.controlStyle);
+    if (styles.decoration) addDecorationCSS(result, styles.decoration);
     return result;
   };
 
   // add CSS to global style element
   setGlobalCSS({
-    [".UI" + style.ids.map(id => "." + id).join("")]: makeDeclaration(style.getOwnStyles()),
+    [".UI" + style.ids.map((id) => "." + id).join("")]: makeDeclaration(
+      style.getOwnStyles()
+    ),
   } as any);
 
   // add CSS for conditional styles
   let setGlobalAddonStyle = (suffix: string, k: keyof UIStyle.ConditionalStyles) => {
     let conditional = style.conditionalStyles[k];
     if (!conditional) return;
-    let className = ".UI" + style.ids.map(id => "." + id).join("") + suffix;
+    let className = ".UI" + style.ids.map((id) => "." + id).join("") + suffix;
     setGlobalCSS({
       [className]: makeDeclaration(conditional.getStyles()),
     } as any);
@@ -353,37 +354,37 @@ function addTextStyleCSS(
   else if (underline === false || strikeThrough === false) result.textDecoration = "none";
 }
 
-/** Helper to append CSS styles to given object for a given `ControlStyle` object */
-function addControlStyleCSS(
+/** Helper to append CSS styles to given object for a given `Decoration` object */
+function addDecorationCSS(
   result: Partial<CSSStyleDeclaration> & { className?: string },
-  controlStyle: UIStyle.ControlStyle
+  decoration: UIStyle.Decoration
 ) {
-  let background = controlStyle.background;
+  let background = decoration.background;
   if (background !== undefined) result.background = UITheme.replaceColor(background);
-  let textColor = controlStyle.textColor;
+  let textColor = decoration.textColor;
   if (textColor !== undefined) result.color = UITheme.replaceColor(textColor);
-  let border = controlStyle.border;
+  let border = decoration.border;
   if (border !== undefined) result.border = UITheme.replaceColor(border);
-  let borderThickness = controlStyle.borderThickness;
+  let borderThickness = decoration.borderThickness;
   if (borderThickness !== undefined) {
     result.borderWidth = getCSSLength(borderThickness);
-    result.borderColor = UITheme.replaceColor(controlStyle.borderColor || "transparent");
-    result.borderStyle = controlStyle.borderStyle || "solid";
+    result.borderColor = UITheme.replaceColor(decoration.borderColor || "transparent");
+    result.borderStyle = decoration.borderStyle || "solid";
   }
 
-  let borderRadius = controlStyle.borderRadius;
+  let borderRadius = decoration.borderRadius;
   if (borderRadius !== undefined)
-    result.borderRadius = getCSSLength(controlStyle.borderRadius);
-  let padding = controlStyle.padding;
+    result.borderRadius = getCSSLength(decoration.borderRadius);
+  let padding = decoration.padding;
   if (padding !== undefined) result.padding = getCSSLength(padding);
-  if (controlStyle.dropShadow) result.boxShadow = getBoxShadowCSS(controlStyle.dropShadow);
-  if (controlStyle.opacity! >= 0) result.opacity = String(controlStyle.opacity);
-  if (controlStyle.css) {
+  if (decoration.dropShadow) result.boxShadow = getBoxShadowCSS(decoration.dropShadow);
+  if (decoration.opacity! >= 0) result.opacity = String(decoration.opacity);
+  if (decoration.css) {
     // copy all properties to result
-    for (let p in controlStyle.css) result[p] = controlStyle.css[p];
+    for (let p in decoration.css) result[p] = decoration.css[p];
   }
-  if (controlStyle.cssClassNames) {
-    result.className = controlStyle.cssClassNames.join(" ");
+  if (decoration.cssClassNames) {
+    result.className = decoration.cssClassNames.join(" ");
   }
 }
 
@@ -399,7 +400,7 @@ function getCSSText(style: any) {
     String(style[p])
       .split("||")
       .reverse()
-      .forEach(str => {
+      .forEach((str) => {
         result += key + ": " + str + "; ";
       });
   }
@@ -461,7 +462,7 @@ function _makeCSSUpdater() {
       }
     }
     elt.textContent =
-      allImports.map(s => "@import url(" + JSON.stringify(s) + ");\n") +
+      allImports.map((s) => "@import url(" + JSON.stringify(s) + ");\n") +
       ".UI { display: block }\n" +
       text;
   };
