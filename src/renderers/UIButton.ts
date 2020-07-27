@@ -39,7 +39,7 @@ class UIButtonRenderer extends RendererBase<
     }
 
     // handle direct clicks with `navigateTo` set
-    element.addEventListener("click", (e) => {
+    element.addEventListener("click", e => {
       if (this.component.navigateTo) {
         if (
           (e as MouseEvent).ctrlKey ||

@@ -173,16 +173,14 @@ function defineStyleClass(style: UIStyle) {
 
   // add CSS to global style element
   setGlobalCSS({
-    [".UI" + style.ids.map((id) => "." + id).join("")]: makeDeclaration(
-      style.getOwnStyles()
-    ),
+    [".UI" + style.ids.map(id => "." + id).join("")]: makeDeclaration(style.getOwnStyles()),
   } as any);
 
   // add CSS for conditional styles
   let setGlobalAddonStyle = (suffix: string, k: keyof UIStyle.ConditionalStyles) => {
     let conditional = style.conditionalStyles[k];
     if (!conditional) return;
-    let className = ".UI" + style.ids.map((id) => "." + id).join("") + suffix;
+    let className = ".UI" + style.ids.map(id => "." + id).join("") + suffix;
     setGlobalCSS({
       [className]: makeDeclaration(conditional.getStyles()),
     } as any);
@@ -400,7 +398,7 @@ function getCSSText(style: any) {
     String(style[p])
       .split("||")
       .reverse()
-      .forEach((str) => {
+      .forEach(str => {
         result += key + ": " + str + "; ";
       });
   }
@@ -462,7 +460,7 @@ function _makeCSSUpdater() {
       }
     }
     elt.textContent =
-      allImports.map((s) => "@import url(" + JSON.stringify(s) + ");\n") +
+      allImports.map(s => "@import url(" + JSON.stringify(s) + ");\n") +
       ".UI { display: block }\n" +
       text;
   };

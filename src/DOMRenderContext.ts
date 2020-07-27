@@ -321,7 +321,7 @@ export class DOMRenderContext extends UIRenderContext {
     }
     shader.addEventListener(
       "click",
-      (e) => {
+      e => {
         if (e.target === shader || e.target === wrapper) {
           e.stopPropagation();
           if (clickToClose && output.source instanceof UIComponent) {
@@ -335,7 +335,7 @@ export class DOMRenderContext extends UIRenderContext {
     );
     shader.addEventListener(
       "touchend",
-      (e) => {
+      e => {
         if (e.target === shader || e.target === wrapper) {
           e.stopPropagation();
           if (clickToClose && output.source instanceof UIComponent) {
@@ -348,7 +348,7 @@ export class DOMRenderContext extends UIRenderContext {
     );
     shader.addEventListener(
       "keydown",
-      (e) => {
+      e => {
         if (e.keyCode === 27) {
           e.stopPropagation();
           if (output.source instanceof UIComponent) {
