@@ -85,7 +85,7 @@ class UILabelRenderer extends RendererBase<UILabel, HTMLElement> {
     "shrinkwrap",
     "disabled",
     "textStyle",
-    "controlStyle",
+    "decoration",
     "dimensions",
     "position"
   )
@@ -114,34 +114,8 @@ export function setTextOrHtmlContent(element: HTMLElement, content: TextContentP
   contentWrapper.style.textOverflow = "inherit";
   try {
     // add icon element
-    let size = getCSSLength(content.iconSize, "1rem");
-    let color = content.iconColor ? UITheme.replaceColor(content.iconColor) : "";
-    let temp = document.createElement("div");
-    temp.innerHTML = UITheme.current.icons[content.icon] || content.icon;
-    let icon = temp.firstChild;
-    if (!icon) icon = document.createTextNode("");
-    if (String(icon.nodeName).toLowerCase() === "svg") {
-      let iconElement: HTMLElement = icon as HTMLElement;
-      if (iconElement.hasAttribute("stroke")) {
-        iconElement.style.stroke = color || "currentColor";
-      } else {
-        iconElement.style.fill = color || "currentColor";
-      }
-      iconElement.style.display = "inline-block";
-      iconElement.style.width = size;
-      iconElement.style.height = "auto";
-    } else {
-      let iconWrapper = document.createElement("icon");
-      iconWrapper.style.display = "inline-block";
-      iconWrapper.appendChild(icon);
-      icon = iconWrapper;
-      if (content.iconSize) iconWrapper.style.fontSize = size;
-      if (color) iconWrapper.style.color = color;
-    }
-    let iconSize = getCSSLength(content.iconSize, "1rem");
-    (icon as HTMLElement).style.flex = "0 0 " + iconSize;
-    (icon as HTMLElement).style.width = iconSize;
-    (icon as HTMLElement).style.order = content.iconAfter ? "2" : "0";
+    let icon = getIconElt(content);
+    icon.style.order = content.iconAfter ? "2" : "0";
     contentWrapper.appendChild(icon);
   } catch (err) {
     if (!_failedIconNotified[content.icon]) {
@@ -186,4 +160,45 @@ interface TextContentProperties {
   iconAfter?: boolean;
 }
 
-UILabel.observe(UILabelRenderer);
+const _memoizedIcons: { [memo: string]: HTMLElement } = {};
+
+/** Memoized function to create an icon element for given icon name/content, size, and color */
+function getIconElt(content: TextContentProperties) {
+  let size = getCSSLength(content.iconSize, "1rem");
+  let color = content.iconColor ? UITheme.replaceColor(content.iconColor) : "";
+  let memo = content.icon + ":" + size + ":" + color;
+  if (_memoizedIcons[memo]) {
+    return _memoizedIcons[memo].cloneNode(true) as HTMLElement;
+  }
+
+  // not memoized yet, get HTML content and create element
+  let temp = document.createElement("div");
+  temp.innerHTML = UITheme.current.icons[content.icon!] || content.icon!;
+  let result: HTMLElement;
+  let icon = temp.firstChild;
+  if (!icon) icon = document.createTextNode("");
+  if (String(icon.nodeName).toLowerCase() === "svg") {
+    result = icon as HTMLElement;
+    if (result.hasAttribute("stroke")) {
+      result.style.stroke = color || "currentColor";
+    } else {
+      result.style.fill = color || "currentColor";
+    }
+    result.style.display = "inline-block";
+    result.style.width = size;
+    result.style.height = "auto";
+  } else {
+    let iconWrapper = document.createElement("icon");
+    iconWrapper.style.display = "inline-block";
+    iconWrapper.appendChild(icon);
+    if (content.iconSize) iconWrapper.style.fontSize = size;
+    if (color) iconWrapper.style.color = color;
+    result = iconWrapper;
+  }
+  result.style.flex = "0 0 " + size;
+  result.style.width = size;
+  _memoizedIcons[memo] = result.cloneNode(true) as HTMLElement;
+  return result;
+}
+
+UILabel.addObserver(UILabelRenderer);

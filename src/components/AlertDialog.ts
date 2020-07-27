@@ -16,9 +16,10 @@ import {
   UIPrimaryButton,
   UISpacer,
   ViewComponent,
+  Stringable,
 } from "typescene";
 
-/** Simple modal message dialog UI component; emits `Confirm` and `CloseModal` events */
+/** Default modal message dialog UI component; emits `Confirm` and `CloseModal` events */
 export class AlertDialog extends ViewComponent.with(
   UICell.with(
     {
@@ -71,10 +72,14 @@ export class AlertDialog extends ViewComponent.with(
     )
   )
 ) {
-  static preset: ViewComponent.PresetFor<
-    AlertDialog,
-    "messages" | "title" | "confirmButtonLabel" | "cancelButtonLabel"
-  >;
+  static preset(presets: {
+    messages: string[];
+    title: Stringable;
+    confirmButtonLabel: Stringable;
+    cancelButtonLabel: Stringable;
+  }) {
+    return super.preset(presets);
+  }
 
   /** Message(s) to be displayed */
   get messages() {
@@ -86,19 +91,19 @@ export class AlertDialog extends ViewComponent.with(
     if (v) for (let s of v) labels.push(new UIParagraph(s));
     this.messageLabels = labels;
   }
-  private _messages?: string[];
+  private _messages?: Stringable[];
 
   /** Message labels (paragraphs) */
   messageLabels: UILabel[] = [];
 
   /** Dialog title */
-  title?: string;
+  title?: Stringable;
 
   /** Label for the confirmation button */
-  confirmButtonLabel = tt("Dismiss");
+  confirmButtonLabel: Stringable = tt("Dismiss");
 
   /** Label for the cancellation button; if none specified, only the confirmation button will be displayed */
-  cancelButtonLabel?: string;
+  cancelButtonLabel?: Stringable;
 }
 
 /** Default alert dialog builder, builds an `AlertDialog` constructor */

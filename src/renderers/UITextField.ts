@@ -91,7 +91,7 @@ class UITextFieldRenderer extends RendererBase<
     "style",
     "shrinkwrap",
     "textStyle",
-    "controlStyle",
+    "decoration",
     "dimensions",
     "position"
   )
@@ -101,4 +101,4 @@ class UITextFieldRenderer extends RendererBase<
   }
 }
 
-UITextField.observe(UITextFieldRenderer);
+UITextField.addObserver(UITextFieldRenderer);

@@ -1,5 +1,4 @@
 import {
-  observe,
   onPropertyChange,
   UICell,
   UIColumn,
@@ -11,6 +10,7 @@ import {
   UIRow,
   UIScrollContainer,
   UIScrollEvent,
+  UIStyle,
 } from "typescene";
 import { DOMRenderContext } from "../DOMRenderContext";
 import { applyElementCSS } from "../DOMStyle";
@@ -199,17 +199,12 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
     }
   }
 
-  /** Handle spacing/separator changes */
-  @onPropertyChange("spacing", "separator")
-  async updateSeparatorAsync() {
-    if (this.isRendered()) this._refreshUpdater(true);
-  }
-
   /** Handle style changes */
   @onPropertyChange(
     "hidden",
     "style",
     "layout",
+    "spacing",
     "dimensions",
     "position",
     "padding",
@@ -221,6 +216,18 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
   async updateStyleAsync() {
     let element = this.getElement();
     if (element) applyElementCSS(this.component, element);
+    let layout = this.component.layout;
+    let separator = layout.separator;
+    if (hasComponentSpacing(this.component)) {
+      let space = this.component.spacing;
+      if (this._separator && this._separator.space === space) return;
+      let vertical = this.component.layout && this.component.layout.axis === "horizontal";
+      if (space) separator = { space, vertical };
+    }
+    if (separator && this._separator !== separator) {
+      this._separator = separator;
+      this._refreshUpdater();
+    }
   }
 
   /** Handle scroll snapping */
@@ -234,7 +241,7 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
       let focusedRect: ClientRect | undefined;
       let cur = element.firstChild;
       while (cur) {
-        if ((cur as HTMLElement).getBoundingClientRect) {
+        if ((cur as any).getBoundingClientRect) {
           let r = (cur as HTMLElement).getBoundingClientRect();
           if (r.bottom > rect.top && r.top < rect.bottom) {
             if (cur === focused) focusedRect = r;
@@ -383,15 +390,14 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
   }
 
   /** Create a new updater with current component spacing/separator */
-  private _refreshUpdater(spacingOnly?: boolean) {
+  private _refreshUpdater() {
     let element = this.getElement();
     if (element) {
-      let separator = this.component.separator;
+      let separator = this._separator || this.component.layout.separator;
       if (!separator && hasComponentSpacing(this.component)) {
-        let spacing = (this._spacing = this.component.spacing);
-        if (spacingOnly && this._updater && spacing === this._spacing) return;
         let vertical = this.component.layout && this.component.layout.axis === "horizontal";
-        separator = { type: "spacer", thickness: spacing, vertical };
+        separator = { space: this.component.spacing!, vertical };
+        this._separator = separator;
       }
       if (this._updater) this._updater.stop();
       this._updater = new DOMContainerUpdater(element, separator);
@@ -406,12 +412,12 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
   }
 
   private _updater?: DOMContainerUpdater;
-  private _spacing?: any;
+  private _separator?: UIStyle.SeparatorOptions;
 }
 
 // make root containers draggable using the "DragContainer" event
-(UIContainer as typeof UIContainer & { new (): UIContainer }).handle({
-  DragContainer(e) {
+(UIContainer as typeof UIContainer & { new (): UIContainer }).addEventHandler(function (e) {
+  if (e.name === "DragContainer") {
     if (this.getParentComponent() instanceof UIComponent) return;
     let element: HTMLElement = this.lastRenderOutput && this.lastRenderOutput.element;
     if (!element || !(e instanceof UIComponentEvent)) return;
@@ -468,8 +474,8 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
     window.addEventListener("touchend", upHandler as any, true);
     window.addEventListener("mouseup", upHandler, true);
     window.addEventListener("click", upHandler, true);
-  },
+  }
 });
 
 // observe *all* containers (cast `UIContainer` because it is an abstract class)
-observe(UIContainer as any, UIContainerRenderer);
+(UIContainer as any).addObserver(UIContainerRenderer);

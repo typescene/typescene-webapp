@@ -105,7 +105,7 @@ class UIToggleRenderer extends RendererBase<UIToggle, HTMLElement> {
     "shrinkwrap",
     "disabled",
     "textStyle",
-    "controlStyle",
+    "decoration",
     "dimensions",
     "position",
     "hightlightColor"
@@ -123,4 +123,4 @@ class UIToggleRenderer extends RendererBase<UIToggle, HTMLElement> {
   }
 }
 
-UIToggle.observe(UIToggleRenderer);
+UIToggle.addObserver(UIToggleRenderer);
