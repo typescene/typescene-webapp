@@ -286,7 +286,7 @@ export function initializeCSS() {
       textDecoration: "none",
     },
     ".UI[hidden]": {
-      display: "none",
+      display: "none !important",
     },
 
     // add style for fixed root component
