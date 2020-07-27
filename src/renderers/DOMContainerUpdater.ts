@@ -332,7 +332,7 @@ export class DOMContainerUpdater {
       }
       cur = cur.nextSibling as any;
     }
-    hideTemp.forEach((f) => f());
+    hideTemp.forEach(f => f());
 
     // update transforms and prepare transition
     cur = this.element.firstChild as any;
@@ -391,7 +391,7 @@ export class DOMContainerUpdater {
     }, 0);
 
     // unhide temporarily hidden elements
-    unhideTemp.forEach((f) => f());
+    unhideTemp.forEach(f => f());
   }
 
   private _rendered?: boolean;

@@ -1,4 +1,4 @@
-import { Application, CHANGE, Component, ComponentConstructor } from "typescene";
+import { Component, ComponentConstructor } from "typescene";
 
 /** Encapsulates hot module reload (HMR) functions for a view module, which must export exactly one component constructor as `default` or `View` */
 export namespace HMR {
@@ -14,12 +14,7 @@ export namespace HMR {
         setTimeout(() => {
           ViewClass = ViewClass || viewModule.exports.default || viewModule.exports.View;
           if (ViewClass && ViewClass.prototype instanceof Component) {
-            // reset all view constructors, then trigger reactivation
             viewModule.hot.data.updateActivity(ViewClass);
-            Application.active.forEach(app => {
-              if (!app.renderContext) return;
-              app.renderContext.getAppComponents().forEach(c => c.emit(CHANGE));
-            });
           }
         }, 0);
       }

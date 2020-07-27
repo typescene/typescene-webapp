@@ -136,7 +136,7 @@ export class DropdownMenuBuilder extends UIMenuBuilder {
       position: { gravity: this._gravity },
       revealTransition: this._revealTransition,
       exitTransition: this._exitTransition,
-      content: [new UISpacer(8, 8), ...this._items.map((C) => new C()), new UISpacer(8, 8)],
+      content: [new UISpacer(8, 8), ...this._items.map(C => new C()), new UISpacer(8, 8)],
     });
   }
 
