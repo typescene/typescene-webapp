@@ -53,7 +53,7 @@ export class AlertDialog extends ViewComponent.with(
     UICell.with(
       { padding: 16 },
       UIColumn.with({
-        content: bind("messageLabels"),
+        content: bind("messageLabels", []),
       }),
       UISpacer.withHeight(24),
       UIOppositeRow.with(
@@ -94,7 +94,7 @@ export class AlertDialog extends ViewComponent.with(
   private _messages?: Stringable[];
 
   /** Message labels (paragraphs) */
-  messageLabels: UILabel[] = [];
+  messageLabels?: UILabel[];
 
   /** Dialog title */
   title?: Stringable;
