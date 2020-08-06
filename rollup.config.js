@@ -17,18 +17,4 @@ export default [
       }
     },
   },
-  {
-    input: ["dist/index.js", "node_modules/typescene/JSX/index.js"],
-    output: {
-      file: "umd/typescene-jsx.min.js",
-      format: "umd",
-      name: "typescene",
-    },
-    plugins: [multiEntry(), resolve(), terser()],
-    onwarn: warning => {
-      if (warning.code !== "CIRCULAR_DEPENDENCY") {
-        console.warn(`- ${warning.message}`);
-      }
-    },
-  },
 ];
