@@ -2,7 +2,7 @@ import {
   bind,
   ComponentPresetType,
   ConfirmationDialogBuilder,
-  tt,
+  strf,
   UIBorderlessButton,
   UICell,
   UICloseRow,
@@ -100,7 +100,7 @@ export class AlertDialog extends ViewComponent.with(
   title?: Stringable;
 
   /** Label for the confirmation button */
-  confirmButtonLabel: Stringable = tt("Dismiss");
+  confirmButtonLabel: Stringable = strf("Dismiss");
 
   /** Label for the cancellation button; if none specified, only the confirmation button will be displayed */
   cancelButtonLabel?: Stringable;
