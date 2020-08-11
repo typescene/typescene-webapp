@@ -222,11 +222,11 @@ function addContainerCSS(result: Partial<CSSStyleDeclaration>, container: UICont
       for (let p in container.css) result[p] = container.css[p];
     }
   } else if (container instanceof UIRow) {
-    if (container.height !== undefined) {
+    if (container.height !== undefined && !result.height) {
       result.height = getCSSLength(container.height);
     }
   } else if (container instanceof UIColumn) {
-    if (container.width !== undefined) {
+    if (container.width !== undefined && !result.width) {
       result.width = getCSSLength(container.width);
     }
   }
