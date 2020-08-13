@@ -97,19 +97,19 @@ export class AlertDialogBuilder extends ConfirmationDialogBuilder {
   build() {
     return AlertDialog.with(this._presets);
   }
-  setTitle(title: string) {
+  setTitle(title: Stringable) {
     this._presets.title = title;
     return this;
   }
-  setConfirmButtonLabel(label: string) {
+  setConfirmButtonLabel(label: Stringable) {
     this._presets.confirmButtonLabel = label;
     return this;
   }
-  setCancelButtonLabel(label: string) {
+  setCancelButtonLabel(label: Stringable) {
     this._presets.cancelButtonLabel = label;
     return this;
   }
-  addMessage(message: string) {
+  addMessage(message: Stringable) {
     this._presets.messages!.push(message);
     return this;
   }
