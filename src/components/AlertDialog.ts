@@ -6,7 +6,6 @@ import {
   UIBorderlessButton,
   UICell,
   UICloseRow,
-  UIColumn,
   UIExpandedLabel,
   UIFlowCell,
   UILabel,
@@ -17,11 +16,22 @@ import {
   UISpacer,
   ViewComponent,
   Stringable,
+  UICloseColumn,
 } from "typescene";
 
 /** Default modal message dialog UI component; emits `Confirm` and `CloseModal` events */
-export class AlertDialog extends ViewComponent.with(
-  UICell.with(
+export class AlertDialog extends ViewComponent.with({
+  defaults: () => ({
+    /** Messages to be displayed */
+    messages: [] as Stringable[],
+    /** Dialog title */
+    title: undefined as Stringable | undefined,
+    /** Label for the confirmation button */
+    confirmButtonLabel: strf("Dismiss") as Stringable,
+    /** Label for the cancellation button; if none specified, only the confirmation button will be displayed */
+    cancelButtonLabel: undefined as Stringable | undefined,
+  }),
+  view: UICell.with(
     {
       background: "@background",
       borderRadius: 4,
@@ -52,7 +62,7 @@ export class AlertDialog extends ViewComponent.with(
     ),
     UICell.with(
       { padding: 16 },
-      UIColumn.with({
+      UICloseColumn.with({
         content: bind("messageLabels", []),
       }),
       UISpacer.withHeight(24),
@@ -70,40 +80,16 @@ export class AlertDialog extends ViewComponent.with(
         })
       )
     )
-  )
-) {
-  static preset(presets: {
-    messages: string[];
-    title: Stringable;
-    confirmButtonLabel: Stringable;
-    cancelButtonLabel: Stringable;
-  }) {
-    return super.preset(presets);
-  }
-
-  /** Message(s) to be displayed */
-  get messages() {
-    return this._messages;
-  }
-  set messages(v) {
-    this._messages = v;
+  ),
+}) {
+  protected beforeRender() {
     let labels: UILabel[] = [];
-    if (v) for (let s of v) labels.push(new UIParagraph(s));
+    for (let s of this.messages!) labels.push(new UIParagraph(s));
     this.messageLabels = labels;
   }
-  private _messages?: Stringable[];
 
   /** Message labels (paragraphs) */
   messageLabels?: UILabel[];
-
-  /** Dialog title */
-  title?: Stringable;
-
-  /** Label for the confirmation button */
-  confirmButtonLabel: Stringable = strf("Dismiss");
-
-  /** Label for the cancellation button; if none specified, only the confirmation button will be displayed */
-  cancelButtonLabel?: Stringable;
 }
 
 /** Default alert dialog builder, builds an `AlertDialog` constructor */

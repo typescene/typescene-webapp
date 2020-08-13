@@ -6,6 +6,7 @@ import {
   UILabel,
   UIRenderEvent,
   UITheme,
+  UIColor,
 } from "typescene";
 import { applyElementCSS, getCSSLength } from "../DOMStyle";
 import { RendererBase } from "./RendererBase";
@@ -156,7 +157,7 @@ interface TextContentProperties {
   icon?: string;
   iconSize?: string | number;
   iconMargin?: string | number;
-  iconColor?: Stringable;
+  iconColor?: UIColor | string;
   iconAfter?: boolean;
 }
 

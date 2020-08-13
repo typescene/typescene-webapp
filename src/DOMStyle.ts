@@ -204,23 +204,8 @@ function defineStyleClass(style: UIStyle) {
 /** Helper to append CSS styles to given object for a given `UIContainer` instance */
 function addContainerCSS(result: Partial<CSSStyleDeclaration>, container: UIContainer) {
   if (container instanceof UICell) {
-    if (container.borderThickness) {
-      result.borderWidth = getCSSLength(container.borderThickness);
-      result.borderColor = UITheme.replaceColor(container.borderColor || "transparent");
-      result.borderStyle = String(container.borderStyle || "solid");
-    }
-    if (container.background)
-      result.background = UITheme.replaceColor(container.background);
-    if (container.textColor) result.color = UITheme.replaceColor(container.textColor);
-    if (container.borderRadius) result.borderRadius = getCSSLength(container.borderRadius);
-    if (container.padding) result.padding = getCSSLength(container.padding);
-    if (container.margin) result.margin = getCSSLength(container.margin);
-    if (container.dropShadow) result.boxShadow = getBoxShadowCSS(container.dropShadow);
-    if (container.opacity! >= 0) result.opacity = String(container.opacity);
-    if (container.css) {
-      // copy all properties to result
-      for (let p in container.css) result[p] = container.css[p];
-    }
+    addDecorationCSS(result, container);
+    if (container.margin !== undefined) result.margin = getCSSLength(container.margin);
   } else if (container instanceof UIRow) {
     if (container.height !== undefined && !result.height) {
       result.height = getCSSLength(container.height);
@@ -361,8 +346,6 @@ function addDecorationCSS(
   if (background !== undefined) result.background = UITheme.replaceColor(background);
   let textColor = decoration.textColor;
   if (textColor !== undefined) result.color = UITheme.replaceColor(textColor);
-  let border = decoration.border;
-  if (border !== undefined) result.border = UITheme.replaceColor(border);
   let borderThickness = decoration.borderThickness;
   if (borderThickness !== undefined) {
     result.borderWidth = getCSSLength(borderThickness);
