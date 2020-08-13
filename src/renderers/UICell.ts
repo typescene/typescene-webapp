@@ -7,6 +7,8 @@ class UICellRenderer {
   /** Handle additional cell style changes */
   @onPropertyChange(
     "css",
+    "decoration",
+    "margin",
     "background",
     "textColor",
     "borderThickness",
@@ -16,7 +18,7 @@ class UICellRenderer {
     "dropShadow",
     "opacity"
   )
-  async updateStyleAsync() {
+  updateStyleAsync() {
     if (this.component.lastRenderOutput) {
       applyElementCSS(this.component, this.component.lastRenderOutput.element);
     }

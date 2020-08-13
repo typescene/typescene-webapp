@@ -82,26 +82,32 @@ export function applyElementCSS(
   if (element.hidden) element.hidden = false;
 
   // set inline styles, if any
+  let styleInstance = component.style;
   let inline: Partial<CSSStyleDeclaration> & { className?: string } = {};
   let className = "UI";
-  if (UIStyle.isStyleOverride(component.dimensions)) {
+  if (UIStyle.isStyleOverride(component.dimensions, styleInstance)) {
     addDimensionsCSS(inline, component.dimensions);
   }
-  if (UIStyle.isStyleOverride(component.position)) {
+  if (UIStyle.isStyleOverride(component.position, styleInstance)) {
     addPositionCSS(inline, component.position);
   }
   if (component instanceof UIContainer) {
-    if (UIStyle.isStyleOverride(component.layout)) {
+    if (UIStyle.isStyleOverride(component.layout, styleInstance)) {
       addContainerLayoutCSS(inline, component.layout);
+    }
+    if (component instanceof UICell) {
+      if (UIStyle.isStyleOverride(component.decoration, styleInstance)) {
+        addDecorationCSS(inline, component.decoration);
+      }
     }
     addContainerCSS(inline, component);
   } else if (component instanceof UIControl) {
-    if (UIStyle.isStyleOverride(component.decoration)) {
+    if (UIStyle.isStyleOverride(component.decoration, styleInstance)) {
       addDecorationCSS(inline, component.decoration);
     } else if (component.decoration.cssClassNames) {
       inline.className = component.decoration.cssClassNames.join(" ");
     }
-    if (UIStyle.isStyleOverride(component.textStyle)) {
+    if (UIStyle.isStyleOverride(component.textStyle, styleInstance)) {
       addTextStyleCSS(inline, component.textStyle);
     }
     if (
@@ -119,7 +125,6 @@ export function applyElementCSS(
   }
 
   // set CSS classes for global style(s), if any
-  let styleInstance = component.style;
   if (!_cssDefined[styleInstance.id]) {
     defineStyleClass(styleInstance);
   }

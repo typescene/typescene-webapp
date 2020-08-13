@@ -217,7 +217,7 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
     "verticalScrollEnabled",
     "horizontalScrollEnabled"
   )
-  async updateStyleAsync() {
+  updateStyleAsync() {
     let element = this.getElement();
     if (element) applyElementCSS(this.component, element);
 

@@ -95,7 +95,7 @@ class UITextFieldRenderer extends RendererBase<
     "dimensions",
     "position"
   )
-  async updateStyleAsync() {
+  updateStyleAsync() {
     let element = this.getElement();
     if (element) applyElementCSS(this.component, element);
   }
