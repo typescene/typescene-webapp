@@ -243,7 +243,7 @@ export class DOMContainerUpdater {
         afterP.then(() => afterRender && afterRender(output)).catch(logUnhandledException);
       } else {
         DOMRenderContext.scheduleRender(() => {
-          if (this._stopped) return output;
+          if (this._stopped || !component.managedState) return output;
           if (lastOutput && lastOutput.element.parentNode === this.element) {
             // use placeholder for components that have no output
             if (!output || !output.element) {
