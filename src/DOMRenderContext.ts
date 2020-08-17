@@ -313,7 +313,6 @@ export class DOMRenderContext extends UIRenderContext {
   ) {
     // create shader that encapsulates the modal content
     let shader = document.createElement("div");
-    let clickToClose = !!output.modalShadeClickToClose;
     shader.className = "App__ModalShader";
     shader.tabIndex = 0;
     if (BrowserApplication.transitionsDisabled) {
@@ -324,7 +323,7 @@ export class DOMRenderContext extends UIRenderContext {
       e => {
         if (e.target === shader || e.target === wrapper) {
           e.stopPropagation();
-          if (clickToClose && output.source instanceof UIComponent) {
+          if (output.source instanceof UIComponent) {
             if (DOMRenderContext.$touchData.last < Date.now() - 1000) {
               output.source.propagateComponentEvent("CloseModal");
             }
@@ -338,7 +337,7 @@ export class DOMRenderContext extends UIRenderContext {
       e => {
         if (e.target === shader || e.target === wrapper) {
           e.stopPropagation();
-          if (clickToClose && output.source instanceof UIComponent) {
+          if (output.source instanceof UIComponent) {
             DOMRenderContext.$touchData.last = Date.now();
             output.source.propagateComponentEvent("CloseModal");
           }
@@ -421,7 +420,6 @@ export class DOMRenderContext extends UIRenderContext {
           }
         } else {
           this._addModalContent(wrapper, output);
-          clickToClose = !!output.modalShadeClickToClose;
         }
         return output;
       })
