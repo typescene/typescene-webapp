@@ -201,20 +201,10 @@ export class DOMContainerUpdater {
   /** Create a separator element */
   private _makeSeparator() {
     if (!this.separator) throw Error;
-    let margin = getCSSLength(this.separator.lineMargin, "");
     let result: HTMLElement;
-    if (this.separator.space) {
-      let thickness = getCSSLength(this.separator.space);
-      result = document.createElement("spacer");
-      result.className = "UIRender__Separator--spacer";
-      if (this.separator.vertical !== false) {
-        result.style.width = thickness;
-      }
-      if (!this.separator.vertical) {
-        result.style.height = thickness;
-      }
-    } else {
+    if (this.separator.lineThickness) {
       let thickness = getCSSLength(this.separator.lineThickness, "");
+      let margin = getCSSLength(this.separator.lineMargin, "");
       result = document.createElement("hr");
       result.className =
         "UIRender__Separator--line" +
@@ -226,6 +216,16 @@ export class DOMContainerUpdater {
           : margin + " 0"
         : "";
       result.style.borderColor = UITheme.replaceColor(this.separator.lineColor!);
+    } else {
+      let thickness = getCSSLength(this.separator.space, "0");
+      result = document.createElement("spacer");
+      result.className = "UIRender__Separator--spacer";
+      if (this.separator.vertical !== false) {
+        result.style.width = thickness;
+      }
+      if (!this.separator.vertical) {
+        result.style.height = thickness;
+      }
     }
     return result;
   }
@@ -243,7 +243,7 @@ export class DOMContainerUpdater {
         afterP.then(() => afterRender && afterRender(output)).catch(logUnhandledException);
       } else {
         DOMRenderContext.scheduleRender(() => {
-          if (this._stopped) return output;
+          if (this._stopped || !component.managedState) return output;
           if (lastOutput && lastOutput.element.parentNode === this.element) {
             // use placeholder for components that have no output
             if (!output || !output.element) {

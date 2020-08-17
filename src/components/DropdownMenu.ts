@@ -10,6 +10,7 @@ import {
   UISeparator,
   UISpacer,
   UIStyle,
+  Stringable,
 } from "typescene";
 
 /** Encapsulates a menu; items are mixed in by `DropdownMenuBuilder` */
@@ -46,9 +47,9 @@ export class DropdownMenuBuilder extends UIMenuBuilder {
 
   addOption(
     key: string,
-    text: string,
+    text: Stringable,
     icon?: string,
-    hint?: string,
+    hint?: Stringable,
     hintIcon?: string,
     textStyle: Partial<UIStyle.TextStyle> = DropdownMenuBuilder.labelStyleMixin,
     hintStyle: Partial<UIStyle.TextStyle> = DropdownMenuBuilder.hintStyleMixin
@@ -94,7 +95,7 @@ export class DropdownMenuBuilder extends UIMenuBuilder {
   }
 
   addSelectionGroup(
-    options: Array<{ key: string; text: string }>,
+    options: Array<{ key: string; text: Stringable }>,
     selectedKey?: string,
     textStyle?: Partial<UIStyle.TextStyle>
   ) {

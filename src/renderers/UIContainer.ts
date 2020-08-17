@@ -20,6 +20,9 @@ import { RendererBase } from "./RendererBase";
 /** Type for containers that have a `spacing` property */
 type UIContainerWithSpacing = UIRow | UIColumn;
 
+/** Cache for separator options based on spacing and directionality; note that there is a chance of a memory leak here if there are many different combinations in use, however in real apps this should never be the case so optimize for speed here */
+const _separators: { [spacingAndDir: string]: UIStyle.SeparatorOptions } = {};
+
 /** Helper function to determine if a container needs spacing between components */
 function hasComponentSpacing(container: UIContainer): container is UIContainerWithSpacing {
   return (
@@ -53,6 +56,7 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
   /** Called after rendering: add base event handlers */
   protected afterRender() {
     super.afterRender();
+    if (!this.component.managedState) return;
 
     // capture scroll events on scroll containers
     if (this.component instanceof UIScrollContainer) {
@@ -213,18 +217,21 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
     "verticalScrollEnabled",
     "horizontalScrollEnabled"
   )
-  async updateStyleAsync() {
+  updateStyleAsync() {
     let element = this.getElement();
     if (element) applyElementCSS(this.component, element);
-    let layout = this.component.layout;
-    let separator = layout.separator;
-    if (hasComponentSpacing(this.component)) {
-      let space = this.component.spacing;
-      if (this._separator && this._separator.space === space) return;
-      let vertical = this.component.layout && this.component.layout.axis === "horizontal";
-      if (space) separator = { space, vertical };
+
+    // check if need to refresh updater with different separator
+    let separator = this.component.layout.separator;
+    if (!separator && hasComponentSpacing(this.component)) {
+      let spacing = this.component.spacing;
+      let axis = this.component.layout.axis;
+      let id = spacing! + "|" + axis!;
+      separator =
+        _separators[id] ||
+        (_separators[id] = { space: spacing, vertical: axis === "horizontal" });
     }
-    if (separator && this._separator !== separator) {
+    if (this._separator !== separator) {
       this._separator = separator;
       this._refreshUpdater();
     }

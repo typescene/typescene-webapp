@@ -37,7 +37,7 @@ class UISeparatorRenderer extends RendererBase<UISeparator, HTMLElement> {
     "margin",
     "position"
   )
-  async updateStyleAsync() {
+  updateStyleAsync() {
     let element = this.getElement();
     if (element) {
       let addClass =

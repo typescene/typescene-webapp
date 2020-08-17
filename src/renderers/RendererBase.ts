@@ -101,7 +101,9 @@ export abstract class RendererBase<
 
   /** Method that is called asynchronously after every time the component is rendered, can be overridden */
   protected afterRender(_out?: DOMRenderOutput) {
-    this.component.emit(_renderedEvent);
+    if (this.component.managedState) {
+      this.component.emit(_renderedEvent);
+    }
     let elt = this._renderedElement;
     if (elt && elt.dataset.transitionT === "revealing") {
       setTimeout(() => {

@@ -18,7 +18,11 @@ class UIImageRenderer extends RendererBase<UIImage, HTMLImageElement> {
   protected createElement() {
     let element = document.createElement("img");
     element.onerror = e => {
-      this.component.emit(new UIComponentEvent("LoadError", this.component, undefined, e));
+      if (this.component.managedState) {
+        this.component.emit(
+          new UIComponentEvent("LoadError", this.component, undefined, e)
+        );
+      }
     };
     if (this.component.isKeyboardFocusable()) element.tabIndex = 0;
     else if (this.component.isFocusable()) element.tabIndex = -1;
@@ -54,7 +58,7 @@ class UIImageRenderer extends RendererBase<UIImage, HTMLImageElement> {
     "dimensions",
     "position"
   )
-  async updateStyleAsync() {
+  updateStyleAsync() {
     let element = this.getElement();
     if (element) applyElementCSS(this.component, element);
   }
