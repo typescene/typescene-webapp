@@ -33,7 +33,7 @@
     "watch": "tsc -p src -w"
   },
   "dependencies": {
-    "typescene": "3.0.0-beta3",
+    "typescene": "3.0.0-beta4",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
