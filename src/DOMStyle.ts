@@ -363,7 +363,8 @@ function addDecorationCSS(
     result.borderRadius = getCSSLength(decoration.borderRadius);
   let padding = decoration.padding;
   if (padding !== undefined) result.padding = getCSSLength(padding);
-  if (decoration.dropShadow) result.boxShadow = getBoxShadowCSS(decoration.dropShadow);
+  if (decoration.dropShadow !== undefined)
+    result.boxShadow = getBoxShadowCSS(decoration.dropShadow);
   if (decoration.opacity! >= 0) result.opacity = String(decoration.opacity);
   if (decoration.css) {
     // copy all properties to result
