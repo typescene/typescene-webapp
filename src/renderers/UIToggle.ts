@@ -105,7 +105,7 @@ class UIToggleRenderer extends RendererBase<UIToggle, HTMLElement> {
     "position",
     "hightlightColor"
   )
-  async updateStyleAsync() {
+  updateStyleAsync() {
     let element = this.getElement();
     if (element) {
       applyElementCSS(this.component, element);

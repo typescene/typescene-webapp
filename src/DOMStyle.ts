@@ -82,26 +82,32 @@ export function applyElementCSS(
   if (element.hidden) element.hidden = false;
 
   // set inline styles, if any
+  let styleInstance = component.style;
   let inline: Partial<CSSStyleDeclaration> & { className?: string } = {};
   let className = "UI";
-  if (UIStyle.isStyleOverride(component.dimensions)) {
+  if (UIStyle.isStyleOverride(component.dimensions, styleInstance)) {
     addDimensionsCSS(inline, component.dimensions);
   }
-  if (UIStyle.isStyleOverride(component.position)) {
+  if (UIStyle.isStyleOverride(component.position, styleInstance)) {
     addPositionCSS(inline, component.position);
   }
   if (component instanceof UIContainer) {
-    if (UIStyle.isStyleOverride(component.layout)) {
+    if (UIStyle.isStyleOverride(component.layout, styleInstance)) {
       addContainerLayoutCSS(inline, component.layout);
+    }
+    if (component instanceof UICell) {
+      if (UIStyle.isStyleOverride(component.decoration, styleInstance)) {
+        addDecorationCSS(inline, component.decoration);
+      }
     }
     addContainerCSS(inline, component);
   } else if (component instanceof UIControl) {
-    if (UIStyle.isStyleOverride(component.decoration)) {
+    if (UIStyle.isStyleOverride(component.decoration, styleInstance)) {
       addDecorationCSS(inline, component.decoration);
     } else if (component.decoration.cssClassNames) {
       inline.className = component.decoration.cssClassNames.join(" ");
     }
-    if (UIStyle.isStyleOverride(component.textStyle)) {
+    if (UIStyle.isStyleOverride(component.textStyle, styleInstance)) {
       addTextStyleCSS(inline, component.textStyle);
     }
     if (
@@ -119,7 +125,6 @@ export function applyElementCSS(
   }
 
   // set CSS classes for global style(s), if any
-  let styleInstance = component.style;
   if (!_cssDefined[styleInstance.id]) {
     defineStyleClass(styleInstance);
   }
@@ -204,29 +209,14 @@ function defineStyleClass(style: UIStyle) {
 /** Helper to append CSS styles to given object for a given `UIContainer` instance */
 function addContainerCSS(result: Partial<CSSStyleDeclaration>, container: UIContainer) {
   if (container instanceof UICell) {
-    if (container.borderThickness) {
-      result.borderWidth = getCSSLength(container.borderThickness);
-      result.borderColor = UITheme.replaceColor(container.borderColor || "transparent");
-      result.borderStyle = String(container.borderStyle || "solid");
-    }
-    if (container.background)
-      result.background = UITheme.replaceColor(container.background);
-    if (container.textColor) result.color = UITheme.replaceColor(container.textColor);
-    if (container.borderRadius) result.borderRadius = getCSSLength(container.borderRadius);
-    if (container.padding) result.padding = getCSSLength(container.padding);
-    if (container.margin) result.margin = getCSSLength(container.margin);
-    if (container.dropShadow) result.boxShadow = getBoxShadowCSS(container.dropShadow);
-    if (container.opacity! >= 0) result.opacity = String(container.opacity);
-    if (container.css) {
-      // copy all properties to result
-      for (let p in container.css) result[p] = container.css[p];
-    }
+    addDecorationCSS(result, container);
+    if (container.margin !== undefined) result.margin = getCSSLength(container.margin);
   } else if (container instanceof UIRow) {
-    if (container.height !== undefined) {
+    if (container.height !== undefined && !result.height) {
       result.height = getCSSLength(container.height);
     }
   } else if (container instanceof UIColumn) {
-    if (container.width !== undefined) {
+    if (container.width !== undefined && !result.width) {
       result.width = getCSSLength(container.width);
     }
   }
@@ -361,8 +351,6 @@ function addDecorationCSS(
   if (background !== undefined) result.background = UITheme.replaceColor(background);
   let textColor = decoration.textColor;
   if (textColor !== undefined) result.color = UITheme.replaceColor(textColor);
-  let border = decoration.border;
-  if (border !== undefined) result.border = UITheme.replaceColor(border);
   let borderThickness = decoration.borderThickness;
   if (borderThickness !== undefined) {
     result.borderWidth = getCSSLength(borderThickness);
@@ -375,7 +363,8 @@ function addDecorationCSS(
     result.borderRadius = getCSSLength(decoration.borderRadius);
   let padding = decoration.padding;
   if (padding !== undefined) result.padding = getCSSLength(padding);
-  if (decoration.dropShadow) result.boxShadow = getBoxShadowCSS(decoration.dropShadow);
+  if (decoration.dropShadow !== undefined)
+    result.boxShadow = getBoxShadowCSS(decoration.dropShadow);
   if (decoration.opacity! >= 0) result.opacity = String(decoration.opacity);
   if (decoration.css) {
     // copy all properties to result
