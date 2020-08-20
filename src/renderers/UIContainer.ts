@@ -121,8 +121,8 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
   /** Handle render event */
   onUIRender(e: UIRenderEvent<UIContainer>) {
     this.handleRenderEvent(e);
+    this._separator = this._getSeparator();
     this._refreshUpdater();
-    this._updater!.update(this.component.content);
   }
 
   /** Handle focus requests */
@@ -222,15 +222,7 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
     if (element) applyElementCSS(this.component, element);
 
     // check if need to refresh updater with different separator
-    let separator = this.component.layout.separator;
-    if (!separator && hasComponentSpacing(this.component)) {
-      let spacing = this.component.spacing;
-      let axis = this.component.layout.axis;
-      let id = spacing! + "|" + axis!;
-      separator =
-        _separators[id] ||
-        (_separators[id] = { space: spacing, vertical: axis === "horizontal" });
-    }
+    let separator = this._getSeparator();
     if (this._separator !== separator) {
       this._separator = separator;
       this._refreshUpdater();
@@ -396,18 +388,12 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
     if (element) delete element.dataset.selected;
   }
 
-  /** Create a new updater with current component spacing/separator */
+  /** Create a new updater and update its contents */
   private _refreshUpdater() {
     let element = this.getElement();
     if (element) {
-      let separator = this._separator || this.component.layout.separator;
-      if (!separator && hasComponentSpacing(this.component)) {
-        let vertical = this.component.layout && this.component.layout.axis === "horizontal";
-        separator = { space: this.component.spacing!, vertical };
-        this._separator = separator;
-      }
       if (this._updater) this._updater.stop();
-      this._updater = new DOMContainerUpdater(element, separator);
+      this._updater = new DOMContainerUpdater(element, this._separator);
       if (this.component.asyncContentRendering) this._updater.setAsyncCreate(true);
       if (this.component.animatedContentRenderingDuration! >= 0) {
         this._updater.setAnimationTimeMs(this.component.animatedContentRenderingDuration!);
@@ -415,7 +401,22 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
       if (this.component.animatedContentRenderingVelocity! >= 0) {
         this._updater.setAnimationSpeed(this.component.animatedContentRenderingVelocity!);
       }
+      this._updater!.update(this.component.content);
     }
+  }
+
+  /** Create or reuse a separator object for the current component */
+  private _getSeparator() {
+    let separator = this.component.layout.separator;
+    if (!separator && hasComponentSpacing(this.component)) {
+      let spacing = this.component.spacing;
+      let axis = this.component.layout.axis;
+      let id = spacing! + "|" + axis!;
+      separator =
+        _separators[id] ||
+        (_separators[id] = { space: spacing, vertical: axis === "horizontal" });
+    }
+    return separator;
   }
 
   private _updater?: DOMContainerUpdater;
