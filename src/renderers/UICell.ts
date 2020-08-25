@@ -18,11 +18,17 @@ class UICellRenderer {
     "dropShadow",
     "opacity"
   )
-  updateStyleAsync() {
-    if (this.component.lastRenderOutput) {
-      applyElementCSS(this.component, this.component.lastRenderOutput.element);
-    }
+  updateStyle() {
+    if (this._sched) return;
+    let elt = this.component.lastRenderOutput?.element;
+    if (!elt) return;
+    this._sched = true;
+    Promise.resolve().then(() => {
+      this._sched = false;
+      applyElementCSS(this.component, elt);
+    });
   }
+  private _sched?: boolean;
 }
 
 UICell.addObserver(UICellRenderer);

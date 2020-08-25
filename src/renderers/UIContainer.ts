@@ -217,9 +217,8 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
     "verticalScrollEnabled",
     "horizontalScrollEnabled"
   )
-  updateStyleAsync() {
-    let element = this.getElement();
-    if (element) applyElementCSS(this.component, element);
+  updateStyle() {
+    this.scheduleStyleUpdate();
 
     // check if need to refresh updater with different separator
     let separator = this._getSeparator();
@@ -407,6 +406,7 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
 
   /** Create or reuse a separator object for the current component */
   private _getSeparator() {
+    if (!this.component.layout) return;
     let separator = this.component.layout.separator;
     if (!separator && hasComponentSpacing(this.component)) {
       let spacing = this.component.spacing;

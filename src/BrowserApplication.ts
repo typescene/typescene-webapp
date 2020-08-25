@@ -1,7 +1,12 @@
 import { AppActivationContext, Application, UITheme } from "typescene";
 import { BrowserTheme, initializeCSS } from "./BrowserTheme";
 import { DOMRenderContext } from "./DOMRenderContext";
-import { DP_PER_REM, importStylesheet, setGlobalCSS } from "./DOMStyle";
+import {
+  DP_PER_REM,
+  importStylesheet,
+  setGlobalCSS,
+  clearGlobalCSSState,
+} from "./DOMStyle";
 import "./renderers";
 
 let _transitionsDisabled = false;
@@ -98,6 +103,14 @@ export class BrowserApplication extends Application {
   private _root?: HTMLElement;
   private _useHistoryAPI?: boolean;
 }
+BrowserApplication.addObserver(
+  class {
+    onRenderContextChange() {
+      // when render context changes, make sure all CSS classes are redefined
+      clearGlobalCSSState();
+    }
+  }
+);
 
 /** Activation context that is used by the `BrowserApplication` type, which takes the target path from the browser window location 'hash' (e.g. `...#/foo/bar`) */
 export class BrowserHashActivationContext extends AppActivationContext {
