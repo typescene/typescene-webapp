@@ -1,13 +1,9 @@
 {
   "name": "@typescene/webapp",
-  "version": "0.0.0",
-  "private": true,
+  "version": "3.0.0",
   "description": "Typescene framework",
   "author": "Jelmer Cormont",
   "license": "MIT",
-  "publishConfig": {
-    "tag": "next"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/typescene/typescene-webapp.git"
@@ -34,7 +30,7 @@
     "watch": "tsc -p src -w"
   },
   "dependencies": {
-    "typescene": "3.0.0-beta1",
+    "typescene": "3.0.0",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
