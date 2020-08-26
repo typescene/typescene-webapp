@@ -1,6 +1,6 @@
 import {
   bind,
-  ComponentPresetType,
+  ComponentConstructor,
   ConfirmationDialogBuilder,
   strf,
   UIBorderlessButton,
@@ -113,7 +113,9 @@ export class AlertDialogBuilder extends ConfirmationDialogBuilder {
     this._presets.messages!.push(message);
     return this;
   }
-  private readonly _presets: Partial<ComponentPresetType<typeof AlertDialog>> = {
+  private readonly _presets: Partial<
+    ComponentConstructor.PresetType<typeof AlertDialog>
+  > = {
     messages: [],
   };
 }
