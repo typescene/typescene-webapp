@@ -53,6 +53,11 @@ export function importStylesheet(url: string) {
   setGlobalCSS({});
 }
 
+/** @internal Forget state of all styles that have already been defined, so that they will be redefined on next use */
+export function clearGlobalCSSState() {
+  _cssDefined = {};
+}
+
 /** @internal Replace given CSS styles in the global root style sheet */
 export function setGlobalCSS(css: {
   [spec: string]: Partial<CSSStyleDeclaration> | { [spec: string]: any };
@@ -118,6 +123,10 @@ export function applyElementCSS(
     }
     if (component instanceof UISeparator) {
       inline.borderWidth = getCSSLength(component.thickness);
+      if (component.margin) {
+        let margin = getCSSLength(component.margin);
+        inline.margin = component.vertical ? "0 " + margin : margin + " 0";
+      }
       if (component.color) {
         inline.borderColor = UITheme.replaceColor(component.color);
       }

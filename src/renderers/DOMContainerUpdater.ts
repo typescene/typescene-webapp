@@ -20,10 +20,7 @@ let _animatedElementId = 16;
 export class DOMContainerUpdater {
   constructor(element: HTMLElement, separator?: UIStyle.SeparatorOptions) {
     this.element = element;
-    if (separator) {
-      this.separator = { ...separator };
-      if (!this.separator.lineColor) this.separator.lineColor = "@separator";
-    }
+    if (separator) this.separator = { ...separator };
   }
 
   /** Set flag to add components synchronously or asynchronously */
@@ -215,7 +212,9 @@ export class DOMContainerUpdater {
           ? "0 " + margin
           : margin + " 0"
         : "";
-      result.style.borderColor = UITheme.replaceColor(this.separator.lineColor!);
+      result.style.borderColor = UITheme.replaceColor(
+        this.separator.lineColor || "@separator"
+      );
     } else {
       let thickness = getCSSLength(this.separator.space, "0");
       result = document.createElement("spacer");

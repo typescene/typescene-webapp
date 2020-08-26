@@ -90,9 +90,8 @@ class UILabelRenderer extends RendererBase<UILabel, HTMLElement> {
     "dimensions",
     "position"
   )
-  updateStyleAsync() {
-    let element = this.getElement();
-    if (element) applyElementCSS(this.component, element);
+  updateStyle() {
+    this.scheduleStyleUpdate();
   }
 }
 

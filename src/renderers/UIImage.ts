@@ -58,9 +58,8 @@ class UIImageRenderer extends RendererBase<UIImage, HTMLImageElement> {
     "dimensions",
     "position"
   )
-  updateStyleAsync() {
-    let element = this.getElement();
-    if (element) applyElementCSS(this.component, element);
+  updateStyle() {
+    this.scheduleStyleUpdate();
   }
 }
 

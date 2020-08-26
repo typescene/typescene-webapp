@@ -37,18 +37,11 @@ class UISeparatorRenderer extends RendererBase<UISeparator, HTMLElement> {
     "margin",
     "position"
   )
-  updateStyleAsync() {
-    let element = this.getElement();
-    if (element) {
-      let addClass =
-        "UIRender__Separator--line" +
-        (this.component.vertical ? " UIRender__Separator--line-vertical" : "");
-      applyElementCSS(this.component, element, false, addClass);
-      if (this.component.margin) {
-        let margin = getCSSLength(this.component.margin);
-        element.style.margin = this.component.vertical ? "0 " + margin : margin + " 0";
-      }
-    }
+  updateStyle() {
+    this.scheduleStyleUpdate(
+      "UIRender__Separator--line" +
+        (this.component.vertical ? " UIRender__Separator--line-vertical" : "")
+    );
   }
 }
 

@@ -102,18 +102,18 @@ class UIToggleRenderer extends RendererBase<UIToggle, HTMLElement> {
     "textStyle",
     "decoration",
     "dimensions",
-    "position",
-    "hightlightColor"
+    "position"
   )
-  updateStyleAsync() {
+  updateStyle() {
+    this.scheduleStyleUpdate();
+  }
+
+  onHighlightColorChangeAsync() {
     let element = this.getElement();
     if (element) {
-      applyElementCSS(this.component, element);
       let customcontrol: HTMLElement = element.firstChild!.nextSibling as any;
-      if (this.component.highlightColor) {
-        let background = UITheme.replaceColor(this.component.highlightColor);
-        customcontrol.style.background = background;
-      }
+      let background = UITheme.replaceColor(this.component.highlightColor || "transparent");
+      customcontrol.style.background = background;
     }
   }
 }

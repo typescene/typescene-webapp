@@ -14,6 +14,7 @@ import {
   DOMRenderOutput,
   RENDER_PROP_ID,
 } from "../DOMRenderContext";
+import { applyElementCSS } from "../DOMStyle";
 
 /** `Rendered` event that is emitted on all rendered components */
 const _renderedEvent = new ManagedEvent("Rendered").freeze();
@@ -271,6 +272,21 @@ export abstract class RendererBase<
       );
     }
   }
+
+  /** Update CSS styles asynchronously, if an element has already been rendered */
+  protected scheduleStyleUpdate(addClass?: string) {
+    this._addClass = addClass;
+    if (!this._renderedElement || this._sched) return;
+    this._sched = true;
+    Promise.resolve().then(() => {
+      this._sched = false;
+      if (this._renderedElement) {
+        applyElementCSS(this.component, this._renderedElement, false, this._addClass);
+      }
+    });
+  }
+  private _sched?: boolean;
+  private _addClass?: string;
 
   /** Returns the last rendered element, if any */
   protected getElement() {

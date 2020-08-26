@@ -134,9 +134,8 @@ class UIButtonRenderer extends RendererBase<
     "dimensions",
     "position"
   )
-  updateStyleAsync() {
-    let element = this.getElement();
-    if (element) applyElementCSS(this.component, element);
+  updateStyle() {
+    this.scheduleStyleUpdate();
   }
 }
 
