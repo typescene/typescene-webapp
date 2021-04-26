@@ -1,4 +1,4 @@
-import { UIStyle, UITheme } from "typescene";
+import { UITheme } from "typescene";
 import { AlertDialogBuilder } from "./components/AlertDialog";
 import { DropdownMenuBuilder } from "./components/DropdownMenu";
 import { getCSSLength, setGlobalCSS } from "./DOMStyle";
@@ -181,6 +181,9 @@ export class BrowserTheme extends UITheme {
         padding: 8,
         css: { cursor: "text" },
       },
+      textStyle: {
+        lineBreakMode: "pre-wrap",
+      },
     });
     this.setStyle("textfield_borderless", {
       decoration: {
@@ -271,8 +274,15 @@ export class BrowserTheme extends UITheme {
   }
 }
 
-/** @internal Add primary global CSS classes */
-export function initializeCSS() {
+/** Initialize global theme */
+function initializeTheme() {
+  let theme = new BrowserTheme();
+  UITheme.current = theme;
+  theme.setFocusOutline();
+}
+
+/** Add primary global CSS classes */
+function initializeCSS() {
   setGlobalCSS({
     // add UI component base styles
     ".UI": {
@@ -452,3 +462,7 @@ function addTransition(
     },
   });
 }
+
+// apply global styles immediately
+initializeCSS();
+initializeTheme();

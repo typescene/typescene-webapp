@@ -2,6 +2,7 @@ import {
   ManagedEvent,
   UICell,
   UIComponent,
+  UIComponentEvent,
   UIFocusRequestEvent,
   UIFocusRequestType,
   UIRenderContext,
@@ -126,7 +127,7 @@ export abstract class RendererBase<
 
     // find event name and propagate event to component itself
     let uiEventName = name || domEventToUIEventName(e);
-    this.component && this.component.propagateComponentEvent(uiEventName, undefined, e);
+    this._emitUIEvent(uiEventName, e);
 
     // set time of last touch event, and watch for moves
     if (uiEventName === "TouchStart") {
@@ -142,15 +143,15 @@ export abstract class RendererBase<
           })
         );
       }
-      this.component && this.component.propagateComponentEvent("MouseDown", undefined, e);
+      this._emitUIEvent("MouseDown", e);
     }
 
     // simulate mouse up and click on touch (if not moved)
     if (uiEventName === "TouchEnd") {
       DOMRenderContext.$touchData.last = Date.now();
       if (_lastTouched === this) {
-        this.component && this.component.propagateComponentEvent("MouseUp", undefined, e);
-        this.component && this.component.propagateComponentEvent("Click", undefined, e);
+        this._emitUIEvent("MouseUp", e);
+        this._emitUIEvent("Click", e);
       }
     }
 
@@ -173,11 +174,17 @@ export abstract class RendererBase<
       }
       if (!ignore && keyName) {
         setTimeout(() => {
-          this.component.propagateComponentEvent(keyName + "Press", undefined, e);
+          this._emitUIEvent(keyName + "Press", e);
         }, 0);
       }
     }
     e.stopPropagation();
+  }
+
+  private _emitUIEvent(name: string, e: Event) {
+    if (this.component && this.component.managedState) {
+      this.component.emit(UIComponentEvent, name, this.component, undefined, e);
+    }
   }
 
   /** Handle given render event by creating an element using the (overridden) `createElement` method if necessary, and storing the last render callback to enable the `updateElement` method */

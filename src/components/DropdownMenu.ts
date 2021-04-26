@@ -57,7 +57,7 @@ export class DropdownMenuBuilder extends UIMenuBuilder {
     function onClick(this: UIComponent) {
       let menu = this.getParentComponent(DropdownMenu);
       if (menu) menu.emitMenuItemSelectedEvent(key);
-      this.propagateComponentEvent("CloseModal");
+      this.emitAction("CloseModal");
     }
     this._items.push(
       UICell.with(

@@ -34,7 +34,7 @@
     "watch": "tsc -p src -w"
   },
   "dependencies": {
-    "typescene": "^3.0.0",
+    "typescene": "file:../typescene",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
