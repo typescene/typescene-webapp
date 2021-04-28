@@ -320,6 +320,7 @@ function initializeCSS() {
       left: "0",
       bottom: "0",
       right: "0",
+      outline: "0",
       overflow: "auto",
       display: "flex",
       flexDirection: "column",
