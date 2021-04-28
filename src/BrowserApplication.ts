@@ -1,5 +1,4 @@
-import { AppActivationContext, Application, UITheme } from "typescene";
-import { BrowserTheme, initializeCSS } from "./BrowserTheme";
+import { AppActivationContext, Application } from "typescene";
 import { DOMRenderContext } from "./DOMRenderContext";
 import {
   DP_PER_REM,
@@ -7,14 +6,8 @@ import {
   setGlobalCSS,
   clearGlobalCSSState,
 } from "./DOMStyle";
-import "./renderers";
 
 let _transitionsDisabled = false;
-
-// apply global styles immediately
-initializeCSS();
-let _theme = (UITheme.current = new BrowserTheme());
-_theme.setFocusOutline();
 
 /** Represents an application that runs in a browser using the available DOM APIs. Automatically creates a renderer that renders all UI components in the browser. */
 export class BrowserApplication extends Application {

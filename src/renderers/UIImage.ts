@@ -19,9 +19,7 @@ class UIImageRenderer extends RendererBase<UIImage, HTMLImageElement> {
     let element = document.createElement("img");
     element.onerror = e => {
       if (this.component.managedState) {
-        this.component.emit(
-          new UIComponentEvent("LoadError", this.component, undefined, e)
-        );
+        this.component.emit(UIComponentEvent, "LoadError", this.component, undefined, e);
       }
     };
     if (this.component.isKeyboardFocusable()) element.tabIndex = 0;

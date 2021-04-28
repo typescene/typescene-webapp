@@ -7,6 +7,7 @@ import {
   UIRenderPlacement,
   UITheme,
 } from "typescene";
+import { UIComponentEvent } from "typescene/dist";
 import { BrowserApplication } from "./BrowserApplication";
 
 /** @internal Unique ID that is used as a property name for renderer instances on DOM elements */
@@ -325,7 +326,7 @@ export class DOMRenderContext extends UIRenderContext {
           e.stopPropagation();
           if (output.source instanceof UIComponent) {
             if (DOMRenderContext.$touchData.last < Date.now() - 1000) {
-              output.source.propagateComponentEvent("CloseModal");
+              output.source.emitAction("CloseModal");
             }
           }
         }
@@ -339,7 +340,7 @@ export class DOMRenderContext extends UIRenderContext {
           e.stopPropagation();
           if (output.source instanceof UIComponent) {
             DOMRenderContext.$touchData.last = Date.now();
-            output.source.propagateComponentEvent("CloseModal");
+            output.source.emitAction("CloseModal");
           }
         }
       },
@@ -351,18 +352,48 @@ export class DOMRenderContext extends UIRenderContext {
         if (e.keyCode === 27) {
           e.stopPropagation();
           if (output.source instanceof UIComponent) {
-            output.source.propagateComponentEvent("EscapeKeyPress", undefined, e);
-            output.source.propagateComponentEvent("CloseModal");
+            output.source.emit(
+              UIComponentEvent,
+              "EscapeKeyPress",
+              output.source,
+              undefined,
+              e
+            );
+            output.source.emitAction("CloseModal");
           }
         } else if (output.source instanceof UIComponent) {
           if (e.keyCode === 37) {
-            output.source.propagateComponentEvent("ArrowLeftKeyPress", undefined, e);
+            output.source.emit(
+              UIComponentEvent,
+              "ArrowLeftKeyPress",
+              output.source,
+              undefined,
+              e
+            );
           } else if (e.keyCode === 38) {
-            output.source.propagateComponentEvent("ArrowUpKeyPress", undefined, e);
+            output.source.emit(
+              UIComponentEvent,
+              "ArrowUpKeyPress",
+              output.source,
+              undefined,
+              e
+            );
           } else if (e.keyCode === 39) {
-            output.source.propagateComponentEvent("ArrowRightKeyPress", undefined, e);
+            output.source.emit(
+              UIComponentEvent,
+              "ArrowRightKeyPress",
+              output.source,
+              undefined,
+              e
+            );
           } else if (e.keyCode === 40) {
-            output.source.propagateComponentEvent("ArrowDownKeyPress", undefined, e);
+            output.source.emit(
+              UIComponentEvent,
+              "ArrowDownKeyPress",
+              output.source,
+              undefined,
+              e
+            );
           }
         }
       },
