@@ -1,4 +1,5 @@
 dist/
+dist-*/
 umd/
 node_modules/
 *.log

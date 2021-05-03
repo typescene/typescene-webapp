@@ -2,12 +2,12 @@ import {
   AppActivity,
   logUnhandledException,
   UIComponent,
+  UIComponentEvent,
   UIRenderable,
   UIRenderContext,
   UIRenderPlacement,
   UITheme,
 } from "typescene";
-import { UIComponentEvent } from "typescene/dist";
 import { BrowserApplication } from "./BrowserApplication";
 
 /** @internal Unique ID that is used as a property name for renderer instances on DOM elements */
