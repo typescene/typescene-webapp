@@ -415,6 +415,14 @@ function initializeCSS() {
       borderBottom: ".125rem solid #fff",
       borderRight: ".125rem solid #fff",
     },
+
+    // fix alignment of text withing <a> button
+    "a.UI": {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+    },
   });
 
   // add all predefined transitions:
