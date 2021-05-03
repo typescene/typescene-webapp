@@ -123,7 +123,7 @@ export class DOMRenderContext extends UIRenderContext {
     if (lowPriority && !_pendingNextRender) _pendingNextRender = [];
     if (!_pendingRender) {
       _pendingRender = [];
-      const f = () => {
+      const f: Function = () => {
         // record start time and keep going until time runs out
         let t = Date.now();
         while ((_pendingRender && _pendingRender.length) || _pendingNextRender) {
@@ -149,7 +149,12 @@ export class DOMRenderContext extends UIRenderContext {
       };
       const reschedule = () => {
         if (typeof window.requestAnimationFrame === "function") {
-          window.requestAnimationFrame(f);
+          let fired = 0;
+          const fire = () => {
+            fired || f((fired = 1));
+          };
+          window.requestAnimationFrame(fire);
+          setTimeout(fire, 200);
         } else {
           setTimeout(f, 10);
         }

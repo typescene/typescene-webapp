@@ -6,8 +6,12 @@ import {
   setGlobalCSS,
   clearGlobalCSSState,
 } from "./DOMStyle";
+import { autoUpdateHandler } from "./HMR";
 
 let _transitionsDisabled = false;
+
+// Use HMR as auto-update mechanism
+Application.setAutoUpdateHandler(autoUpdateHandler);
 
 /** Represents an application that runs in a browser using the available DOM APIs. Automatically creates a renderer that renders all UI components in the browser. */
 export class BrowserApplication extends Application {
