@@ -416,11 +416,10 @@ function initializeCSS() {
       borderRight: ".125rem solid #fff",
     },
 
-    // fix alignment of text withing <a> button
+    // fix vertical alignment of text within <a> button
     "a.UI": {
       display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: "column",
       justifyContent: "center",
     },
   });
