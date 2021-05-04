@@ -361,11 +361,11 @@ function addDecorationCSS(
   let textColor = decoration.textColor;
   if (textColor !== undefined) result.color = UITheme.replaceColor(textColor);
   let borderThickness = decoration.borderThickness;
-  if (borderThickness !== undefined) {
-    result.borderWidth = getCSSLength(borderThickness);
-    result.borderColor = UITheme.replaceColor(decoration.borderColor || "transparent");
-    result.borderStyle = decoration.borderStyle || "solid";
-  }
+  if (borderThickness !== undefined) result.borderWidth = getCSSLength(borderThickness);
+  let borderColor = decoration.borderColor;
+  if (borderColor != undefined) result.borderColor = UITheme.replaceColor(borderColor);
+  let borderStyle = decoration.borderStyle;
+  if (borderStyle != undefined) result.borderStyle = decoration.borderStyle;
 
   let borderRadius = decoration.borderRadius;
   if (borderRadius !== undefined)

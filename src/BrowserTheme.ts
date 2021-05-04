@@ -288,7 +288,7 @@ function initializeCSS() {
     ".UI": {
       margin: "0",
       padding: "0",
-      border: "0",
+      border: "0 solid transparent",
       outline: "0",
       cursor: "inherit",
       boxSizing: "border-box",
