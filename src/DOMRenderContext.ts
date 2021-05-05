@@ -1,6 +1,8 @@
 import {
   AppActivity,
   logUnhandledException,
+  managedChild,
+  ManagedObject,
   UIComponent,
   UIComponentEvent,
   UIRenderable,
@@ -9,6 +11,72 @@ import {
   UITheme,
 } from "typescene";
 import { BrowserApplication } from "./BrowserApplication";
+import { getWindowInnerHeightDp, getWindowInnerWidthDp } from "./DOMStyle";
+
+const DEFAULT_SMALL_BREAKPOINT = 590;
+const DEFAULT_LARGE_BREAKPOINT = 1150;
+
+/** Viewport Context object for measurements based on `window` */
+class DOMViewportContext extends ManagedObject {
+  /** The viewport width in dp units */
+  width?: number;
+
+  /** The viewport height in dp units */
+  height?: number;
+
+  /** True if the viewport width is smaller than the first breakpoint */
+  narrow = false;
+
+  /** True if the viewport width is larger than the second breakpoint */
+  wide = false;
+
+  /** True if the viewport height is smaller than the first breakpoint */
+  short = false;
+
+  /** True if the viewport height is larger than the second breakpoint */
+  tall = false;
+
+  /** Set breakpoints for narrow, wide, short and tall properties to given values (in dp units), and update all properties */
+  setBreakpoints(small: number, large: number) {
+    this._smallBreakpoint = small;
+    this._largeBreakpoint = large;
+    this.update();
+  }
+
+  /** Measure the current viewport and update context properties */
+  update() {
+    let changed = false;
+    let w = getWindowInnerWidthDp();
+    let h = getWindowInnerHeightDp();
+    let narrow = w < this._smallBreakpoint;
+    let wide = w > this._largeBreakpoint;
+    let short = h < this._smallBreakpoint;
+    let tall = h > this._largeBreakpoint;
+    this.width = w;
+    this.height = h;
+    if (this.narrow !== narrow) {
+      this.narrow = narrow;
+      changed = true;
+    }
+    if (this.wide !== wide) {
+      this.wide = wide;
+      changed = true;
+    }
+    if (this.short !== short) {
+      this.short = short;
+      changed = true;
+    }
+    if (this.tall !== tall) {
+      this.tall = tall;
+      changed = true;
+    }
+    if (changed) this.emitChange();
+    return false;
+  }
+
+  private _smallBreakpoint = DEFAULT_SMALL_BREAKPOINT;
+  private _largeBreakpoint = DEFAULT_LARGE_BREAKPOINT;
+}
 
 /** @internal Unique ID that is used as a property name for renderer instances on DOM elements */
 export const RENDER_PROP_ID =
@@ -198,13 +266,28 @@ export class DOMRenderContext extends UIRenderContext {
     }
     this.root = root;
     this.addEventListeners();
+    this.viewportContext.update();
   }
 
   /** The root node that contains all rendered content (read-only) */
   readonly root: HTMLElement;
 
+  /** Observable viewport data */
+  @managedChild
+  readonly viewportContext = new DOMViewportContext();
+
+  /** Bound event handler function */
+  private readonly _updateViewportContext = () => this.viewportContext.update();
+
+  /** Timer ID for viewport context update (interval) */
+  private _updateViewportTimer?: any;
+
   /** Add all event handlers on the root element */
   addEventListeners() {
+    // add resize listener to keep track of viewport, use timer as a backup
+    window.addEventListener("resize", this._updateViewportContext);
+    this._updateViewportTimer = setInterval(this._updateViewportContext, 500);
+
     // add focus handler that blocks focus outside of modals
     this.root.removeEventListener("focusin", detractFocus, true);
     this.root.addEventListener("focusin", detractFocus, true);
@@ -232,6 +315,8 @@ export class DOMRenderContext extends UIRenderContext {
   /** Remove the rendered content from the screen when the renderer is destroyed */
   async onManagedStateDestroyingAsync() {
     await super.onManagedStateDestroyingAsync();
+    window.removeEventListener("resize", this._updateViewportContext);
+    clearInterval(this._updateViewportTimer);
     this.clear();
     if (this._isFixedRoot && this.root.parentNode) {
       document.body.removeChild(this.root);
