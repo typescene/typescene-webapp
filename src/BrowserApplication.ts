@@ -1,29 +1,18 @@
-import { AppActivationContext, Application, UITheme } from "typescene";
-import { BrowserTheme, initializeCSS } from "./BrowserTheme";
+import { AppActivationContext, Application } from "typescene";
 import { DOMRenderContext } from "./DOMRenderContext";
-import {
-  DP_PER_REM,
-  importStylesheet,
-  setGlobalCSS,
-  clearGlobalCSSState,
-} from "./DOMStyle";
-import "./renderers";
+import { importStylesheet, clearGlobalCSSState, setGlobalDpSize } from "./DOMStyle";
+import { autoUpdateHandler } from "./HMR";
 
 let _transitionsDisabled = false;
 
-// apply global styles immediately
-initializeCSS();
-let _theme = (UITheme.current = new BrowserTheme());
-_theme.setFocusOutline();
+// Use HMR as auto-update mechanism
+Application.setAutoUpdateHandler(autoUpdateHandler);
 
 /** Represents an application that runs in a browser using the available DOM APIs. Automatically creates a renderer that renders all UI components in the browser. */
 export class BrowserApplication extends Application {
   /** Set global (page-wide) relative size of DP units in nominal pixels, defaults to 1 */
   static setGlobalDpSize(size = 1) {
-    size *= DP_PER_REM;
-    setGlobalCSS({
-      html: { fontSize: size + "px" },
-    });
+    setGlobalDpSize(size);
   }
 
   /** Import an external stylesheet from given URL (asynchronously) */

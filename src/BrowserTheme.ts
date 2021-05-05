@@ -1,4 +1,4 @@
-import { UIStyle, UITheme } from "typescene";
+import { UITheme } from "typescene";
 import { AlertDialogBuilder } from "./components/AlertDialog";
 import { DropdownMenuBuilder } from "./components/DropdownMenu";
 import { getCSSLength, setGlobalCSS } from "./DOMStyle";
@@ -181,6 +181,9 @@ export class BrowserTheme extends UITheme {
         padding: 8,
         css: { cursor: "text" },
       },
+      textStyle: {
+        lineBreakMode: "pre-wrap",
+      },
     });
     this.setStyle("textfield_borderless", {
       decoration: {
@@ -271,14 +274,21 @@ export class BrowserTheme extends UITheme {
   }
 }
 
-/** @internal Add primary global CSS classes */
-export function initializeCSS() {
+/** Initialize global theme */
+function initializeTheme() {
+  let theme = new BrowserTheme();
+  UITheme.current = theme;
+  theme.setFocusOutline();
+}
+
+/** Add primary global CSS classes */
+function initializeCSS() {
   setGlobalCSS({
     // add UI component base styles
     ".UI": {
       margin: "0",
       padding: "0",
-      border: "0",
+      border: "0 solid transparent",
       outline: "0",
       cursor: "inherit",
       boxSizing: "border-box",
@@ -310,6 +320,7 @@ export function initializeCSS() {
       left: "0",
       bottom: "0",
       right: "0",
+      outline: "0",
       overflow: "auto",
       display: "flex",
       flexDirection: "column",
@@ -404,6 +415,13 @@ export function initializeCSS() {
       borderBottom: ".125rem solid #fff",
       borderRight: ".125rem solid #fff",
     },
+
+    // fix vertical alignment of text within <a> button
+    "a.UI": {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+    },
   });
 
   // add all predefined transitions:
@@ -452,3 +470,7 @@ function addTransition(
     },
   });
 }
+
+// apply global styles immediately
+initializeCSS();
+initializeTheme();

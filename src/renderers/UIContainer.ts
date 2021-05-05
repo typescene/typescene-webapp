@@ -108,7 +108,9 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
             Math.abs(vertDist / (window.innerHeight || 1)) / (tDiffSec || 0.1);
           event.horizontalVelocity =
             Math.abs(horzDist / (window.innerWidth || 1)) / (tDiffSec || 0.1);
-          this.component.emit(event.freeze());
+          if (scrollContainer.managedState) {
+            scrollContainer.emit(event.freeze());
+          }
         };
         element.onscroll = (e: Event) => {
           lastEventT = Date.now();

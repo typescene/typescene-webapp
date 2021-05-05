@@ -15,6 +15,9 @@ import { DOMRenderContext } from "./DOMRenderContext";
 /** @internal Number of logical pixels in a REM unit */
 export const DP_PER_REM = 16;
 
+/** Actual number of pixels in a REM unit */
+let _actualDPPerRem = 16;
+
 /** Flexbox justify options */
 const _flexJustifyOptions = {
   "start": "flex-start",
@@ -56,6 +59,24 @@ export function importStylesheet(url: string) {
 /** @internal Forget state of all styles that have already been defined, so that they will be redefined on next use */
 export function clearGlobalCSSState() {
   _cssDefined = {};
+}
+
+/** @internal Override REM size globally */
+export function setGlobalDpSize(size: number) {
+  _actualDPPerRem = size * DP_PER_REM;
+  setGlobalCSS({
+    html: { fontSize: _actualDPPerRem + "px" },
+  });
+}
+
+/** @internal Measure window width in DP units */
+export function getWindowInnerWidthDp() {
+  return (window.innerWidth / _actualDPPerRem) * DP_PER_REM;
+}
+
+/** @internal Measure window height in DP units */
+export function getWindowInnerHeightDp() {
+  return (window.innerHeight / _actualDPPerRem) * DP_PER_REM;
 }
 
 /** @internal Replace given CSS styles in the global root style sheet */
@@ -361,11 +382,11 @@ function addDecorationCSS(
   let textColor = decoration.textColor;
   if (textColor !== undefined) result.color = UITheme.replaceColor(textColor);
   let borderThickness = decoration.borderThickness;
-  if (borderThickness !== undefined) {
-    result.borderWidth = getCSSLength(borderThickness);
-    result.borderColor = UITheme.replaceColor(decoration.borderColor || "transparent");
-    result.borderStyle = decoration.borderStyle || "solid";
-  }
+  if (borderThickness !== undefined) result.borderWidth = getCSSLength(borderThickness);
+  let borderColor = decoration.borderColor;
+  if (borderColor != undefined) result.borderColor = UITheme.replaceColor(borderColor);
+  let borderStyle = decoration.borderStyle;
+  if (borderStyle != undefined) result.borderStyle = decoration.borderStyle;
 
   let borderRadius = decoration.borderRadius;
   if (borderRadius !== undefined)
