@@ -288,7 +288,7 @@ function initializeCSS() {
     ".UI": {
       margin: "0",
       padding: "0",
-      border: "0",
+      border: "0 solid transparent",
       outline: "0",
       cursor: "inherit",
       boxSizing: "border-box",
@@ -414,6 +414,13 @@ function initializeCSS() {
       transform: "rotate(45deg)",
       borderBottom: ".125rem solid #fff",
       borderRight: ".125rem solid #fff",
+    },
+
+    // fix vertical alignment of text within <a> button
+    "a.UI": {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
     },
   });
 
