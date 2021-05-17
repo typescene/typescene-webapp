@@ -1,4 +1,5 @@
 import {
+  ComponentEvent,
   onPropertyChange,
   UICell,
   UIColumn,
@@ -425,14 +426,25 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
   private _separator?: UIStyle.SeparatorOptions;
 }
 
+// debounce container drag operations using a timestamp:
+let _dragStart: any;
+
 // make root containers draggable using the "DragContainer" event
 (UIContainer as typeof UIContainer & { new (): UIContainer }).addEventHandler(function (e) {
   if (e.name === "DragContainer") {
-    if (this.getParentComponent() instanceof UIComponent) return;
+    if (_dragStart > Date.now() - 40 || this.getParentComponent() instanceof UIComponent)
+      return;
     let element: HTMLElement = this.lastRenderOutput && this.lastRenderOutput.element;
-    if (!element || !(e instanceof UIComponentEvent)) return;
-    let event: MouseEvent | TouchEvent = e.event;
+    if (!element) return;
+    let event: MouseEvent | TouchEvent | undefined;
+    while (e && !event) {
+      if (e instanceof UIComponentEvent && e.event) event = e.event;
+      else if (e instanceof ComponentEvent && e.inner) e = e.inner;
+      else break;
+    }
     if (!event || (event as MouseEvent).button) return;
+
+    // check starting coordinates
     let startX =
       ((event as TouchEvent).touches && (event as TouchEvent).touches[0].screenX) ||
       (event as MouseEvent).screenX;
@@ -441,9 +453,13 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
       (event as MouseEvent).screenY;
     if (startX === undefined || startY === undefined) return;
 
+    // found the element and coordinates, start dragging now
+    _dragStart = Date.now();
     let moved = false;
     let rect = element.getBoundingClientRect();
-    let moveHandler = (e: MouseEvent | TouchEvent) => {
+
+    /** Handler that is invoked when the mouse/touch input is moved */
+    const moveHandler = (e: MouseEvent | TouchEvent) => {
       let screenX =
         ((e as TouchEvent).touches && (e as TouchEvent).touches[0].screenX) ||
         (e as MouseEvent).screenX;
@@ -466,11 +482,14 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
       let x = Math.max(-element.clientWidth + 40, rect.left + diffX);
       element.style.left = Math.min(x, window.innerWidth - 64) + "px";
     };
-    let upHandler = (e: MouseEvent) => {
+
+    /** Handler that is invoked when the mouse button/touch input is released */
+    const upHandler = (e: MouseEvent) => {
       if (moved) {
         e.preventDefault();
         e.stopPropagation();
       }
+      _dragStart = 0;
       DOMRenderContext.scheduleRender(() => {
         window.removeEventListener("touchmove", moveHandler, true);
         window.removeEventListener("mousemove", moveHandler, true);
@@ -479,6 +498,8 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
         window.removeEventListener("click", upHandler, true);
       });
     };
+
+    // add all handlers
     window.addEventListener("touchmove", moveHandler, true);
     window.addEventListener("mousemove", moveHandler, true);
     window.addEventListener("touchend", upHandler as any, true);
