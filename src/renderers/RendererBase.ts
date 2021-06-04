@@ -210,8 +210,10 @@ export abstract class RendererBase<
         element.dataset.transitionT = "revealing";
       }
     }
-    let output = new UIRenderContext.Output(component, element);
-    component.lastRenderOutput = output as any;
+    let output =
+      component.lastRenderOutput && component.lastRenderOutput.element === element
+        ? component.lastRenderOutput
+        : (component.lastRenderOutput = new UIRenderContext.Output(component, element));
     this._lastRenderCallback = e.renderCallback(output, this.afterRender.bind(this));
   }
 
