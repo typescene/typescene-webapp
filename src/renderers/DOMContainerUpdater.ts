@@ -243,10 +243,25 @@ export class DOMContainerUpdater {
       } else {
         DOMRenderContext.scheduleRender(() => {
           if (this._stopped || !component.managedState) return output;
-          if (lastOutput && lastOutput.element.parentNode === this.element) {
-            // use placeholder for components that have no output
+          if (
+            lastOutput &&
+            lastOutput !== output &&
+            lastOutput.element.parentNode === this.element
+          ) {
             if (!output || !output.element) {
+              // use placeholder for components that have no output
               output = this._getPlaceholder(component);
+            } else {
+              // if new output is already a child element somewhere,
+              // don't just remove it but replace with a placeholder
+              if (output.element.parentNode) {
+                let swap = this._getPlaceholder(component);
+                let elt = output.element;
+                elt.parentNode!.replaceChild(swap.element, elt);
+                output.element = swap.element;
+                swap.element = elt;
+                output = swap;
+              }
             }
 
             // update existing element
