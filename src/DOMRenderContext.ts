@@ -354,8 +354,17 @@ export class DOMRenderContext extends UIRenderContext {
       }
       this._page = output;
       let activity = output.source.getParentComponent(AppActivity);
-      while (activity && !activity.name) activity = activity.getParentActivity();
-      if (activity && activity.name) document.title = activity.name;
+      while (activity) {
+        let title =
+          (activity.navigationTarget && String(activity.navigationTarget.title || "")) ||
+          activity.name ||
+          "";
+        if (title) {
+          document.title = title;
+          break;
+        }
+        activity = activity.getParentActivity();
+      }
     };
 
     // render element asynchronously and call callback

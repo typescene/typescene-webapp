@@ -1,5 +1,5 @@
 import { onPropertyChange, UIButton, UIFocusRequestEvent, UIRenderEvent } from "typescene";
-import { BrowserApplication, BrowserHashActivationContext } from "../BrowserApplication";
+import { BrowserApplication } from "../BrowserApplication";
 import { applyElementCSS } from "../DOMStyle";
 import { RendererBase } from "./RendererBase";
 import { setTextOrHtmlContent } from "./UILabel";
@@ -28,10 +28,10 @@ class UIButtonRenderer extends RendererBase<
       iconMargin: this.component.iconMargin,
       iconAfter: this.component.iconAfter,
     });
-    if (this.component.navigateTo) {
+    if (this.component.navigateTo || this.component.navigationTarget) {
       (element as HTMLAnchorElement).href = getPathHref(
         this.component,
-        this.component.navigateTo
+        String(this.component.getNavigationTarget())
       );
     }
     if (this.component.disabled) {
@@ -40,7 +40,7 @@ class UIButtonRenderer extends RendererBase<
 
     // handle direct clicks with `navigateTo` set
     element.addEventListener("click", e => {
-      if (this.component.navigateTo) {
+      if (this.component.navigateTo || this.component.navigationTarget) {
         if (
           (e as MouseEvent).ctrlKey ||
           (e as MouseEvent).altKey ||
@@ -51,11 +51,10 @@ class UIButtonRenderer extends RendererBase<
           e.stopPropagation();
           e.stopImmediatePropagation();
         } else {
-          // use app to navigate instead
+          // use app to navigate instead, emit an event here:
           e.preventDefault();
           if (!this.component.disabled) {
-            let app = this.component.getParentComponent(BrowserApplication);
-            app && app.navigate(this.component.navigateTo);
+            this.component.emitAction("Navigate");
           }
         }
       }
@@ -90,12 +89,13 @@ class UIButtonRenderer extends RendererBase<
   }
 
   /** Handle link `href` changes */
-  onNavigateToChange() {
+  @onPropertyChange("navigateTo", "navigationTarget")
+  setHref() {
     let element = this.getElement();
     if (element) {
       (element as HTMLAnchorElement).href = getPathHref(
         this.component,
-        this.component.navigateTo
+        String(this.component.getNavigationTarget())
       );
     }
   }
@@ -144,6 +144,6 @@ UIButton.addObserver(UIButtonRenderer);
 /** Helper function to get a proper `href` attribute for given path */
 function getPathHref(component: UIButton, path?: string) {
   let app = component.getParentComponent(BrowserApplication);
-  let ctx = app && (app.activationContext as BrowserHashActivationContext);
+  let ctx = app && (app.activationContext as any);
   return (ctx && ctx.getPathHref && ctx.getPathHref(path)) || "";
 }
