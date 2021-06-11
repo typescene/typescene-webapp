@@ -3,6 +3,7 @@ import {
   ComponentConstructor,
   ConfirmationDialogBuilder,
   strf,
+  UIStyle,
   UIBorderlessButton,
   UICell,
   UICloseRow,
@@ -10,14 +11,44 @@ import {
   UIFlowCell,
   UILabel,
   UILinkButton,
-  UIOppositeRow,
   UIParagraph,
   UIPrimaryButton,
   UISpacer,
   ViewComponent,
   Stringable,
   UICloseColumn,
+  UIRow,
 } from "typescene";
+
+export const alertDialogStyles = UIStyle.group({
+  "alertDialog": {
+    decoration: {
+      background: "@background",
+      borderRadius: 4,
+      dropShadow: 0.65,
+    },
+    position: { gravity: "center" },
+    dimensions: { maxWidth: 400, width: "95vw" },
+  },
+  "alertDialog-titlebar": {
+    decoration: {
+      background: "@primary",
+      textColor: "@primary.text",
+    },
+    dimensions: { height: 40 },
+  },
+  "alertDialog-title": {},
+  "alertDialog-buttonRow": {
+    containerLayout: { distribution: "end" },
+    decoration: { padding: 0 },
+  },
+  "alertDialog-cancelButton": {
+    dimensions: { grow: 0 },
+  },
+  "alertDialog-confirmButton": {
+    dimensions: { grow: 0 },
+  },
+});
 
 /** Default modal message dialog UI component; emits `Confirm` and `CloseModal` events */
 export class AlertDialog extends ViewComponent.with({
@@ -33,29 +64,25 @@ export class AlertDialog extends ViewComponent.with({
   }),
   view: UICell.with(
     {
-      background: "@background",
-      borderRadius: 4,
-      position: { gravity: "center" },
-      dimensions: { maxWidth: 400, width: "95vw" },
-      dropShadow: 0.65,
+      style: "alertDialog",
       revealTransition: "up-fast",
     },
     UIFlowCell.with(
       {
-        background: "@primary",
-        dimensions: { height: 40 },
+        style: "alertDialog-titlebar",
         hidden: bind("title|!"),
         onMouseDown: "+DragContainer",
       },
       UICloseRow.with(
         UISpacer.withWidth(16),
-        UIExpandedLabel.withText(bind("title"), { color: "@primary:text" }),
+        UIExpandedLabel.withText(bind("title"), "alertDialog-title"),
         UIBorderlessButton.with({
           position: { gravity: "center" },
           icon: "close",
           onClick: "+CloseModal",
           iconSize: 18,
-          iconColor: "@primary:text",
+          iconColor: "currentColor",
+          textStyle: { color: "inherit" },
           disableKeyboardFocus: true,
         })
       )
@@ -66,14 +93,20 @@ export class AlertDialog extends ViewComponent.with({
         content: bind("messageLabels", []),
       }),
       UISpacer.withHeight(24),
-      UIOppositeRow.with(
-        { padding: 0 },
+      UIRow.with(
+        {
+          style: "alertDialog-buttonRow",
+        },
         UILinkButton.with({
+          style: "alertDialog-cancelButton",
+          shrinkwrap: "auto",
           hidden: bind("cancelButtonLabel|!"),
           label: bind("cancelButtonLabel"),
           onClick: "+CloseModal",
         }),
         UIPrimaryButton.with({
+          style: "alertDialog-confirmButton",
+          shrinkwrap: "auto",
           label: bind("confirmButtonLabel"),
           onClick: "+Confirm",
           requestFocus: true,
