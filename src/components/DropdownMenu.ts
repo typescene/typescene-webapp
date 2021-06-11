@@ -13,12 +13,43 @@ import {
   Stringable,
 } from "typescene";
 
+export const dropdownMenuStyles = UIStyle.group({
+  "dropdownMenu": {
+    dimensions: { minWidth: 50, maxWidth: 280 },
+    decoration: {
+      background: "@background",
+      borderRadius: 4,
+      dropShadow: 0.8,
+    },
+  },
+  "dropdownMenu-item": UIStyle.create({
+    containerLayout: { axis: "horizontal" },
+    decoration: {
+      padding: { x: 16 },
+      css: { cursor: "pointer" },
+    },
+  })
+    .addState("hover", {
+      decoration: {
+        background: "@primary",
+        textColor: "@primary.text",
+      },
+    })
+    .addState("focused", {
+      decoration: {
+        background: "@primary",
+        textColor: "@primary.text",
+      },
+    }),
+  "dropdownMenu-label": {},
+  "dropdownMenu-hint": {
+    textStyle: { color: "@text/50%", fontSize: 12 },
+  },
+});
+
 /** Encapsulates a menu; items are mixed in by `DropdownMenuBuilder` */
 class DropdownMenu extends UICell.with({
-  background: "@background",
-  dimensions: { minWidth: 50, maxWidth: 280 },
-  borderRadius: 4,
-  dropShadow: 0.8,
+  style: "dropdownMenu",
   onArrowDownKeyPress(e: UIComponentEvent) {
     if (!(e.source instanceof DropdownMenu)) return;
     for (let item of (this as UICell).content) {
@@ -37,9 +68,6 @@ class DropdownMenu extends UICell.with({
 
 /** Default dropdown menu builder, used by `UIMenu` */
 export class DropdownMenuBuilder extends UIMenuBuilder {
-  static labelStyleMixin: Partial<UIStyle.TextStyle> = {};
-  static hintStyleMixin: Partial<UIStyle.TextStyle> = { color: "@text/50%", fontSize: 12 };
-
   clear() {
     this._items.length = 0;
     return this;
@@ -51,8 +79,8 @@ export class DropdownMenuBuilder extends UIMenuBuilder {
     icon?: string,
     hint?: Stringable,
     hintIcon?: string,
-    textStyle: Partial<UIStyle.TextStyle> = DropdownMenuBuilder.labelStyleMixin,
-    hintStyle: Partial<UIStyle.TextStyle> = DropdownMenuBuilder.hintStyleMixin
+    textStyle?: Partial<UIStyle.TextStyle>,
+    hintStyle?: Partial<UIStyle.TextStyle>
   ) {
     function onClick(this: UIComponent) {
       let menu = this.getParentComponent(DropdownMenu);
@@ -62,17 +90,8 @@ export class DropdownMenuBuilder extends UIMenuBuilder {
     this._items.push(
       UICell.with(
         {
-          layout: { axis: "horizontal" },
-          css: { cursor: "pointer" },
+          style: "dropdownMenu-item",
           allowKeyboardFocus: true,
-          onMouseEnter() {
-            this.background = "@primary";
-            this.textColor = "@primary:text";
-          },
-          onMouseLeave() {
-            this.background = "";
-            this.textColor = "";
-          },
           onClick,
           onEnterKeyPress: onClick,
           onArrowDownKeyPress: function () {
@@ -82,13 +101,22 @@ export class DropdownMenuBuilder extends UIMenuBuilder {
             this.requestFocusPrevious();
           },
         },
-        UISpacer.with({ dimensions: { width: 16, shrink: 0 }, shrinkwrap: true }),
-        UIExpandedLabel.with({ text, icon, iconMargin: 8, textStyle }),
+        UIExpandedLabel.with({
+          text,
+          icon,
+          iconMargin: 8,
+          style: "dropdownMenu-label",
+          textStyle,
+        }),
         hint ? UISpacer.withWidth(8) : undefined,
         hint
-          ? UILabel.with({ text: hint, icon: hintIcon, textStyle: hintStyle })
-          : undefined,
-        UISpacer.withWidth(16)
+          ? UILabel.with({
+              text: hint,
+              icon: hintIcon,
+              style: "dropdownMenu-hint",
+              textStyle: hintStyle,
+            })
+          : undefined
       )
     );
     return this;

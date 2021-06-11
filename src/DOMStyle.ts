@@ -136,9 +136,10 @@ export function applyElementCSS(
     if (UIStyle.isStyleOverride(component.textStyle, styleInstance)) {
       addTextStyleCSS(inline, component.textStyle);
     }
+    let grow = +component.dimensions.grow!;
     if (
-      (component.shrinkwrap && component.dimensions.grow) ||
-      (!component.shrinkwrap && !component.dimensions.grow)
+      (component.shrinkwrap === true && grow) ||
+      (component.shrinkwrap === false && !grow)
     ) {
       inline.flexGrow = component.shrinkwrap ? "0" : "1";
     }

@@ -1,7 +1,9 @@
-import { AppActivationContext, Application } from "typescene";
+import { Application } from "typescene";
 import { DOMRenderContext } from "./DOMRenderContext";
 import { importStylesheet, clearGlobalCSSState, setGlobalDpSize } from "./DOMStyle";
 import { autoUpdateHandler } from "./HMR";
+import { BrowserHashActivationContext } from "./BrowserHashActivationContext";
+import { BrowserHistoryActivationContext } from "./BrowserHistoryActivationContext";
 
 let _transitionsDisabled = false;
 
@@ -49,7 +51,7 @@ export class BrowserApplication extends Application {
     if (!this.activationContext) {
       // create the activation context (hash/history based API)
       this.activationContext = this._useHistoryAPI
-        ? new BrowserHistoryAPIActivationContext()
+        ? new BrowserHistoryActivationContext()
         : new BrowserHashActivationContext();
     }
   }
@@ -84,7 +86,7 @@ export class BrowserApplication extends Application {
   useHistoryAPI() {
     this._useHistoryAPI = true;
     if (this.activationContext) {
-      this.activationContext = new BrowserHistoryAPIActivationContext();
+      this.activationContext = new BrowserHistoryActivationContext();
     }
     return this;
   }
@@ -100,116 +102,3 @@ BrowserApplication.addObserver(
     }
   }
 );
-
-/** Activation context that is used by the `BrowserApplication` type, which takes the target path from the browser window location 'hash' (e.g. `...#/foo/bar`) */
-export class BrowserHashActivationContext extends AppActivationContext {
-  constructor() {
-    super();
-    this._handler = () => {
-      this._setPath();
-    };
-    window.addEventListener("hashchange", this._handler);
-    this._setPath();
-  }
-
-  /** Convert given path into a valid href (used by Button renderer) */
-  getPathHref(path?: string) {
-    let target = "";
-    if (!path || path[0] === ":") return "";
-    if (path[0] === "#") path = path.slice(1);
-    if (path[0] === "/") {
-      target = path;
-    } else {
-      let current = this.target;
-      if (current.slice(-1) !== "/") current += "/";
-      target = "/" + current + path;
-    }
-    target = target.replace(/\/+/g, "/");
-    let i = 0;
-    while (/\/\.\.?\//.test(target)) {
-      if (i++ > 100) break;
-      target = target
-        .replace(/\/\.\//g, "/")
-        .replace(/\/[^\/]+\/\.\.\//g, "/")
-        .replace(/^\/?\.\.\//, "/");
-    }
-    return "#/" + target.replace(/^\/+/, "");
-  }
-
-  navigate(path: string) {
-    path = String(path);
-    if (path === ":back") {
-      window.history.back();
-      return;
-    }
-    window.location.hash = this.getPathHref(path);
-  }
-
-  async onManagedStateDestroyingAsync() {
-    window.removeEventListener("hashchange", this._handler);
-  }
-
-  private _setPath() {
-    let hash = String(window.location.hash || "").replace(/^\#\/?/, "");
-    this.target = hash;
-  }
-
-  private _handler: () => void;
-}
-
-/** Activation context that is used by the `BrowserApplication` type, which takes the target path from the browser history API (i.e. full path) */
-export class BrowserHistoryAPIActivationContext extends AppActivationContext {
-  constructor() {
-    super();
-    this._handler = () => {
-      this._setPath();
-    };
-    window.addEventListener("popstate", this._handler);
-    this._setPath();
-  }
-
-  /** Convert given path into a valid href (used by Button renderer) */
-  getPathHref(path?: string) {
-    let target = "";
-    if (!path || path[0] === ":") return "";
-    if (path[0] === "#") path = path.slice(1);
-    if (path[0] === "/") {
-      target = path;
-    } else {
-      let current = this.target;
-      if (current.slice(-1) !== "/") current += "/";
-      target = "/" + current + path;
-    }
-    target = target.replace(/\/+/g, "/");
-    let i = 0;
-    while (/\/\.\.?\//.test(target)) {
-      if (i++ > 100) break;
-      target = target
-        .replace(/\/\.\//g, "/")
-        .replace(/\/[^\/]+\/\.\.\//g, "/")
-        .replace(/^\/?\.\.\//, "/");
-    }
-    return "/" + target.replace(/^\/+/, "");
-  }
-
-  navigate(path: string) {
-    path = String(path);
-    if (path === ":back") {
-      window.history.back();
-      return;
-    }
-    window.history.pushState({}, document.title, this.getPathHref(path));
-    this._setPath();
-  }
-
-  async onManagedStateDestroyingAsync() {
-    window.removeEventListener("popstate", this._handler);
-  }
-
-  private _setPath() {
-    let path = String(window.location.pathname || "").replace(/^\/?/, "");
-    this.target = path;
-  }
-
-  private _handler: () => void;
-}
