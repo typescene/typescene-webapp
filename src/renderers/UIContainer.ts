@@ -471,6 +471,13 @@ let _dragStart: any;
       if (!moved) {
         if (Math.abs(diffX) < 2 && Math.abs(diffY) < 2) return;
         moved = true;
+        let parentNode = element.parentNode as HTMLElement;
+        if (parentNode && parentNode.className === "App__ModalWrapper") {
+          // make sure the modal wrapper is based at 0, 0
+          // (not the case for menu, popover etc.)
+          parentNode.style.top = "0";
+          parentNode.style.left = "0";
+        }
         element.style.position = "absolute";
         element.style.bottom = "auto";
         element.style.right = "auto";
