@@ -28,6 +28,7 @@ class UITextFieldRenderer extends RendererBase<
     element.value = value == null ? "" : String(value);
     if (this.component.name) element.name = this.component.name;
     if (this.component.disabled) element.disabled = true;
+    if (this.component.enterKeyHint) element.enterKeyHint = this.component.enterKeyHint;
     applyElementCSS(this.component, element, true);
     return element;
   }
@@ -59,7 +60,7 @@ class UITextFieldRenderer extends RendererBase<
   }
 
   /** Handle control changes */
-  @onPropertyChange("name", "value", "type", "placeholder")
+  @onPropertyChange("name", "value", "type", "placeholder", "enterKeyHint")
   updateControl() {
     let element = this.getElement();
     if (element) {
@@ -71,6 +72,7 @@ class UITextFieldRenderer extends RendererBase<
         (element as HTMLInputElement).type = this.component.type;
       }
       if (this.component.name) element.name = this.component.name;
+      if (this.component.enterKeyHint) element.enterKeyHint = this.component.enterKeyHint;
 
       // update value asynchronously if it was set programmatically
       let value = this.component.value;
