@@ -498,7 +498,10 @@ let _dragStart: any;
       }
       _dragStart = 0;
       DOMRenderContext.scheduleRender(() => {
-        window.removeEventListener("touchmove", moveHandler, true);
+        window.removeEventListener("touchmove", moveHandler, {
+          passive: false,
+          capture: true,
+        } as any);
         window.removeEventListener("mousemove", moveHandler, true);
         window.removeEventListener("touchend", upHandler as any, true);
         window.removeEventListener("mouseup", upHandler, true);
@@ -507,7 +510,7 @@ let _dragStart: any;
     };
 
     // add all handlers
-    window.addEventListener("touchmove", moveHandler, true);
+    window.addEventListener("touchmove", moveHandler, { passive: false, capture: true });
     window.addEventListener("mousemove", moveHandler, true);
     window.addEventListener("touchend", upHandler as any, true);
     window.addEventListener("mouseup", upHandler, true);
