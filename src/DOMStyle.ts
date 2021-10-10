@@ -250,12 +250,14 @@ function addContainerCSS(result: Partial<CSSStyleDeclaration>, container: UICont
     if (container.width !== undefined && !result.width) {
       result.width = getCSSLength(container.width);
     }
-  }
-  if ((container as UIScrollContainer).verticalScrollEnabled) {
-    result.overflowY = "auto";
-  }
-  if ((container as UIScrollContainer).horizontalScrollEnabled) {
-    result.overflowX = "auto";
+  } else if (container instanceof UIScrollContainer) {
+    if (container.padding !== undefined) result.padding = getCSSLength(container.padding);
+    if (container.verticalScrollEnabled) {
+      result.overflowY = "auto";
+    }
+    if (container.horizontalScrollEnabled) {
+      result.overflowX = "auto";
+    }
   }
 }
 
