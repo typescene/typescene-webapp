@@ -247,10 +247,10 @@ export class BrowserTheme extends UITheme {
   /** Default icons in SVG format (base implementation adapted from Material Design icons by Google) */
   icons: UITheme["icons"] = {
     blank: `<svg viewBox="0 0 48 48"></svg>`,
-    close: `<svg viewBox="0 0 48 48"><path d="M38 12.83L35.17 10 24 21.17 12.83 10 10 12.83 21.17 24 10 35.17 12.83 38 24 26.83 35.17 38 38 35.17 26.83 24z"/></svg>`,
-    expandDown: `<svg viewBox="0 0 48 48"><path d="M33.17 17.17L24 26.34l-9.17-9.17L12 20l12 12 12-12z"/></svg>`,
+    close: `<svg viewBox="0 0 48 48"><path d="M39 12l-3-3l-12 12l-12-12l-3 3l12 12l-12 12l3 3l12-12l12 12l3-3l-12-12l12-12z"/></svg>`,
+    expandDown: `<svg viewBox="0 0 48 48"><path d="M32 18l-9 9l-9-9l-3 3l12 12l12-12l-3-3"/></svg>`,
     menu: `<svg viewBox="0 0 48 48"><path d="M6 36h36v-4H6v4zm0-10h36v-4H6v4zm0-14v4h36v-4H6z"/></svg>`,
-    check: `<svg viewBox="0 0 48 48"><path d="M18 32.34L9.66 24l-2.83 2.83L18 38l24-24-2.83-2.83z"/></svg>`,
+    check: `<svg viewBox="0 0 48 48"><path d="M18 32L10 24l-3 3L18 38l24-24-3-3z"/></svg>`,
   };
 
   /** Set the global focus 'glow' outline width and blur (dp or string with unit, defaults to 2 and 0), and color (defaults to `@primary/50%`) */
