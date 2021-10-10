@@ -264,7 +264,7 @@ export class DOMRenderContext extends UIRenderContext {
       this.root = root;
       this._removeOnDestroy = !!removeOnDestroy;
     } else {
-      root = DOMRenderContext.createFixedRootElement();
+      this.root = DOMRenderContext.createFixedRootElement();
       this._removeOnDestroy = true;
     }
     this.addEventListeners();
