@@ -233,7 +233,7 @@ export class DOMRenderContext extends UIRenderContext {
       (lowPriority ? _pendingNextRender : _pendingRender)!.push(() => {
         try {
           resolve(callback());
-        } catch (err) {
+        } catch (err: any) {
           reject(err);
         }
       });
