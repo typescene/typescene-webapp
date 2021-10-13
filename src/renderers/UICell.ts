@@ -10,6 +10,7 @@ class UICellRenderer {
     "decoration",
     "margin",
     "background",
+    "textDirection",
     "textColor",
     "borderThickness",
     "borderColor",
