@@ -117,7 +117,7 @@ export function setTextOrHtmlContent(element: HTMLElement, content: TextContentP
     let icon = getIconElt(content);
     icon.style.order = content.iconAfter ? "2" : "0";
     contentWrapper.appendChild(icon);
-  } catch (err) {
+  } catch (err: any) {
     if (!_failedIconNotified[content.icon]) {
       _failedIconNotified[content.icon] = true;
       logUnhandledException(err);

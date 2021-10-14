@@ -15,9 +15,9 @@ class UIButtonRenderer extends RendererBase<
 
   /** Create output element, used by base class */
   protected createElement() {
-    let element = document.createElement(
-      this.component.accessibleRole === "link" ? "a" : "button"
-    );
+    let isLink = this.component.accessibleRole === "link";
+    let element = document.createElement(isLink ? "a" : "button");
+    if (!isLink) element.type = "button";
     element.tabIndex = this.component.isKeyboardFocusable() ? 0 : -1;
     applyElementCSS(this.component, element, true);
     setTextOrHtmlContent(element, {

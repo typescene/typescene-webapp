@@ -181,15 +181,17 @@ export function getCSSLength(length?: UIStyle.Offsets, defaultValue: any = "auto
   if (typeof length === "object") {
     let top: string | number = 0;
     let bottom: string | number = 0;
-    let left: string | number = 0;
-    let right: string | number = 0;
-    if (length.x) left = right = getCSSLength(length.x);
+    let start: string | number = 0;
+    let end: string | number = 0;
+    if (length.x) start = end = getCSSLength(length.x);
     if (length.y) top = bottom = getCSSLength(length.y);
     if (length.top) top = getCSSLength(length.top);
     if (length.bottom) bottom = getCSSLength(length.bottom);
-    if (length.left) left = getCSSLength(length.left);
-    if (length.right) right = getCSSLength(length.right);
-    return top + " " + right + " " + bottom + " " + left;
+    if (length.start) start = getCSSLength(length.start);
+    else if (length.left) start = getCSSLength(length.left);
+    if (length.end) end = getCSSLength(length.end);
+    else if (length.right) end = getCSSLength(length.right);
+    return top + " " + end + " " + bottom + " " + start;
   }
   return defaultValue;
 }
@@ -241,6 +243,7 @@ function defineStyleClass(style: UIStyle) {
 function addContainerCSS(result: Partial<CSSStyleDeclaration>, container: UIContainer) {
   if (container instanceof UICell) {
     addDecorationCSS(result, container);
+    if (container.textDirection) result.direction = container.textDirection;
     if (container.margin !== undefined) result.margin = getCSSLength(container.margin);
   } else if (container instanceof UIRow) {
     if (container.height !== undefined && !result.height) {
@@ -250,12 +253,14 @@ function addContainerCSS(result: Partial<CSSStyleDeclaration>, container: UICont
     if (container.width !== undefined && !result.width) {
       result.width = getCSSLength(container.width);
     }
-  }
-  if ((container as UIScrollContainer).verticalScrollEnabled) {
-    result.overflowY = "auto";
-  }
-  if ((container as UIScrollContainer).horizontalScrollEnabled) {
-    result.overflowX = "auto";
+  } else if (container instanceof UIScrollContainer) {
+    if (container.padding !== undefined) result.padding = getCSSLength(container.padding);
+    if (container.verticalScrollEnabled) {
+      result.overflowY = "auto";
+    }
+    if (container.horizontalScrollEnabled) {
+      result.overflowX = "auto";
+    }
   }
 }
 
@@ -303,31 +308,33 @@ function addDimensionsCSS(
 /** Helper to append CSS styles to given object for a given `Position` object */
 function addPositionCSS(result: Partial<CSSStyleDeclaration>, position: UIStyle.Position) {
   let alignSelf = position.gravity;
+  let hasHorizontalPosition: boolean | undefined;
+  let hasVerticalPosition: boolean | undefined;
+  if (
+    position.left !== undefined ||
+    position.right !== undefined ||
+    position.start !== undefined ||
+    position.end !== undefined
+  ) {
+    hasHorizontalPosition = true;
+    result.left = getCSSLength(position.left ?? position.start);
+    result.right = getCSSLength(position.right ?? position.end);
+    result.insetInlineStart = getCSSLength(position.start ?? position.left);
+    result.insetInlineEnd = getCSSLength(position.end ?? position.right);
+  }
+  if (position.top !== undefined || position.bottom !== undefined) {
+    hasVerticalPosition = true;
+    result.top = getCSSLength(position.top);
+    result.bottom = getCSSLength(position.bottom);
+  }
   if (alignSelf === "overlay") {
     result.position = "absolute";
     result.zIndex = "100";
-    result.top = getCSSLength(position.top);
-    result.bottom = getCSSLength(position.bottom);
-    result.left = getCSSLength(position.left);
-    result.right = getCSSLength(position.right);
-    if (position.left === undefined && position.right === undefined) {
-      result.margin = "auto";
-    }
+    if (!hasHorizontalPosition) result.margin = "auto";
   } else {
-    if (alignSelf) {
-      result.alignSelf = _flexAlignOptions[alignSelf];
-    }
-    if (
-      position.top !== undefined ||
-      position.bottom !== undefined ||
-      position.left !== undefined ||
-      position.right !== undefined
-    ) {
+    if (alignSelf) result.alignSelf = _flexAlignOptions[alignSelf];
+    if (hasHorizontalPosition || hasVerticalPosition) {
       result.position = "relative";
-      if (position.top !== undefined) result.top = getCSSLength(position.top);
-      if (position.bottom !== undefined) result.bottom = getCSSLength(position.bottom);
-      if (position.left !== undefined) result.left = getCSSLength(position.left);
-      if (position.right !== undefined) result.right = getCSSLength(position.right);
     }
   }
 }
@@ -337,6 +344,8 @@ function addTextStyleCSS(
   result: Partial<CSSStyleDeclaration>,
   textStyle: UIStyle.TextStyle
 ) {
+  let direction = textStyle.direction;
+  if (direction !== undefined) result.direction = direction;
   let align = textStyle.align;
   if (align !== undefined) result.textAlign = align;
   let color = textStyle.color;
@@ -411,18 +420,32 @@ function getCSSText(style: any) {
   let result = "";
   for (let p in style) {
     if (p === "className" || style[p] === "" || style[p] == undefined) continue;
-    let key = p
-      .replace(/([A-Z])/g, "-$1")
-      .toLowerCase()
-      .replace(/^(webkit|o|ms|moz)-/, "-$1-");
-    String(style[p])
-      .split("||")
-      .reverse()
-      .forEach(str => {
-        result += key + ": " + str + "; ";
-      });
+    let key = memoizeKey(p);
+    let value = String(style[p]);
+    if (value.indexOf("|") >= 0) {
+      value
+        .split("||")
+        .reverse()
+        .forEach(str => {
+          result += key + ": " + str + "; ";
+        });
+    } else {
+      result += key + ": " + value + "; ";
+    }
   }
   return result;
+}
+
+// Memoize camelCase property names to css-case names:
+const _memoizeKey: { [k: string]: string } = Object.create(null);
+function memoizeKey(k: string) {
+  return (
+    _memoizeKey[k] ??
+    (_memoizeKey[k] = k
+      .replace(/([A-Z])/g, "-$1")
+      .toLowerCase()
+      .replace(/^(webkit|o|ms|moz)-/, "-$1-"))
+  );
 }
 
 /** Helper function to get boxShadow property for given elevation (0-1) */

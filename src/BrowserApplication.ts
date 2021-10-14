@@ -64,13 +64,13 @@ export class BrowserApplication extends Application {
   }
 
   /**
-   * Use given DOM element to contain the application output, by creating a new renderer instance that is mounted to given element.
+   * Use given DOM element to contain the application output, by creating a new renderer instance that is mounted to given element. Optionally, the element will be removed when the application and/or renderer is destroyed.
    * @note By default, `BrowserApplication` occupies the entire page and clears everything else from the same page. Use this method _immediately_ after creating the application to prevent clearing the page, or supply a DOM element as a constructor argument if instantiating the application manually.
    */
-  mount(element: HTMLElement) {
+  mount(element: HTMLElement, removeOnDestroy?: boolean) {
     this._root = element;
     if (this.renderContext) {
-      this.renderContext = new DOMRenderContext(element);
+      this.renderContext = new DOMRenderContext(element, removeOnDestroy);
     }
     return this;
   }

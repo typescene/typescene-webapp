@@ -233,7 +233,7 @@ export class DOMRenderContext extends UIRenderContext {
       (lowPriority ? _pendingNextRender : _pendingRender)!.push(() => {
         try {
           resolve(callback());
-        } catch (err) {
+        } catch (err: any) {
           reject(err);
         }
       });
@@ -256,15 +256,17 @@ export class DOMRenderContext extends UIRenderContext {
   }
 
   /** Create a new application render context that places elements within given root element */
-  constructor(root?: HTMLElement) {
+  constructor(root?: HTMLElement, removeOnDestroy?: boolean) {
     super();
 
     // set or create root element
-    if (!root) {
-      root = DOMRenderContext.createFixedRootElement();
-      this._isFixedRoot = true;
+    if (root) {
+      this.root = root;
+      this._removeOnDestroy = !!removeOnDestroy;
+    } else {
+      this.root = DOMRenderContext.createFixedRootElement();
+      this._removeOnDestroy = true;
     }
-    this.root = root;
     this.addEventListeners();
     this.viewportContext.update();
   }
@@ -318,8 +320,8 @@ export class DOMRenderContext extends UIRenderContext {
     window.removeEventListener("resize", this._updateViewportContext);
     clearInterval(this._updateViewportTimer);
     this.clear();
-    if (this._isFixedRoot && this.root.parentNode) {
-      document.body.removeChild(this.root);
+    if (this._removeOnDestroy && this.root.parentNode) {
+      this.root.parentNode.removeChild(this.root);
     }
   }
 
@@ -695,7 +697,7 @@ export class DOMRenderContext extends UIRenderContext {
   }
 
   private _page?: DOMRenderOutput;
-  private _isFixedRoot?: boolean;
+  private _removeOnDestroy?: boolean;
 }
 
 /** Helper function to fix positioning of a dropdown menu or vertical popover */

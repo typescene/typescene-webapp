@@ -11,6 +11,7 @@ import {
   UIRow,
   UIScrollContainer,
   UIScrollEvent,
+  UIScrollTargetEvent,
   UIStyle,
 } from "typescene";
 import { DOMRenderContext } from "../DOMRenderContext";
@@ -71,51 +72,56 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
         let pending = false;
         let wentUp: boolean | undefined;
         let wentDown: boolean | undefined;
-        let wentLeft: boolean | undefined;
-        let wentRight: boolean | undefined;
-        let checkAndEmit = (e: Event) => {
+        let wentXStart: boolean | undefined;
+        let wentXEnd: boolean | undefined;
+        let checkAndEmit = () => {
           let tDiffSec = (Date.now() - lastT) / 1000;
           let vertDist = element.scrollTop - lastTop;
-          let horzDist = element.scrollLeft - lastLeft;
+          let horzDist = Math.abs(element.scrollLeft) - Math.abs(lastLeft);
           if (vertDist < 0) wentDown = !(wentUp = true);
           if (vertDist > 0) wentDown = !(wentUp = false);
-          if (horzDist < 0) wentRight = !(wentLeft = true);
-          if (horzDist > 0) wentRight = !(wentLeft = false);
+          if (horzDist < 0) wentXEnd = !(wentXStart = true);
+          if (horzDist > 0) wentXEnd = !(wentXStart = false);
           lastTop = element.scrollTop;
           lastLeft = element.scrollLeft;
           lastT = Date.now();
-          let event: UIScrollEvent;
-          if (lastEventT < lastT - 200) {
-            event = new UIScrollEvent("ScrollEnd", scrollContainer, undefined, e);
-            pending = false;
-          } else {
-            event = new UIScrollEvent("Scroll", scrollContainer, undefined, e);
-            setTimeout(checkAndEmit, 250);
-            pending = true;
-          }
-          event.scrolledDown = wentDown;
-          event.scrolledUp = wentUp;
-          event.scrolledLeft = wentLeft;
-          event.scrolledRight = wentRight;
-          event.atTop = lastTop <= scrollContainer.topThreshold;
-          event.atLeft = lastLeft <= scrollContainer.leftThreshold;
-          event.atBottom =
-            lastTop + element.clientHeight >=
-            element.scrollHeight - scrollContainer.bottomThreshold;
-          event.atRight =
-            lastLeft + element.clientWidth >=
-            element.scrollWidth - scrollContainer.rightThreshold;
-          event.verticalVelocity =
-            Math.abs(vertDist / (window.innerHeight || 1)) / (tDiffSec || 0.1);
-          event.horizontalVelocity =
-            Math.abs(horzDist / (window.innerWidth || 1)) / (tDiffSec || 0.1);
+          const makeEvent = (name: string) => {
+            let event = new UIScrollEvent(name, scrollContainer);
+            event.yOffset = lastTop;
+            event.xOffset = lastLeft;
+            lastLeft = Math.abs(lastLeft);
+            event.scrolledDown = wentDown;
+            event.scrolledUp = wentUp;
+            event.scrolledHorizontalStart = wentXStart;
+            event.scrolledHorizontalEnd = wentXEnd;
+            event.atTop = lastTop <= scrollContainer.topThreshold;
+            event.atHorizontalStart = lastLeft <= scrollContainer.horizontalThreshold;
+            event.atBottom =
+              lastTop + element.clientHeight >=
+              element.scrollHeight - scrollContainer.bottomThreshold;
+            event.atHorizontalEnd =
+              lastLeft + element.clientWidth >=
+              element.scrollWidth - scrollContainer.horizontalThreshold;
+            event.verticalVelocity =
+              Math.abs(vertDist / (window.innerHeight || 1)) / (tDiffSec || 0.1);
+            event.horizontalVelocity =
+              Math.abs(horzDist / (window.innerWidth || 1)) / (tDiffSec || 0.1);
+            return event.freeze();
+          };
           if (scrollContainer.managedState) {
-            scrollContainer.emit(event.freeze());
+            scrollContainer.emit(makeEvent("Scroll"));
+            if (lastEventT < lastT - 200) {
+              scrollContainer.emit(makeEvent("ScrollEnd"));
+              pending = false;
+            } else {
+              setTimeout(checkAndEmit, 250);
+              pending = true;
+            }
           }
         };
         element.onscroll = (e: Event) => {
           lastEventT = Date.now();
-          if (!pending) checkAndEmit(e);
+          if (!pending) checkAndEmit();
         };
       }
     }
@@ -154,6 +160,17 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
       let element = this.getElement();
       if (element) element.tabIndex = 0;
       this.lastFocused = undefined;
+    }
+  }
+
+  /** Scroll to top/bottom or coordinates */
+  onUIScrollTarget(e: UIScrollTargetEvent) {
+    let element = this.getElement();
+    if (element) {
+      if (e.target === "top") element.scrollTo({ top: 0 });
+      if (e.target === "bottom") element.scrollTo({ top: element.scrollHeight });
+      if (e.yOffset !== undefined) element.scrollTo({ top: e.yOffset });
+      if (e.xOffset !== undefined) element.scrollTo({ left: e.xOffset });
     }
   }
 
@@ -303,13 +320,13 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
       }
       if (
         e.name === "ScrollEnd" ||
-        e.name === "ScrollSnapLeft" ||
-        e.name === "ScrollSnapRight"
+        e.name === "ScrollSnapStart" ||
+        e.name === "ScrollSnapEnd"
       ) {
-        // snap horizontally
+        // snap horizontally (TODO: this probably doesn't work with RTL yet)
         let targetLeft: number | undefined;
         let furthest = rect.width;
-        let skew = e.name === "ScrollEnd" ? 0 : e.name === "ScrollSnapLeft" ? 0.25 : -0.25;
+        let skew = e.name === "ScrollEnd" ? 0 : e.name === "ScrollSnapStart" ? 0.25 : -0.25;
         switch (container.horizontalSnap) {
           case "start":
             for (let r of rects) {
@@ -363,14 +380,12 @@ class UIContainerRenderer extends RendererBase<UIContainer, HTMLElement> {
       this.onScrollEnd(e);
     }
   }
-  onScrollSnapLeft(e: UIComponentEvent) {
-    // TODO: localize for RTL containers (?)
+  onScrollSnapStart(e: UIComponentEvent) {
     if ((this.component as UIScrollContainer).horizontalSnap === "start") {
       this.onScrollEnd(e);
     }
   }
-  onScrollSnapRight(e: UIComponentEvent) {
-    // TODO: localize for RTL containers (?)
+  onScrollSnapEnd(e: UIComponentEvent) {
     if ((this.component as UIScrollContainer).horizontalSnap === "end") {
       this.onScrollEnd(e);
     }
@@ -471,6 +486,13 @@ let _dragStart: any;
       if (!moved) {
         if (Math.abs(diffX) < 2 && Math.abs(diffY) < 2) return;
         moved = true;
+        let parentNode = element.parentNode as HTMLElement;
+        if (parentNode && parentNode.className === "App__ModalWrapper") {
+          // make sure the modal wrapper is based at 0, 0
+          // (not the case for menu, popover etc.)
+          parentNode.style.top = "0";
+          parentNode.style.left = "0";
+        }
         element.style.position = "absolute";
         element.style.bottom = "auto";
         element.style.right = "auto";
@@ -491,7 +513,10 @@ let _dragStart: any;
       }
       _dragStart = 0;
       DOMRenderContext.scheduleRender(() => {
-        window.removeEventListener("touchmove", moveHandler, true);
+        window.removeEventListener("touchmove", moveHandler, {
+          passive: false,
+          capture: true,
+        } as any);
         window.removeEventListener("mousemove", moveHandler, true);
         window.removeEventListener("touchend", upHandler as any, true);
         window.removeEventListener("mouseup", upHandler, true);
@@ -500,7 +525,7 @@ let _dragStart: any;
     };
 
     // add all handlers
-    window.addEventListener("touchmove", moveHandler, true);
+    window.addEventListener("touchmove", moveHandler, { passive: false, capture: true });
     window.addEventListener("mousemove", moveHandler, true);
     window.addEventListener("touchend", upHandler as any, true);
     window.addEventListener("mouseup", upHandler, true);
