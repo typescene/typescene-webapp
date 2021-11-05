@@ -681,11 +681,16 @@ export class DOMRenderContext extends UIRenderContext {
         wrapper.style.justifyContent = "space-around";
         break;
       case UIRenderPlacement.DIALOG:
-      default:
         // dialog wrapper: gravity pulls to top/center/bottom
         wrapper.style.flexDirection = "row";
         wrapper.style.alignItems = "center";
         wrapper.style.justifyContent = "space-around";
+        break;
+      default:
+        // default modal: center in all directions
+        wrapper.style.flexDirection = "column";
+        wrapper.style.alignItems = "stretch";
+        wrapper.style.justifyContent = "stretch";
     }
   }
 
