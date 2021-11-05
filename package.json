@@ -34,7 +34,7 @@
     "postbuild": "rollup -c"
   },
   "dependencies": {
-    "typescene": "3.1.5",
+    "typescene": "3.1.6",
     "tslib": "^2.3.1"
   },
   "devDependencies": {
